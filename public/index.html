@@ -389,6 +389,45 @@
   html[dir="rtl"] #lang-toggle     { right: auto; left: 1rem; }
   html[dir="rtl"] .btn-row         { flex-direction: row-reverse; }
 
+  /* ── Clue editor ──────────────────────────────────────────────────────── */
+  .clue-editor-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .clue-editor-num {
+    min-width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgba(124,58,237,0.2);
+    color: var(--violet);
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.5rem;
+  }
+  .clue-editor-item textarea {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    font-family: var(--font);
+    resize: vertical;
+    min-height: 3rem;
+    outline: none;
+    transition: border-color 0.15s;
+    line-height: 1.4;
+    width: 100%;
+  }
+  .clue-editor-item textarea:focus { border-color: var(--purple); }
+
   /* ── Secret reveal box ────────────────────────────────────────────────── */
   .secret-box {
     background: rgba(245,158,11,0.08);
@@ -554,7 +593,21 @@
         <div class="spinner"></div>
         <div style="color:var(--muted);margin-top:0.75rem;font-size:0.9rem" data-en="Claude is crafting clues..." data-ar="كلود يبتكر الأدلة...">Claude is crafting clues...</div>
       </div>
-      <button class="btn btn-green" id="start-round-btn" onclick="startRound()" style="display:none" data-en="▶ Start Round" data-ar="▶ ابدأ الجولة">▶ Start Round</button>
+
+      <!-- Clue editor — shown after generation -->
+      <div id="clue-editor" style="display:none">
+        <div class="divider"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+          <div class="section-title" style="margin-bottom:0" data-en="✏️ Review & Edit Clues" data-ar="✏️ راجع وعدّل الأدلة">✏️ Review & Edit Clues</div>
+          <button class="btn btn-ghost btn-sm" onclick="regenerateClues()" style="width:auto" data-en="↺ Regenerate" data-ar="↺ أعد التوليد">↺ Regenerate</button>
+        </div>
+        <div style="color:var(--muted);font-size:0.8rem;margin-bottom:1rem" data-en="Clue 1 is the most vague, Clue 10 is the most obvious. Edit any clue freely." data-ar="الدليل ١ هو الأكثر غموضاً، والدليل ١٠ هو الأوضح. يمكنك تعديل أي دليل بحرية.">
+          Clue 1 is the most vague, Clue 10 is the most obvious. Edit any clue freely.
+        </div>
+        <div id="clue-editor-list"></div>
+        <div class="spacer-sm"></div>
+        <button class="btn btn-green" id="start-round-btn" onclick="startRound()" data-en="▶ Start Round with These Clues" data-ar="▶ ابدأ الجولة بهذه الأدلة">▶ Start Round with These Clues</button>
+      </div>
     </div>
     <div class="spacer-lg"></div>
   </div>
@@ -852,14 +905,14 @@ function handleMessage(msg) {
     case 'GENERATING_CLUES':
       qs('#generating-status').style.display = '';
       qs('#generate-btn').style.display = 'none';
-      qs('#start-round-btn').style.display = 'none';
+      qs('#clue-editor').style.display = 'none';
       break;
 
     case 'CLUES_READY':
       qs('#generating-status').style.display = 'none';
-      qs('#start-round-btn').style.display = '';
       qs('#generate-btn').style.display = '';
-      toast(`✅ ${msg.totalClues} clues generated! Start the round when ready.`, 'success');
+      renderClueEditor(msg.clues);
+      toast(`✅ ${msg.totalClues} ${t('clues generated! Review and edit if needed.', 'أدلة جاهزة! راجعها وعدّل إن شئت.')}`, 'success');
       break;
 
     case 'ROUND_PREPARING':
@@ -959,8 +1012,28 @@ function generateClues() {
 }
 
 function startRound() {
-  send({ type: 'START_ROUND' });
+  // Collect edited clues from the editor textareas
+  const textareas = qs('#clue-editor-list')?.querySelectorAll('textarea');
+  const clues = textareas && textareas.length === 10
+    ? Array.from(textareas).map(ta => ta.value.trim())
+    : undefined;
+  send({ type: 'START_ROUND', clues });
   showScreen('screen-host-round');
+}
+
+function regenerateClues() {
+  qs('#clue-editor').style.display = 'none';
+  generateClues();
+}
+
+function renderClueEditor(clues) {
+  const list = qs('#clue-editor-list');
+  list.innerHTML = clues.map((clue, i) => `
+    <div class="clue-editor-item">
+      <div class="clue-editor-num">${i + 1}</div>
+      <textarea dir="auto" rows="2">${escHtml(clue)}</textarea>
+    </div>`).join('');
+  qs('#clue-editor').style.display = '';
 }
 
 function revealClue() {
@@ -975,7 +1048,7 @@ function endRound() {
 function newRound() {
   send({ type: 'NEW_ROUND' });
   showScreen('screen-host-lobby');
-  qs('#start-round-btn').style.display = 'none';
+  qs('#clue-editor').style.display = 'none';
   qs('#generate-btn').style.display = '';
   qs('#generating-status').style.display = 'none';
   qs('#secret-input').value = '';

@@ -384,7 +384,7 @@ async function dispatch(ws, msg) {
         p.guessTime = null;
       }
 
-      send(ws, { type: 'CLUES_READY', totalClues: clues.length, firstClue: clues[0] });
+      send(ws, { type: 'CLUES_READY', totalClues: clues.length, clues });
       pushHostUpdate(session);
       break;
     }
@@ -396,6 +396,11 @@ async function dispatch(ws, msg) {
       if (!session?.round || session.round.status !== 'ready') {
         send(ws, { type: 'ERROR', message: 'Generate clues first, then start the round' });
         return;
+      }
+
+      // Accept edited clues from host if provided
+      if (Array.isArray(msg.clues) && msg.clues.length === 10) {
+        session.round.clues = msg.clues.map(c => String(c).trim() || session.round.clues[0]);
       }
 
       session.roundNumber++;
