@@ -1,26 +1,24 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Who Am I? / من أنا؟</title>
+<title>من أنا؟</title>
 <style>
-  /* ── Reset & base ─────────────────────────────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg:       #0d0b1e;
-    --surface:  rgba(255,255,255,0.06);
-    --border:   rgba(255,255,255,0.10);
-    --purple:   #7c3aed;
-    --violet:   #a855f7;
-    --gold:     #f59e0b;
-    --green:    #10b981;
-    --red:      #ef4444;
-    --blue:     #3b82f6;
-    --text:     #f1f5f9;
-    --muted:    #94a3b8;
-    --radius:   14px;
-    --font: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    --bg:      #0d0b1e;
+    --surface: rgba(255,255,255,0.06);
+    --border:  rgba(255,255,255,0.10);
+    --purple:  #7c3aed;
+    --violet:  #a855f7;
+    --gold:    #f59e0b;
+    --green:   #10b981;
+    --red:     #ef4444;
+    --text:    #f1f5f9;
+    --muted:   #94a3b8;
+    --radius:  14px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
   html, body { height: 100%; }
   body {
@@ -35,12 +33,12 @@
     overflow-x: hidden;
   }
 
-  /* ── Screens ──────────────────────────────────────────────────────────── */
+  /* ── Screens ── */
   #app { width: 100%; min-height: 100vh; }
   .screen { display: none; min-height: 100vh; padding: 1rem; }
   .screen.active { display: flex; flex-direction: column; align-items: center; }
 
-  /* ── Cards ────────────────────────────────────────────────────────────── */
+  /* ── Cards ── */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -51,12 +49,11 @@
     max-width: 480px;
   }
   .card-wide { max-width: 700px; }
-  .card-full { max-width: 900px; }
 
-  /* ── Typography ───────────────────────────────────────────────────────── */
+  /* ── Typography ── */
   .title {
-    font-size: clamp(2rem, 8vw, 3rem);
-    font-weight: 800;
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+    font-weight: 900;
     background: linear-gradient(135deg, var(--violet) 0%, var(--gold) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -67,11 +64,11 @@
   }
   .subtitle { color: var(--muted); text-align: center; font-size: 0.95rem; }
   .section-title {
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     margin-bottom: 0.75rem;
   }
   .big-code {
@@ -83,7 +80,7 @@
     font-family: 'Courier New', monospace;
   }
 
-  /* ── Buttons ──────────────────────────────────────────────────────────── */
+  /* ── Buttons ── */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -119,10 +116,10 @@
   .btn-row { display: flex; gap: 0.75rem; }
   .btn-row .btn { flex: 1; }
 
-  /* ── Inputs ───────────────────────────────────────────────────────────── */
+  /* ── Inputs ── */
   .input-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
   .input-group label { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
-  input[type="text"], input[type="password"] {
+  input[type="text"] {
     background: rgba(255,255,255,0.08);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -133,13 +130,12 @@
     font-family: var(--font);
     transition: border-color 0.15s;
     outline: none;
+    text-align: right;
   }
-  input[type="text"]:focus, input[type="password"]:focus {
-    border-color: var(--purple);
-  }
+  input[type="text"]:focus { border-color: var(--purple); }
   input[type="text"]::placeholder { color: var(--muted); }
 
-  /* ── Badges ───────────────────────────────────────────────────────────── */
+  /* ── Badges ── */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -155,7 +151,7 @@
   .badge-red    { background: rgba(239,68,68,0.2);   color: var(--red); }
   .badge-gray   { background: rgba(148,163,184,0.15); color: var(--muted); }
 
-  /* ── Clue cards ───────────────────────────────────────────────────────── */
+  /* ── Clue cards ── */
   .clue-list { display: flex; flex-direction: column; gap: 0.75rem; }
   .clue-card {
     background: var(--surface);
@@ -175,7 +171,7 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--purple), var(--violet));
+    background: linear-gradient(90deg, var(--violet), var(--purple));
     animation: shimmer 1.5s ease-in-out;
   }
   .clue-number {
@@ -186,11 +182,7 @@
     letter-spacing: 0.1em;
     margin-bottom: 0.4rem;
   }
-  .clue-text {
-    font-size: 1.05rem;
-    line-height: 1.5;
-    color: var(--text);
-  }
+  .clue-text { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
   .clue-card:not(.clue-new) .clue-number { color: var(--muted); }
   .clue-card:not(.clue-new) .clue-text { color: var(--muted); font-size: 0.95rem; }
 
@@ -199,35 +191,26 @@
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
   @keyframes shimmer {
-    0%   { opacity: 0; transform: scaleX(0); transform-origin: left; }
+    0%   { opacity: 0; transform: scaleX(0); transform-origin: right; }
     50%  { opacity: 1; transform: scaleX(1); }
     100% { opacity: 0; }
   }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.5; }
-  }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  @keyframes spin { to { transform: rotate(360deg); } }
   @keyframes bounceIn {
     0%   { transform: scale(0.8); opacity: 0; }
     60%  { transform: scale(1.05); }
     100% { transform: scale(1); opacity: 1; }
   }
 
-  /* ── Player list (host) ───────────────────────────────────────────────── */
-  .player-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
+  /* ── Player table (host) ── */
+  .player-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
   .player-table th {
-    text-align: left;
+    text-align: right;
     color: var(--muted);
     font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     padding: 0.5rem 0.75rem;
     border-bottom: 1px solid var(--border);
     font-weight: 600;
@@ -240,17 +223,12 @@
   .player-table tr:last-child td { border-bottom: none; }
   .player-table tr.correct-row td { color: var(--green); }
   .player-table tr.disconnected-row td { opacity: 0.45; }
-  .dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-right: 0.4rem;
-  }
-  .dot-green  { background: var(--green); box-shadow: 0 0 4px var(--green); }
-  .dot-gray   { background: var(--muted); }
-  .dot-gold   { background: var(--gold); box-shadow: 0 0 4px var(--gold); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 0.4rem; }
+  .dot-green { background: var(--green); box-shadow: 0 0 4px var(--green); }
+  .dot-gray  { background: var(--muted); }
+  .dot-gold  { background: var(--gold); box-shadow: 0 0 4px var(--gold); }
 
-  /* ── Leaderboard ──────────────────────────────────────────────────────── */
+  /* ── Leaderboard ── */
   .lb-row {
     display: flex;
     align-items: center;
@@ -265,19 +243,13 @@
   .lb-row:nth-child(1) { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
   .lb-row:nth-child(2) { border-color: rgba(148,163,184,0.4); background: rgba(148,163,184,0.06); }
   .lb-row:nth-child(3) { border-color: rgba(205,127,50,0.4);  background: rgba(205,127,50,0.06); }
-  .lb-rank { font-size: 1.4rem; width: 2rem; text-align: center; }
-  .lb-name { flex: 1; font-weight: 700; font-size: 1rem; }
+  .lb-rank  { font-size: 1.4rem; width: 2rem; text-align: center; }
+  .lb-name  { flex: 1; font-weight: 700; font-size: 1rem; }
   .lb-clues { color: var(--muted); font-size: 0.85rem; text-align: center; min-width: 3rem; }
-  .lb-time  { color: var(--muted); font-size: 0.85rem; text-align: right; min-width: 4rem; }
-  .lb-score {
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: var(--gold);
-    min-width: 3rem;
-    text-align: right;
-  }
+  .lb-time  { color: var(--muted); font-size: 0.85rem; text-align: left; min-width: 4rem; }
+  .lb-score { font-weight: 800; font-size: 1.1rem; color: var(--gold); min-width: 3rem; text-align: left; }
 
-  /* ── Status bar ───────────────────────────────────────────────────────── */
+  /* ── Status bar ── */
   .status-bar {
     display: flex;
     align-items: center;
@@ -291,17 +263,12 @@
     color: var(--muted);
   }
 
-  /* ── Divider ──────────────────────────────────────────────────────────── */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 1.25rem 0;
-  }
+  /* ── Misc ── */
+  .divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
   .spacer-sm { height: 0.75rem; }
   .spacer    { height: 1.25rem; }
   .spacer-lg { height: 2rem; }
-
-  /* ── Spinner ──────────────────────────────────────────────────────────── */
+  .empty { text-align: center; color: var(--muted); padding: 2rem 0; font-size: 0.9rem; }
   .spinner {
     width: 2rem; height: 2rem;
     border: 3px solid rgba(255,255,255,0.15);
@@ -310,12 +277,8 @@
     animation: spin 0.8s linear infinite;
     margin: 0 auto;
   }
-  .spinner-lg {
-    width: 3.5rem; height: 3.5rem;
-    border-width: 4px;
-  }
 
-  /* ── Toast ────────────────────────────────────────────────────────────── */
+  /* ── Toast ── */
   #toast {
     position: fixed;
     bottom: 1.5rem;
@@ -335,42 +298,64 @@
     backdrop-filter: blur(12px);
     pointer-events: none;
   }
-  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  #toast.error { border-color: var(--red); color: #fca5a5; }
+  #toast.show  { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #toast.error { border-color: var(--red);   color: #fca5a5; }
   #toast.success { border-color: var(--green); color: #6ee7b7; }
 
-  /* ── Lang toggle ──────────────────────────────────────────────────────── */
-  #lang-toggle {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 500;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    cursor: pointer;
-    padding: 0.4rem 0.7rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    font-family: var(--font);
-    transition: background 0.15s;
+  /* ── Secret box ── */
+  .secret-box {
+    background: rgba(245,158,11,0.08);
+    border: 1px dashed rgba(245,158,11,0.35);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
   }
-  #lang-toggle:hover { background: rgba(255,255,255,0.1); }
+  .secret-label { font-size: 0.75rem; color: var(--gold); font-weight: 700; letter-spacing: 0.05em; }
+  .secret-name  { font-size: 1.5rem; font-weight: 900; color: var(--text); margin-top: 0.25rem; }
 
-  /* ── Waiting animation ────────────────────────────────────────────────── */
-  .pulse-ring {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 1.5rem auto;
-  }
-  .pulse-emoji {
-    font-size: 4rem;
-    animation: pulse 2s ease-in-out infinite;
+  /* ── Progress bar ── */
+  .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; margin: 0.5rem 0; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--violet));
+    border-radius: 99px;
+    transition: width 0.4s ease;
   }
 
-  /* ── Correct overlay ──────────────────────────────────────────────────── */
+  /* ── Guess area ── */
+  .guess-area {
+    position: sticky;
+    bottom: 0;
+    padding: 0.75rem 0;
+    background: linear-gradient(to top, var(--bg) 80%, transparent);
+  }
+  .guess-row { display: flex; gap: 0.5rem; }
+  .guess-row input { flex: 1; }
+  .guess-row .btn { width: auto; padding: 0.75rem 1.25rem; white-space: nowrap; }
+
+  /* ── Home layout ── */
+  .home-options { display: grid; grid-template-columns: 1fr; gap: 1rem; width: 100%; max-width: 480px; }
+  @media (min-width: 640px) { .home-options { grid-template-columns: 1fr 1fr; } }
+
+  /* ── Clues pill ── */
+  .clues-pill {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 99px;
+    font-size: 0.9rem; font-weight: 700; color: var(--violet);
+    margin: 0.5rem auto; width: fit-content;
+  }
+
+  /* ── Scroll container ── */
+  .scroll-area { flex: 1; overflow-y: auto; width: 100%; max-width: 480px; padding-bottom: 0.5rem; }
+  .scroll-area-wide { max-width: 700px; }
+
+  /* ── Pulse ── */
+  .pulse-emoji { font-size: 4rem; animation: pulse 2s ease-in-out infinite; }
+
+  /* ── Correct banner ── */
   .correct-banner {
     background: rgba(16,185,129,0.15);
     border: 1px solid var(--green);
@@ -382,33 +367,16 @@
   .correct-banner h3 { color: var(--green); font-size: 1.5rem; margin-bottom: 0.25rem; }
   .correct-banner p  { color: var(--muted); font-size: 0.9rem; }
 
-  /* ── RTL support ──────────────────────────────────────────────────────── */
-  html[dir="rtl"] .player-table th { text-align: right; }
-  html[dir="rtl"] .lb-score        { text-align: left; }
-  html[dir="rtl"] .lb-time         { text-align: left; }
-  html[dir="rtl"] #lang-toggle     { right: auto; left: 1rem; }
-  html[dir="rtl"] .btn-row         { flex-direction: row-reverse; }
-
-  /* ── Clue editor ──────────────────────────────────────────────────────── */
-  .clue-editor-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
+  /* ── Clue editor ── */
+  .clue-editor-item { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
   .clue-editor-num {
-    min-width: 2rem;
-    height: 2rem;
+    min-width: 2rem; height: 2rem;
     border-radius: 50%;
     background: rgba(124,58,237,0.2);
     color: var(--violet);
-    font-weight: 800;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 0.5rem;
+    font-weight: 800; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 0.5rem;
   }
   .clue-editor-item textarea {
     flex: 1;
@@ -423,196 +391,111 @@
     min-height: 3rem;
     outline: none;
     transition: border-color 0.15s;
-    line-height: 1.4;
+    line-height: 1.5;
     width: 100%;
+    text-align: right;
+    direction: rtl;
   }
   .clue-editor-item textarea:focus { border-color: var(--purple); }
-
-  /* ── Secret reveal box ────────────────────────────────────────────────── */
-  .secret-box {
-    background: rgba(245,158,11,0.08);
-    border: 1px dashed rgba(245,158,11,0.35);
-    border-radius: 10px;
-    padding: 1rem;
-    text-align: center;
-  }
-  .secret-label { font-size: 0.75rem; color: var(--gold); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-  .secret-name  { font-size: 1.5rem; font-weight: 900; color: var(--text); margin-top: 0.25rem; }
-
-  /* ── Progress bar ─────────────────────────────────────────────────────── */
-  .progress-bar {
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 99px;
-    overflow: hidden;
-    margin: 0.5rem 0;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--purple), var(--violet));
-    border-radius: 99px;
-    transition: width 0.4s ease;
-  }
-
-  /* ── Guess input area ─────────────────────────────────────────────────── */
-  .guess-area {
-    position: sticky;
-    bottom: 0;
-    padding: 0.75rem 0;
-    background: linear-gradient(to top, var(--bg) 80%, transparent);
-  }
-  .guess-row {
-    display: flex;
-    gap: 0.5rem;
-  }
-  .guess-row input { flex: 1; }
-  .guess-row .btn { width: auto; padding: 0.75rem 1.25rem; white-space: nowrap; }
-
-  /* ── Home screen layout ───────────────────────────────────────────────── */
-  .home-options {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    width: 100%;
-    max-width: 480px;
-  }
-  @media (min-width: 640px) {
-    .home-options { grid-template-columns: 1fr 1fr; }
-  }
-
-  /* ── Info list ────────────────────────────────────────────────────────── */
-  .info-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; font-size: 0.9rem; }
-  .info-row .label { color: var(--muted); }
-  .info-row .val   { font-weight: 700; }
-
-  /* ── Clues counter pill ───────────────────────────────────────────────── */
-  .clues-pill {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
-    background: rgba(124,58,237,0.15);
-    border: 1px solid rgba(124,58,237,0.3);
-    border-radius: 99px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--violet);
-    margin: 0.5rem auto;
-    width: fit-content;
-  }
-
-  /* ── Empty state ──────────────────────────────────────────────────────── */
-  .empty { text-align: center; color: var(--muted); padding: 2rem 0; font-size: 0.9rem; }
-
-  /* ── Scroll container ─────────────────────────────────────────────────── */
-  .scroll-area {
-    flex: 1;
-    overflow-y: auto;
-    width: 100%;
-    max-width: 480px;
-    padding-bottom: 0.5rem;
-  }
-  .scroll-area-wide { max-width: 700px; }
 </style>
 </head>
 <body>
-<button id="lang-toggle" onclick="toggleLang()">عربي</button>
 <div id="app">
 
-  <!-- ═══════════════════════════════════ SCREEN: HOME ══════════════════════════════════ -->
+  <!-- ════════════════ الصفحة الرئيسية ════════════════ -->
   <div id="screen-home" class="screen active">
     <div class="spacer-lg"></div>
-    <div class="title">Who Am I?</div>
-    <div id="title-ar" class="title" style="display:none">من أنا؟</div>
-    <div class="subtitle" id="sub-en">The multiplayer celebrity guessing game</div>
-    <div class="subtitle" id="sub-ar" style="display:none">لعبة التخمين الجماعية</div>
+    <div class="title">من أنا؟</div>
+    <div class="subtitle">لعبة تخمين الشخصيات الجماعية</div>
     <div class="spacer-lg"></div>
 
     <div class="home-options">
-      <!-- HOST -->
+      <!-- المضيف -->
       <div class="card" style="display:flex;flex-direction:column;gap:1rem">
         <div style="font-size:2.5rem;text-align:center">🎮</div>
         <div>
-          <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem" data-en="Host a Game" data-ar="أنشئ جلسة">Host a Game</div>
-          <div style="color:var(--muted);font-size:0.85rem" data-en="Create a session for others to join" data-ar="أنشئ جلسة يدخلها اللاعبون">Create a session for others to join</div>
+          <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem">أنشئ جلسة</div>
+          <div style="color:var(--muted);font-size:0.85rem">كون جلسة يدخلها اللاعبون</div>
         </div>
-        <button class="btn btn-primary" onclick="createSession()" data-en="Create Session" data-ar="إنشاء جلسة">Create Session</button>
+        <button class="btn btn-primary" onclick="createSession()">إنشاء جلسة</button>
       </div>
 
-      <!-- PLAYER -->
+      <!-- اللاعب -->
       <div class="card" style="display:flex;flex-direction:column;gap:1rem">
         <div style="font-size:2.5rem;text-align:center">📱</div>
         <div>
-          <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem" data-en="Join a Game" data-ar="انضم للعبة">Join a Game</div>
-          <div style="color:var(--muted);font-size:0.85rem" data-en="Enter a session code to play" data-ar="أدخل كود الجلسة للعب">Enter a session code to play</div>
+          <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem">انضم للعبة</div>
+          <div style="color:var(--muted);font-size:0.85rem">أدخل كود الجلسة للعب</div>
         </div>
         <div class="input-group">
-          <label data-en="Session Code" data-ar="كود الجلسة">Session Code</label>
-          <input type="text" id="join-code" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;letter-spacing:0.15em;font-weight:700;text-align:center;font-size:1.2rem" oninput="this.value=this.value.toUpperCase()">
+          <label>كود الجلسة</label>
+          <input type="text" id="join-code" placeholder="ABC123" maxlength="6"
+            style="text-transform:uppercase;letter-spacing:0.15em;font-weight:700;text-align:center;font-size:1.2rem"
+            oninput="this.value=this.value.toUpperCase()">
         </div>
         <div class="input-group">
-          <label data-en="Your Display Name" data-ar="اسمك في اللعبة">Your Display Name</label>
-          <input type="text" id="join-name" placeholder="Enter your name..." maxlength="30" dir="auto">
+          <label>اسمك في اللعبة</label>
+          <input type="text" id="join-name" placeholder="أدخل اسمك..." maxlength="30">
         </div>
-        <button class="btn btn-gold" onclick="joinSession()" data-en="Join Game" data-ar="انضم">Join Game</button>
+        <button class="btn btn-gold" onclick="joinSession()">انضم الآن</button>
       </div>
     </div>
 
     <div class="spacer"></div>
-    <div style="color:var(--muted);font-size:0.75rem;text-align:center;max-width:360px" data-en="5–15 players · Powered by Claude AI · Real-time scoring" data-ar="٥–١٥ لاعب · مدعوم بـ Claude AI · نقاط لحظية">
-      5–15 players · Powered by Claude AI · Real-time scoring
+    <div style="color:var(--muted);font-size:0.75rem;text-align:center;max-width:360px">
+      ٥–١٥ لاعب · مدعوم بـ Claude AI · نقاط لحظية
     </div>
     <div class="spacer-lg"></div>
   </div>
 
-  <!-- ═══════════════════════════════════ SCREEN: HOST LOBBY ════════════════════════════ -->
+  <!-- ════════════════ غرفة الانتظار (المضيف) ════════════════ -->
   <div id="screen-host-lobby" class="screen">
     <div class="spacer"></div>
     <div class="card card-wide" style="width:100%">
-      <div class="section-title" data-en="Session Code" data-ar="كود الجلسة">Session Code</div>
+      <div class="section-title">كود الجلسة</div>
       <div class="big-code" id="lobby-code">------</div>
-      <div style="text-align:center;color:var(--muted);font-size:0.85rem;margin-top:0.5rem" data-en="Share this code with players" data-ar="شارك هذا الكود مع اللاعبين">Share this code with players</div>
+      <div style="text-align:center;color:var(--muted);font-size:0.85rem;margin-top:0.5rem">شارك هذا الكود مع اللاعبين</div>
 
       <div class="divider"></div>
 
-      <div class="section-title" data-en="Players Joined" data-ar="اللاعبون">Players Joined</div>
+      <div class="section-title">اللاعبون</div>
       <div id="lobby-players">
-        <div class="empty" data-en="Waiting for players to join..." data-ar="في انتظار اللاعبين...">Waiting for players to join...</div>
+        <div class="empty">في انتظار اللاعبين...</div>
       </div>
 
       <div class="divider"></div>
 
       <div class="input-group">
-        <label data-en="🔐 Secret Person's Name (hidden from players)" data-ar="🔐 اسم الشخص السري (مخفي عن اللاعبين)">🔐 Secret Person's Name (hidden from players)</label>
-        <input type="text" id="secret-input" dir="auto" placeholder="e.g. Albert Einstein..." autocomplete="off">
+        <label>🔐 اسم الشخص السري (مخفي عن اللاعبين)</label>
+        <input type="text" id="secret-input" placeholder="مثال: ناصر القصبي..." autocomplete="off">
       </div>
-      <button class="btn btn-primary" id="generate-btn" onclick="generateClues()" data-en="✨ Generate Clues" data-ar="✨ توليد الأدلة">✨ Generate Clues</button>
+      <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">✨ توليد الأدلة</button>
       <div class="spacer-sm"></div>
+
       <div id="generating-status" style="display:none;text-align:center">
         <div class="spinner"></div>
-        <div style="color:var(--muted);margin-top:0.75rem;font-size:0.9rem" data-en="Claude is crafting clues..." data-ar="كلود يبتكر الأدلة...">Claude is crafting clues...</div>
+        <div style="color:var(--muted);margin-top:0.75rem;font-size:0.9rem">كلود يبتكر الأدلة...</div>
       </div>
 
-      <!-- Clue editor — shown after generation -->
+      <!-- محرر الأدلة — يظهر بعد التوليد -->
       <div id="clue-editor" style="display:none">
         <div class="divider"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
-          <div class="section-title" style="margin-bottom:0" data-en="✏️ Review & Edit Clues" data-ar="✏️ راجع وعدّل الأدلة">✏️ Review & Edit Clues</div>
-          <button class="btn btn-ghost btn-sm" onclick="regenerateClues()" style="width:auto" data-en="↺ Regenerate" data-ar="↺ أعد التوليد">↺ Regenerate</button>
+          <div class="section-title" style="margin-bottom:0">✏️ راجع وعدّل الأدلة</div>
+          <button class="btn btn-ghost btn-sm" onclick="regenerateClues()" style="width:auto">↺ أعد التوليد</button>
         </div>
-        <div style="color:var(--muted);font-size:0.8rem;margin-bottom:1rem" data-en="Clue 1 is the most vague, Clue 10 is the most obvious. Edit any clue freely." data-ar="الدليل ١ هو الأكثر غموضاً، والدليل ١٠ هو الأوضح. يمكنك تعديل أي دليل بحرية.">
-          Clue 1 is the most vague, Clue 10 is the most obvious. Edit any clue freely.
+        <div style="color:var(--muted);font-size:0.8rem;margin-bottom:1rem">
+          الدليل ١ هو الأكثر غموضاً، والدليل ١٠ هو الأوضح. يمكنك تعديل أي دليل بحرية.
         </div>
         <div id="clue-editor-list"></div>
         <div class="spacer-sm"></div>
-        <button class="btn btn-green" id="start-round-btn" onclick="startRound()" data-en="▶ Start Round with These Clues" data-ar="▶ ابدأ الجولة بهذه الأدلة">▶ Start Round with These Clues</button>
+        <button class="btn btn-green" id="start-round-btn" onclick="startRound()">▶ ابدأ الجولة بهذه الأدلة</button>
       </div>
     </div>
     <div class="spacer-lg"></div>
   </div>
 
-  <!-- ═══════════════════════════════════ SCREEN: HOST ROUND ════════════════════════════ -->
+  <!-- ════════════════ شاشة الجولة (المضيف) ════════════════ -->
   <div id="screen-host-round" class="screen">
     <div class="spacer"></div>
     <div class="scroll-area scroll-area-wide" style="max-width:700px">
@@ -620,11 +503,11 @@
       <div class="card card-wide">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
           <div>
-            <div class="section-title" data-en="Round" data-ar="الجولة">Round</div>
+            <div class="section-title">الجولة</div>
             <div style="font-size:2rem;font-weight:900" id="host-round-num">1</div>
           </div>
           <div class="secret-box" style="flex:1;min-width:180px">
-            <div class="secret-label" data-en="Secret Person" data-ar="الشخص السري">Secret Person</div>
+            <div class="secret-label">الشخص السري</div>
             <div class="secret-name" id="host-secret-name">—</div>
           </div>
         </div>
@@ -633,7 +516,7 @@
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
           <div>
-            <div class="section-title" data-en="Clue Progress" data-ar="تقدم الأدلة">Clue Progress</div>
+            <div class="section-title">تقدم الأدلة</div>
             <div id="host-clue-counter" style="font-size:0.95rem;color:var(--muted)">—</div>
           </div>
         </div>
@@ -643,22 +526,22 @@
 
         <div class="spacer-sm"></div>
         <div class="btn-row">
-          <button class="btn btn-primary" id="reveal-btn" onclick="revealClue()" data-en="⬇ Show Next Clue to All" data-ar="⬇ أظهر الدليل التالي للجميع">⬇ Show Next Clue to All</button>
-          <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto;padding:0.85rem 1rem" data-en="End Round" data-ar="إنهاء الجولة">End Round</button>
+          <button class="btn btn-primary" id="reveal-btn" onclick="revealClue()">⬇ أظهر الدليل التالي للجميع</button>
+          <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto;padding:0.85rem 1rem">إنهاء الجولة</button>
         </div>
       </div>
 
       <div class="spacer-sm"></div>
 
       <div class="card card-wide">
-        <div class="section-title" data-en="Live Player Status" data-ar="حالة اللاعبين">Live Player Status</div>
+        <div class="section-title">حالة اللاعبين</div>
         <table class="player-table">
           <thead>
             <tr>
-              <th data-en="Player" data-ar="اللاعب">Player</th>
-              <th data-en="Clues" data-ar="أدلة">Clues</th>
-              <th data-en="Status" data-ar="الحالة">Status</th>
-              <th data-en="Time" data-ar="الوقت">Time</th>
+              <th>اللاعب</th>
+              <th>الأدلة</th>
+              <th>الحالة</th>
+              <th>الوقت</th>
             </tr>
           </thead>
           <tbody id="host-player-table"></tbody>
@@ -669,25 +552,25 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════ SCREEN: PLAYER WAITING ════════════════════════ -->
+  <!-- ════════════════ انتظار (اللاعب) ════════════════ -->
   <div id="screen-player-wait" class="screen">
     <div class="spacer-lg"></div>
     <div class="card" style="text-align:center">
       <div class="pulse-emoji" id="wait-emoji">⏳</div>
-      <div style="font-size:1.2rem;font-weight:800;margin-bottom:0.5rem" id="wait-title" data-en="Waiting for the host..." data-ar="في انتظار المضيف...">Waiting for the host...</div>
-      <div style="color:var(--muted);font-size:0.9rem" id="wait-subtitle" data-en="The round will start soon." data-ar="ستبدأ الجولة قريباً.">The round will start soon.</div>
+      <div style="font-size:1.2rem;font-weight:800;margin-bottom:0.5rem" id="wait-title">في انتظار المضيف...</div>
+      <div style="color:var(--muted);font-size:0.9rem" id="wait-subtitle">ستبدأ الجولة قريباً.</div>
       <div class="spacer"></div>
       <div style="display:flex;justify-content:center;gap:1.5rem">
         <div>
-          <div class="section-title" data-en="Session" data-ar="الجلسة">Session</div>
+          <div class="section-title">الجلسة</div>
           <div style="font-weight:900;font-size:1.2rem;color:var(--gold)" id="wait-code">—</div>
         </div>
         <div>
-          <div class="section-title" data-en="You are" data-ar="أنت">You are</div>
+          <div class="section-title">أنت</div>
           <div style="font-weight:900;font-size:1.2rem;color:var(--violet)" id="wait-name">—</div>
         </div>
         <div>
-          <div class="section-title" data-en="Score" data-ar="النقاط">Score</div>
+          <div class="section-title">نقاطك</div>
           <div style="font-weight:900;font-size:1.2rem;color:var(--green)" id="wait-score">0</div>
         </div>
       </div>
@@ -695,52 +578,54 @@
     <div class="spacer-lg"></div>
   </div>
 
-  <!-- ═══════════════════════════════════ SCREEN: PLAYER ROUND ══════════════════════════ -->
+  <!-- ════════════════ شاشة الجولة (اللاعب) ════════════════ -->
   <div id="screen-player-round" class="screen">
     <div class="scroll-area" style="display:flex;flex-direction:column;gap:0;padding-top:0.75rem">
 
-      <!-- Status bar -->
+      <!-- شريط الحالة -->
       <div class="status-bar" style="max-width:480px;margin:0 auto;width:100%">
         <div>
-          <span data-en="Round" data-ar="جولة">Round</span>
-          <strong id="player-round-num" style="margin-inline-start:0.3rem">1</strong>
+          جولة <strong id="player-round-num" style="margin-right:0.3rem">1</strong>
         </div>
         <div class="clues-pill" style="margin:0">
           <span>🔍</span>
           <span id="player-clues-count">1</span>
           <span style="font-weight:400;color:var(--muted)">/10</span>
-          <span data-en="clues" data-ar="أدلة">clues</span>
+          <span>أدلة</span>
         </div>
-        <div style="font-weight:800;color:var(--gold)" id="player-score-display">0 pts</div>
+        <div style="font-weight:800;color:var(--gold)" id="player-score-display">0 نقطة</div>
       </div>
 
       <div class="spacer-sm"></div>
 
-      <!-- Correct banner (shown after correct guess) -->
+      <!-- لافتة الإجابة الصحيحة -->
       <div id="correct-banner" style="display:none;max-width:480px;margin:0 auto;width:100%">
         <div class="correct-banner">
-          <h3>🎉 <span data-en="Correct!" data-ar="صحيح!">Correct!</span></h3>
+          <h3>🎉 أحسنت!</h3>
           <p id="correct-detail"></p>
         </div>
         <div class="spacer-sm"></div>
       </div>
 
-      <!-- Clue list -->
+      <!-- قائمة الأدلة -->
       <div class="card" style="width:100%;max-width:480px;margin:0 auto">
-        <div class="section-title" data-en="Clues Revealed" data-ar="الأدلة المكشوفة">Clues Revealed</div>
+        <div class="section-title">الأدلة المكشوفة</div>
         <div id="clue-list" class="clue-list"></div>
       </div>
 
       <div class="spacer-sm"></div>
 
-      <!-- Request clue + guess area -->
+      <!-- أزرار اللاعب -->
       <div id="player-actions" style="width:100%;max-width:480px;margin:0 auto">
-        <button class="btn btn-ghost" id="request-clue-btn" onclick="requestClue()" data-en="🔍 Request Another Clue (-1 point potential)" data-ar="🔍 اطلب دليلاً آخر (−١ نقطة محتملة)">🔍 Request Another Clue (-1 point potential)</button>
+        <button class="btn btn-ghost" id="request-clue-btn" onclick="requestClue()">
+          🔍 اطلب دليلاً آخر <span style="color:var(--muted);font-size:0.85rem">(تكلفك نقطة)</span>
+        </button>
         <div class="spacer-sm"></div>
         <div class="guess-area">
           <div class="guess-row">
-            <input type="text" id="guess-input" dir="auto" placeholder="Who am I? Enter your guess..." autocomplete="off" onkeydown="if(event.key==='Enter')submitGuess()">
-            <button class="btn btn-gold" onclick="submitGuess()" style="width:auto" data-en="Guess!" data-ar="خمّن!">Guess!</button>
+            <input type="text" id="guess-input" placeholder="من أنا؟ أدخل تخمينك..." autocomplete="off"
+              onkeydown="if(event.key==='Enter')submitGuess()">
+            <button class="btn btn-gold" onclick="submitGuess()" style="width:auto">خمّن!</button>
           </div>
         </div>
       </div>
@@ -749,51 +634,50 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════ SCREEN: RESULTS ══════════════════════════════ -->
+  <!-- ════════════════ نتائج الجولة ════════════════ -->
   <div id="screen-results" class="screen">
     <div class="spacer"></div>
     <div class="scroll-area">
       <div class="card" style="text-align:center;padding-bottom:1.5rem">
         <div style="font-size:3rem">🏁</div>
-        <div style="font-size:1.5rem;font-weight:800;margin:0.25rem 0" data-en="Round Complete!" data-ar="انتهت الجولة!">Round Complete!</div>
+        <div style="font-size:1.5rem;font-weight:800;margin:0.25rem 0">انتهت الجولة!</div>
         <div style="color:var(--muted);margin-bottom:1rem">
-          <span data-en="The answer was:" data-ar="كانت الإجابة:">The answer was:</span>
-          <strong style="color:var(--gold);margin-inline-start:0.4rem" id="results-secret">—</strong>
+          كانت الإجابة:
+          <strong style="color:var(--gold);margin-right:0.4rem" id="results-secret">—</strong>
         </div>
 
         <div id="results-list"></div>
-
         <div class="divider"></div>
 
-        <div class="section-title" data-en="Leaderboard" data-ar="لوحة المتصدرين">Leaderboard</div>
+        <div class="section-title">لوحة المتصدرين</div>
         <div id="results-leaderboard"></div>
 
         <div class="spacer-sm"></div>
         <div id="host-results-controls" style="display:none">
           <div class="btn-row">
-            <button class="btn btn-primary" onclick="newRound()" data-en="▶ New Round" data-ar="▶ جولة جديدة">▶ New Round</button>
-            <button class="btn btn-ghost" onclick="endSession()" data-en="🏆 End Session" data-ar="🏆 إنهاء الجلسة">🏆 End Session</button>
+            <button class="btn btn-primary" onclick="newRound()">▶ جولة جديدة</button>
+            <button class="btn btn-ghost" onclick="endSession()">🏆 إنهاء الجلسة</button>
           </div>
         </div>
-        <div id="player-results-msg" style="display:none;color:var(--muted);font-size:0.9rem" data-en="Waiting for the host to start the next round..." data-ar="في انتظار المضيف لبدء الجولة التالية...">Waiting for the host to start the next round...</div>
+        <div id="player-results-msg" style="display:none;color:var(--muted);font-size:0.9rem">
+          في انتظار المضيف لبدء الجولة التالية...
+        </div>
       </div>
       <div class="spacer-lg"></div>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════ SCREEN: FINAL LEADERBOARD ════════════════════ -->
+  <!-- ════════════════ الترتيب النهائي ════════════════ -->
   <div id="screen-final" class="screen">
     <div class="spacer"></div>
     <div class="scroll-area">
       <div class="card" style="text-align:center">
         <div style="font-size:3.5rem">🏆</div>
-        <div style="font-size:1.7rem;font-weight:900;margin:0.5rem 0" data-en="Game Over!" data-ar="انتهت اللعبة!">Game Over!</div>
-        <div style="color:var(--muted);margin-bottom:1.5rem" data-en="Final Rankings" data-ar="الترتيب النهائي">Final Rankings</div>
-
+        <div style="font-size:1.7rem;font-weight:900;margin:0.5rem 0">انتهت اللعبة!</div>
+        <div style="color:var(--muted);margin-bottom:1.5rem">الترتيب النهائي</div>
         <div id="final-leaderboard"></div>
-
         <div class="divider"></div>
-        <button class="btn btn-primary" onclick="goHome()" data-en="🏠 Back to Home" data-ar="🏠 الصفحة الرئيسية">🏠 Back to Home</button>
+        <button class="btn btn-primary" onclick="goHome()">🏠 الصفحة الرئيسية</button>
       </div>
       <div class="spacer-lg"></div>
     </div>
@@ -813,8 +697,7 @@ const state = {
   clues: [],
   correctGuess: false,
   score: 0,
-  hostState: null,
-  lang: 'en'
+  hostState: null
 };
 
 let ws = null;
@@ -828,7 +711,6 @@ function connect() {
 
   ws.onopen = () => {
     reconnectAttempts = 0;
-    // Rejoin if we were in a session
     if (state.role === 'player' && state.sessionCode && state.playerName) {
       send({ type: 'JOIN_SESSION', code: state.sessionCode, name: state.playerName });
     } else if (state.role === 'host' && state.sessionCode) {
@@ -850,9 +732,7 @@ function connect() {
 }
 
 function send(obj) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(obj));
-  }
+  if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
 // ─── Message handler ──────────────────────────────────────────────────────────
@@ -865,8 +745,8 @@ function handleMessage(msg) {
       showScreen('screen-host-lobby');
       qs('#lobby-code').textContent = msg.code;
       if (!msg.rejoined) {
-        qs('#lobby-players').innerHTML = emptyHtml('Waiting for players to join...', 'في انتظار اللاعبين...');
-        qs('#start-round-btn').style.display = 'none';
+        qs('#lobby-players').innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
+        qs('#clue-editor').style.display = 'none';
         qs('#generate-btn').style.display = '';
         qs('#generating-status').style.display = 'none';
         qs('#secret-input').value = '';
@@ -884,14 +764,11 @@ function handleMessage(msg) {
       qs('#wait-code').textContent = msg.sessionCode;
       qs('#wait-name').textContent = msg.playerName;
       qs('#wait-score').textContent = state.score;
-      qs('#player-score-display').textContent = state.score + ' pts';
+      qs('#player-score-display').textContent = state.score + ' نقطة';
 
       if (msg.roundStatus === 'active') {
         showScreen('screen-player-round');
         qs('#player-round-num').textContent = state.roundNumber;
-      } else if (msg.roundStatus === 'complete') {
-        // results will come via ROUND_COMPLETE
-        showScreen('screen-player-wait');
       } else {
         showScreen('screen-player-wait');
       }
@@ -912,17 +789,17 @@ function handleMessage(msg) {
       qs('#generating-status').style.display = 'none';
       qs('#generate-btn').style.display = '';
       renderClueEditor(msg.clues);
-      toast(`✅ ${msg.totalClues} ${t('clues generated! Review and edit if needed.', 'أدلة جاهزة! راجعها وعدّل إن شئت.')}`, 'success');
+      toast(`✅ تم توليد ${msg.totalClues} أدلة! راجعها وعدّل إن شئت.`, 'success');
       break;
 
     case 'ROUND_PREPARING':
       showScreen('screen-player-wait');
       qs('#wait-emoji').textContent = '🎯';
-      qs('#wait-title').textContent = t('Get ready! A new round is starting...', 'استعد! جولة جديدة تبدأ...');
-      qs('#wait-subtitle').textContent = t('The host is preparing clues.', 'المضيف يجهّز الأدلة.');
+      qs('#wait-title').textContent = 'استعد! جولة جديدة تبدأ...';
+      qs('#wait-subtitle').textContent = 'المضيف يجهّز الأدلة.';
       break;
 
-    case 'ROUND_STARTED': {
+    case 'ROUND_STARTED':
       state.roundStatus = 'active';
       state.roundNumber = msg.roundNumber || state.roundNumber;
       state.clues = [];
@@ -938,7 +815,6 @@ function handleMessage(msg) {
       showScreen('screen-player-round');
       addClue(msg.clue, msg.clueIndex, true);
       break;
-    }
 
     case 'CLUE_REVEALED':
       addClue(msg.clue, msg.clueIndex, true);
@@ -950,13 +826,13 @@ function handleMessage(msg) {
       if (msg.correct) {
         state.correctGuess = true;
         state.score += msg.roundScore || 0;
-        qs('#player-score-display').textContent = state.score + ' pts';
+        qs('#player-score-display').textContent = state.score + ' نقطة';
         qs('#correct-banner').style.display = '';
         qs('#correct-detail').textContent =
-          `${t('You used', 'استخدمت')} ${msg.cluesSeen} ${t('clue(s)', 'دليل')} · ${t('earned', 'حصلت على')} ${msg.roundScore} ${t('pts', 'نقطة')} · ${formatTime(msg.guessTime)}`;
+          `استخدمت ${msg.cluesSeen} دليل · حصلت على ${msg.roundScore} نقطة · ${formatTime(msg.guessTime)}`;
         qs('#player-actions').style.display = 'none';
       } else {
-        toast('❌ ' + t('Wrong guess — try again!', 'إجابة خاطئة — حاول مجدداً!'), 'error');
+        toast('❌ إجابة خاطئة — حاول مجدداً!', 'error');
       }
       break;
 
@@ -971,8 +847,8 @@ function handleMessage(msg) {
       state.correctGuess = false;
       showScreen('screen-player-wait');
       qs('#wait-emoji').textContent = '⏳';
-      qs('#wait-title').textContent = t('Waiting for the host...', 'في انتظار المضيف...');
-      qs('#wait-subtitle').textContent = t('The next round will start soon.', 'ستبدأ الجولة التالية قريباً.');
+      qs('#wait-title').textContent = 'في انتظار المضيف...';
+      qs('#wait-subtitle').textContent = 'ستبدأ الجولة التالية قريباً.';
       qs('#wait-score').textContent = state.score;
       break;
 
@@ -986,7 +862,6 @@ function handleMessage(msg) {
 
     case 'ERROR':
       toast('⚠ ' + msg.message, 'error');
-      // Re-show generating btn if generation failed
       if (state.role === 'host') {
         qs('#generating-status').style.display = 'none';
         qs('#generate-btn').style.display = '';
@@ -997,28 +872,14 @@ function handleMessage(msg) {
 
 // ─── Host actions ─────────────────────────────────────────────────────────────
 function createSession() {
-  if (!ws || ws.readyState !== WebSocket.OPEN) {
-    connect();
-    setTimeout(createSession, 800);
-    return;
-  }
+  if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(createSession, 800); return; }
   send({ type: 'CREATE_SESSION' });
 }
 
 function generateClues() {
   const secret = qs('#secret-input').value.trim();
-  if (!secret) { toast(t('Enter a person\'s name first', 'أدخل اسم شخص أولاً'), 'error'); return; }
+  if (!secret) { toast('أدخل اسم الشخص أولاً', 'error'); return; }
   send({ type: 'GENERATE_CLUES', secret });
-}
-
-function startRound() {
-  // Collect edited clues from the editor textareas
-  const textareas = qs('#clue-editor-list')?.querySelectorAll('textarea');
-  const clues = textareas && textareas.length === 10
-    ? Array.from(textareas).map(ta => ta.value.trim())
-    : undefined;
-  send({ type: 'START_ROUND', clues });
-  showScreen('screen-host-round');
 }
 
 function regenerateClues() {
@@ -1031,17 +892,24 @@ function renderClueEditor(clues) {
   list.innerHTML = clues.map((clue, i) => `
     <div class="clue-editor-item">
       <div class="clue-editor-num">${i + 1}</div>
-      <textarea dir="auto" rows="2">${escHtml(clue)}</textarea>
+      <textarea rows="2">${escHtml(clue)}</textarea>
     </div>`).join('');
   qs('#clue-editor').style.display = '';
 }
 
-function revealClue() {
-  send({ type: 'REVEAL_CLUE' });
+function startRound() {
+  const textareas = qs('#clue-editor-list')?.querySelectorAll('textarea');
+  const clues = textareas && textareas.length === 10
+    ? Array.from(textareas).map(ta => ta.value.trim())
+    : undefined;
+  send({ type: 'START_ROUND', clues });
+  showScreen('screen-host-round');
 }
 
+function revealClue() { send({ type: 'REVEAL_CLUE' }); }
+
 function endRound() {
-  if (!confirm(t('End this round now?', 'هل تريد إنهاء الجولة الآن؟'))) return;
+  if (!confirm('هل تريد إنهاء الجولة الآن؟')) return;
   send({ type: 'END_ROUND' });
 }
 
@@ -1055,7 +923,7 @@ function newRound() {
 }
 
 function endSession() {
-  if (!confirm(t('End the session and show final scores?', 'هل تريد إنهاء الجلسة وعرض النتائج النهائية؟'))) return;
+  if (!confirm('هل تريد إنهاء الجلسة وعرض النتائج النهائية؟')) return;
   send({ type: 'END_SESSION' });
 }
 
@@ -1063,13 +931,9 @@ function endSession() {
 function joinSession() {
   const code = qs('#join-code').value.trim().toUpperCase();
   const name = qs('#join-name').value.trim();
-  if (!code) { toast(t('Enter a session code', 'أدخل كود الجلسة'), 'error'); return; }
-  if (!name) { toast(t('Enter your name', 'أدخل اسمك'), 'error'); return; }
-  if (!ws || ws.readyState !== WebSocket.OPEN) {
-    connect();
-    setTimeout(joinSession, 800);
-    return;
-  }
+  if (!code) { toast('أدخل كود الجلسة', 'error'); return; }
+  if (!name) { toast('أدخل اسمك', 'error'); return; }
+  if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(joinSession, 800); return; }
   send({ type: 'JOIN_SESSION', code, name });
 }
 
@@ -1080,95 +944,70 @@ function requestClue() {
 
 function submitGuess() {
   const guess = qs('#guess-input').value.trim();
-  if (!guess) return;
-  if (state.correctGuess) return;
+  if (!guess || state.correctGuess) return;
   qs('#guess-input').value = '';
   send({ type: 'SUBMIT_GUESS', guess });
 }
 
-// ─── Render helpers ───────────────────────────────────────────────────────────
+// ─── Render ───────────────────────────────────────────────────────────────────
 function addClue(clueText, clueIndex, isNew) {
   const list = qs('#clue-list');
-
-  // Mark old clues as not-new
   list.querySelectorAll('.clue-card.clue-new').forEach(el => el.classList.remove('clue-new'));
-
-  // Check if already rendered
   if (list.querySelector(`[data-ci="${clueIndex}"]`)) return;
 
   const card = document.createElement('div');
   card.className = 'clue-card' + (isNew ? ' clue-new' : '');
   card.dataset.ci = clueIndex;
   card.innerHTML = `
-    <div class="clue-number">${t('Clue', 'الدليل')} ${clueIndex + 1}</div>
-    <div class="clue-text" dir="auto">${escHtml(clueText)}</div>`;
-
+    <div class="clue-number">الدليل ${clueIndex + 1}</div>
+    <div class="clue-text">${escHtml(clueText)}</div>`;
   list.insertBefore(card, list.firstChild);
   state.clues[clueIndex] = clueText;
-
   if (isNew) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function renderHostState(s) {
   if (!s) return;
-
-  // Update lobby code always
   qs('#lobby-code').textContent = s.sessionCode;
 
-  const playerEntries = Object.values(s.players || {});
+  const players = Object.values(s.players || {});
 
-  // Lobby player list
+  // قائمة اللاعبين في اللوبي
   const lobbyEl = qs('#lobby-players');
-  if (playerEntries.length === 0) {
-    lobbyEl.innerHTML = emptyHtml('Waiting for players to join...', 'في انتظار اللاعبين...');
+  if (players.length === 0) {
+    lobbyEl.innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
   } else {
-    lobbyEl.innerHTML = playerEntries.map(p => `
+    lobbyEl.innerHTML = players.map(p => `
       <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border)">
         <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>
         <span style="font-weight:700;flex:1">${escHtml(p.name)}</span>
-        <span class="badge ${p.connected ? 'badge-green' : 'badge-gray'}">${p.connected ? t('Connected', 'متصل') : t('Away', 'غائب')}</span>
+        <span class="badge ${p.connected ? 'badge-green' : 'badge-gray'}">${p.connected ? 'متصل' : 'غائب'}</span>
       </div>`).join('');
   }
 
-  // Host round screen
   if (s.round) {
     qs('#host-round-num').textContent = s.roundNumber;
     qs('#host-secret-name').textContent = s.round.secret;
-
-    const gi = s.round.globalClueIndex;
-    const total = s.round.totalClues;
-    qs('#host-clue-counter').textContent = `${gi} / ${total} ${t('revealed', 'مكشوف')}`;
+    const gi = s.round.globalClueIndex, total = s.round.totalClues;
+    qs('#host-clue-counter').textContent = `${gi} / ${total} مكشوف`;
     qs('#host-clue-progress').style.width = `${Math.round((gi / total) * 100)}%`;
+    qs('#reveal-btn').disabled = !(s.round.status === 'active' && gi < total);
 
-    const revealBtn = qs('#reveal-btn');
-    if (s.round.status === 'active' && gi < total) {
-      revealBtn.disabled = false;
-    } else {
-      revealBtn.disabled = true;
-    }
-
-    // Player table
     const tbody = qs('#host-player-table');
-    if (playerEntries.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="empty">${t('No players yet', 'لا يوجد لاعبون')}</td></tr>`;
+    if (players.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" class="empty">لا يوجد لاعبون</td></tr>`;
     } else {
-      tbody.innerHTML = playerEntries.map(p => {
-        const isCorrect = p.correctGuess;
-        const isOff = !p.connected;
-        let statusBadge;
-        if (isCorrect) {
-          statusBadge = `<span class="badge badge-green">✅ ${t('Correct!', 'صحيح!')}</span>`;
-        } else if (isOff) {
-          statusBadge = `<span class="badge badge-gray">🔌 ${t('Disconnected', 'غير متصل')}</span>`;
-        } else {
-          statusBadge = `<span class="badge badge-purple">🤔 ${t('Guessing', 'يخمّن')}</span>`;
-        }
-        const timeStr = p.guessTime ? formatTime(p.guessTime) : '—';
-        return `<tr class="${isCorrect ? 'correct-row' : ''} ${isOff ? 'disconnected-row' : ''}">
+      tbody.innerHTML = players.map(p => {
+        const badge = p.correctGuess
+          ? `<span class="badge badge-green">✅ صحيح!</span>`
+          : !p.connected
+            ? `<span class="badge badge-gray">🔌 غير متصل</span>`
+            : `<span class="badge badge-purple">🤔 يخمّن</span>`;
+        return `<tr class="${p.correctGuess ? 'correct-row' : ''} ${!p.connected ? 'disconnected-row' : ''}">
           <td><span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>${escHtml(p.name)}</td>
           <td><span class="badge badge-gold">🔍 ${p.cluesSeen}</span></td>
-          <td>${statusBadge}</td>
-          <td style="color:var(--muted);font-size:0.85rem">${timeStr}</td>
+          <td>${badge}</td>
+          <td style="color:var(--muted);font-size:0.85rem">${p.guessTime ? formatTime(p.guessTime) : '—'}</td>
         </tr>`;
       }).join('');
     }
@@ -1177,63 +1016,48 @@ function renderHostState(s) {
 
 function renderResults(msg) {
   qs('#results-secret').textContent = msg.secret || '—';
+  const medal = ['🥇', '🥈', '🥉'];
 
-  const rankEmoji = ['🥇', '🥈', '🥉'];
-
-  // Round results
   qs('#results-list').innerHTML = `
-    <div class="section-title" style="margin-bottom:0.75rem" data-en="This Round" data-ar="هذه الجولة">${t('This Round', 'هذه الجولة')}</div>
+    <div class="section-title" style="margin-bottom:0.75rem">هذه الجولة</div>
     ${(msg.results || []).map((r, i) => `
       <div class="lb-row" style="animation-delay:${i * 60}ms">
-        <div class="lb-rank">${rankEmoji[i] || `${i + 1}`}</div>
+        <div class="lb-rank">${medal[i] || (i + 1)}</div>
         <div class="lb-name">${escHtml(r.name)}</div>
         <div class="lb-clues">${r.correct ? `🔍 ${r.cluesSeen}` : '❌'}</div>
         <div class="lb-time">${r.correct && r.guessTime ? formatTime(r.guessTime) : '—'}</div>
         <div class="lb-score">+${r.roundScore}</div>
       </div>`).join('')}`;
 
-  // Cumulative leaderboard
   qs('#results-leaderboard').innerHTML = (msg.leaderboard || []).map((l, i) => `
     <div class="lb-row" style="animation-delay:${(i + (msg.results || []).length) * 60}ms">
-      <div class="lb-rank">${rankEmoji[i] || `${i + 1}`}</div>
+      <div class="lb-rank">${medal[i] || (i + 1)}</div>
       <div class="lb-name">${escHtml(l.name)}</div>
-      <div class="lb-score">${l.score} pts</div>
+      <div class="lb-score">${l.score} نقطة</div>
     </div>`).join('');
 
-  if (state.role === 'host') {
-    qs('#host-results-controls').style.display = '';
-    qs('#player-results-msg').style.display = 'none';
-  } else {
-    qs('#host-results-controls').style.display = 'none';
-    qs('#player-results-msg').style.display = '';
-  }
-
+  qs('#host-results-controls').style.display = state.role === 'host' ? '' : 'none';
+  qs('#player-results-msg').style.display   = state.role === 'host' ? 'none' : '';
   showScreen('screen-results');
 }
 
 function renderFinalLeaderboard(leaderboard) {
-  const rankEmoji = ['🥇', '🥈', '🥉'];
+  const medal = ['🥇', '🥈', '🥉'];
   qs('#final-leaderboard').innerHTML = (leaderboard || []).map((l, i) => `
     <div class="lb-row" style="animation-delay:${i * 80}ms">
-      <div class="lb-rank">${rankEmoji[i] || `${i + 1}`}</div>
+      <div class="lb-rank">${medal[i] || (i + 1)}</div>
       <div class="lb-name">${escHtml(l.name)}</div>
-      <div class="lb-score" style="font-size:1.4rem">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-inline-start:0.25rem">pts</span></div>
+      <div class="lb-score" style="font-size:1.4rem">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-right:0.25rem"> نقطة</span></div>
     </div>`).join('');
   showScreen('screen-final');
 }
 
 function goHome() {
-  state.role = null;
-  state.sessionCode = null;
-  state.playerName = null;
-  state.roundStatus = 'waiting';
-  state.clues = [];
-  state.correctGuess = false;
-  state.score = 0;
+  state.role = null; state.sessionCode = null; state.playerName = null;
+  state.roundStatus = 'waiting'; state.clues = []; state.correctGuess = false; state.score = 0;
   showScreen('screen-home');
 }
 
-// ─── Screen management ────────────────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = qs('#' + id);
@@ -1241,41 +1065,15 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-// ─── Language toggle ──────────────────────────────────────────────────────────
-function toggleLang() {
-  state.lang = state.lang === 'en' ? 'ar' : 'en';
-  const html = document.documentElement;
-  html.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
-  html.lang = state.lang;
-  qs('#lang-toggle').textContent = state.lang === 'ar' ? 'English' : 'عربي';
-
-  // Toggle visible Arabic/English elements
-  document.querySelectorAll('[data-en][data-ar]').forEach(el => {
-    el.textContent = el.getAttribute(`data-${state.lang}`);
-  });
-  document.querySelectorAll('#title-ar, #sub-ar').forEach(el => {
-    el.style.display = state.lang === 'ar' ? '' : 'none';
-  });
-  document.querySelectorAll('#sub-en').forEach(el => {
-    el.style.display = state.lang === 'en' ? '' : 'none';
-  });
-  const titleEn = qs('.title:first-of-type');
-  if (titleEn) titleEn.style.display = state.lang === 'en' ? '' : 'none';
-}
-
 // ─── Utilities ────────────────────────────────────────────────────────────────
-function t(en, ar) { return state.lang === 'ar' ? ar : en; }
 function qs(sel) { return document.querySelector(sel); }
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function emptyHtml(en, ar) {
-  return `<div class="empty" data-en="${en}" data-ar="${ar}">${t(en, ar)}</div>`;
-}
 function formatTime(ms) {
   if (!ms && ms !== 0) return '—';
   if (ms < 1000) return ms + 'ms';
-  return (ms / 1000).toFixed(1) + 's';
+  return (ms / 1000).toFixed(1) + 'ث';
 }
 
 let toastTimer;
@@ -1289,8 +1087,6 @@ function toast(msg, type) {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 connect();
-
-// Keyboard shortcut: Enter to join
 qs('#join-name').addEventListener('keydown', e => { if (e.key === 'Enter') joinSession(); });
 qs('#join-code').addEventListener('keydown', e => { if (e.key === 'Enter') qs('#join-name').focus(); });
 qs('#secret-input').addEventListener('keydown', e => { if (e.key === 'Enter') generateClues(); });

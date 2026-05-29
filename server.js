@@ -47,21 +47,21 @@ async function generateClues(personName) {
     max_tokens: 1500,
     messages: [{
       role: 'user',
-      content: `You are running a "Who Am I?" guessing game. The secret person is: "${personName}"
+      content: `أنت تدير لعبة "من أنا؟". الشخص السري هو: "${personName}"
 
-Generate exactly 10 clues ordered from most vague/general (clue 1) to most specific/revealing (clue 10).
+اكتب بالعربية بالضبط ١٠ أدلة مرتبة من الأكثر غموضاً (الدليل ١) إلى الأكثر وضوحاً (الدليل ١٠).
 
-RULES:
-- NEVER mention the person's real name, nicknames, aliases, or stage names in any clue
-- Every clue must be 100% factually accurate
-- Clue 1: very broad (general era, continent, field — could fit many people)
-- Clue 5-6: moderately specific (narrows down significantly)
-- Clue 10: obvious to anyone who knows this person
-- Each clue must be 1-2 sentences maximum
-- Clues should be interesting and fair
+القواعد:
+- لا تذكر اسم الشخص أو لقبه أو أي اسم مستعار في أي دليل إطلاقاً
+- كل دليل يجب أن يكون صحيحاً بالكامل
+- الدليل ١: معلومة عامة جداً (حقبة زمنية، منطقة جغرافية، مجال عام)
+- الدليل ٥-٦: يضيق دائرة التخمين بشكل ملحوظ
+- الدليل ١٠: واضح جداً لمن يعرف هذا الشخص
+- كل دليل جملة أو جملتان كحد أقصى
+- الأدلة يجب أن تكون مثيرة للاهتمام وعادلة
 
-Return ONLY a valid JSON array of exactly 10 strings — no markdown, no explanation, no extra text:
-["clue1","clue2","clue3","clue4","clue5","clue6","clue7","clue8","clue9","clue10"]`
+أجب فقط بمصفوفة JSON صحيحة تحتوي على ١٠ نصوص بالعربية — بدون ماركداون أو شرح:
+["الدليل1","الدليل2","الدليل3","الدليل4","الدليل5","الدليل6","الدليل7","الدليل8","الدليل9","الدليل10"]`
     }]
   });
 
@@ -79,12 +79,12 @@ async function judgeAnswer(secret, answer) {
     max_tokens: 60,
     messages: [{
       role: 'user',
-      content: `In a "Who Am I?" game the correct answer is "${secret}".
-A player guessed: "${answer}"
+      content: `في لعبة "من أنا؟" الإجابة الصحيحة هي "${secret}".
+اللاعب أجاب: "${answer}"
 
-Accept as correct: exact full name, common nicknames, shortened last names (e.g. "Einstein" for "Albert Einstein"), minor spelling errors, partial names if clearly unambiguous.
+اقبل الإجابة إذا كانت: الاسم الكامل، أو اسم مختصر شائع، أو اسم العائلة فقط إذا كان واضحاً، أو خطأ إملائي بسيط، أو أي شكل لا لبس فيه.
 
-Respond with ONLY valid JSON, absolutely no other text: {"correct":true} or {"correct":false}`
+أجب فقط بـ JSON صحيح بدون أي نص إضافي: {"correct":true} أو {"correct":false}`
     }]
   });
 
