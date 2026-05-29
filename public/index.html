@@ -469,27 +469,27 @@
         <label>🔐 اسم الشخص السري (مخفي عن اللاعبين)</label>
         <input type="text" id="secret-input" placeholder="مثال: ناصر القصبي..." autocomplete="off">
       </div>
-      <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">✨ توليد الأدلة</button>
+      <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">✨ توليد التلميحات</button>
       <div class="spacer-sm"></div>
 
       <div id="generating-status" style="display:none;text-align:center">
         <div class="spinner"></div>
-        <div style="color:var(--muted);margin-top:0.75rem;font-size:0.9rem">كلود يبتكر الأدلة...</div>
+        <div style="color:var(--muted);margin-top:0.75rem;font-size:0.9rem">كلود يبتكر التلميحات...</div>
       </div>
 
-      <!-- محرر الأدلة — يظهر بعد التوليد -->
+      <!-- محرر التلميحات — يظهر بعد التوليد -->
       <div id="clue-editor" style="display:none">
         <div class="divider"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
-          <div class="section-title" style="margin-bottom:0">✏️ راجع وعدّل الأدلة</div>
+          <div class="section-title" style="margin-bottom:0">✏️ راجع وعدّل التلميحات</div>
           <button class="btn btn-ghost btn-sm" onclick="regenerateClues()" style="width:auto">↺ أعد التوليد</button>
         </div>
         <div style="color:var(--muted);font-size:0.8rem;margin-bottom:1rem">
-          الدليل ١ هو الأكثر غموضاً، والدليل ١٠ هو الأوضح. يمكنك تعديل أي دليل بحرية.
+          التلميح ١ هو الأكثر غموضاً، والتلميح ١٠ هو الأوضح. يمكنك تعديل أي تلميح بحرية.
         </div>
         <div id="clue-editor-list"></div>
         <div class="spacer-sm"></div>
-        <button class="btn btn-green" id="start-round-btn" onclick="startRound()">▶ ابدأ الجولة بهذه الأدلة</button>
+        <button class="btn btn-green" id="start-round-btn" onclick="startRound()">▶ ابدأ الجولة بهذه التلميحات</button>
       </div>
     </div>
     <div class="spacer-lg"></div>
@@ -516,7 +516,7 @@
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
           <div>
-            <div class="section-title">تقدم الأدلة</div>
+            <div class="section-title">تقدم التلميحات</div>
             <div id="host-clue-counter" style="font-size:0.95rem;color:var(--muted)">—</div>
           </div>
         </div>
@@ -526,7 +526,7 @@
 
         <div class="spacer-sm"></div>
         <div class="btn-row">
-          <button class="btn btn-primary" id="reveal-btn" onclick="revealClue()">⬇ أظهر الدليل التالي للجميع</button>
+          <button class="btn btn-primary" id="reveal-btn" onclick="revealClue()">⬇ أظهر التلميح التالي للجميع</button>
           <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto;padding:0.85rem 1rem">إنهاء الجولة</button>
         </div>
       </div>
@@ -539,7 +539,7 @@
           <thead>
             <tr>
               <th>اللاعب</th>
-              <th>الأدلة</th>
+              <th>التلميحات</th>
               <th>الحالة</th>
               <th>الوقت</th>
             </tr>
@@ -591,7 +591,7 @@
           <span>🔍</span>
           <span id="player-clues-count">1</span>
           <span style="font-weight:400;color:var(--muted)">/10</span>
-          <span>أدلة</span>
+          <span>تلميحات</span>
         </div>
         <div style="font-weight:800;color:var(--gold)" id="player-score-display">0 نقطة</div>
       </div>
@@ -607,9 +607,9 @@
         <div class="spacer-sm"></div>
       </div>
 
-      <!-- قائمة الأدلة -->
+      <!-- قائمة التلميحات -->
       <div class="card" style="width:100%;max-width:480px;margin:0 auto">
-        <div class="section-title">الأدلة المكشوفة</div>
+        <div class="section-title">التلميحات المكشوفة</div>
         <div id="clue-list" class="clue-list"></div>
       </div>
 
@@ -618,7 +618,7 @@
       <!-- أزرار اللاعب -->
       <div id="player-actions" style="width:100%;max-width:480px;margin:0 auto">
         <button class="btn btn-ghost" id="request-clue-btn" onclick="requestClue()">
-          🔍 اطلب دليلاً آخر <span style="color:var(--muted);font-size:0.85rem">(تكلفك نقطة)</span>
+          🔍 اطلب تلميحاً آخر <span style="color:var(--muted);font-size:0.85rem">(تكلفك نقطة)</span>
         </button>
         <div class="spacer-sm"></div>
         <div class="guess-area">
@@ -789,14 +789,14 @@ function handleMessage(msg) {
       qs('#generating-status').style.display = 'none';
       qs('#generate-btn').style.display = '';
       renderClueEditor(msg.clues);
-      toast(`✅ تم توليد ${msg.totalClues} أدلة! راجعها وعدّل إن شئت.`, 'success');
+      toast(`✅ تم توليد ${msg.totalClues} تلميحات! راجعها وعدّل إن شئت.`, 'success');
       break;
 
     case 'ROUND_PREPARING':
       showScreen('screen-player-wait');
       qs('#wait-emoji').textContent = '🎯';
       qs('#wait-title').textContent = 'استعد! جولة جديدة تبدأ...';
-      qs('#wait-subtitle').textContent = 'المضيف يجهّز الأدلة.';
+      qs('#wait-subtitle').textContent = 'المضيف يجهّز التلميحات.';
       break;
 
     case 'ROUND_STARTED':
@@ -829,7 +829,7 @@ function handleMessage(msg) {
         qs('#player-score-display').textContent = state.score + ' نقطة';
         qs('#correct-banner').style.display = '';
         qs('#correct-detail').textContent =
-          `استخدمت ${msg.cluesSeen} دليل · حصلت على ${msg.roundScore} نقطة · ${formatTime(msg.guessTime)}`;
+          `استخدمت ${msg.cluesSeen} تلميح · حصلت على ${msg.roundScore} نقطة · ${formatTime(msg.guessTime)}`;
         qs('#player-actions').style.display = 'none';
       } else {
         toast('❌ إجابة خاطئة — حاول مجدداً!', 'error');
@@ -959,7 +959,7 @@ function addClue(clueText, clueIndex, isNew) {
   card.className = 'clue-card' + (isNew ? ' clue-new' : '');
   card.dataset.ci = clueIndex;
   card.innerHTML = `
-    <div class="clue-number">الدليل ${clueIndex + 1}</div>
+    <div class="clue-number">التلميح ${clueIndex + 1}</div>
     <div class="clue-text">${escHtml(clueText)}</div>`;
   list.insertBefore(card, list.firstChild);
   state.clues[clueIndex] = clueText;
@@ -989,7 +989,7 @@ function renderHostState(s) {
     qs('#host-round-num').textContent = s.roundNumber;
     qs('#host-secret-name').textContent = s.round.secret;
     const gi = s.round.globalClueIndex, total = s.round.totalClues;
-    qs('#host-clue-counter').textContent = `${gi} / ${total} مكشوف`;
+    qs('#host-clue-counter').textContent = `${gi} / ${total} تلميح مكشوف`;
     qs('#host-clue-progress').style.width = `${Math.round((gi / total) * 100)}%`;
     qs('#reveal-btn').disabled = !(s.round.status === 'active' && gi < total);
 
