@@ -201,14 +201,14 @@ wss.on('connection', ws => {
   ws.on('message', async raw => {
     let msg;
     try { msg = JSON.parse(raw); } catch {
-      send(ws, { type: 'ERROR', message: 'Invalid JSON' });
+      send(ws, { type: 'ERROR', message: 'رسالة غير صالحة' });
       return;
     }
     try {
       await dispatch(ws, msg);
     } catch (err) {
       console.error('Handler error:', err.message);
-      send(ws, { type: 'ERROR', message: err.message || 'Server error' });
+      send(ws, { type: 'ERROR', message: err.message || 'خطأ في الخادم' });
     }
   });
 
@@ -266,25 +266,25 @@ async function dispatch(ws, msg) {
     case 'JOIN_SESSION': {
       const { code, name } = msg;
       if (!code || !name) {
-        send(ws, { type: 'ERROR', message: 'Code and name are required' });
+        send(ws, { type: 'ERROR', message: 'الكود والاسم مطلوبان' });
         return;
       }
 
       const session = sessions.get(String(code).toUpperCase().trim());
       if (!session) {
-        send(ws, { type: 'ERROR', message: 'Session not found — check the code' });
+        send(ws, { type: 'ERROR', message: 'الجلسة غير موجودة — تحقق من الكود' });
         return;
       }
 
       const trimName = String(name).trim().slice(0, 30);
       if (!trimName) {
-        send(ws, { type: 'ERROR', message: 'Name cannot be empty' });
+        send(ws, { type: 'ERROR', message: 'الاسم لا يمكن أن يكون فارغاً' });
         return;
       }
 
       const isRejoin = Boolean(session.players[trimName]);
       if (!isRejoin && Object.keys(session.players).length >= 15) {
-        send(ws, { type: 'ERROR', message: 'Session is full (max 15 players)' });
+        send(ws, { type: 'ERROR', message: 'الجلسة ممتلئة (الحد الأقصى 15 لاعباً)' });
         return;
       }
 
@@ -388,7 +388,7 @@ async function dispatch(ws, msg) {
 
       const secret = String(msg.secret || '').trim();
       if (!secret) {
-        send(ws, { type: 'ERROR', message: 'Enter a person\'s name first' });
+        send(ws, { type: 'ERROR', message: 'أدخل اسم الشخصية أولاً' });
         return;
       }
 
@@ -423,7 +423,7 @@ async function dispatch(ws, msg) {
       if (ws._role !== 'host') return;
       const session = sessions.get(ws._code);
       if (!session?.round || session.round.status !== 'ready') {
-        send(ws, { type: 'ERROR', message: 'Generate clues first, then start the round' });
+        send(ws, { type: 'ERROR', message: 'ولّد التلميحات أولاً ثم ابدأ الجولة' });
         return;
       }
 
@@ -464,7 +464,7 @@ async function dispatch(ws, msg) {
 
       const idx = round.globalClueIndex; // 0-based index of clue to push
       if (idx >= round.clues.length) {
-        send(ws, { type: 'ERROR', message: 'No more clues to reveal' });
+        send(ws, { type: 'ERROR', message: 'لا توجد تلميحات أخرى للكشف' });
         return;
       }
 
@@ -538,7 +538,7 @@ async function dispatch(ws, msg) {
 
       const player = session.players[ws._name];
       if (!player || player.correctGuess) {
-        send(ws, { type: 'ERROR', message: 'Already guessed correctly this round' });
+        send(ws, { type: 'ERROR', message: 'لقد أجبت إجابة صحيحة بالفعل في هذه الجولة' });
         return;
       }
       if (player.leftDuringRound) {
@@ -628,7 +628,7 @@ async function dispatch(ws, msg) {
       const { code } = msg;
       const session = sessions.get(String(code || '').toUpperCase());
       if (!session) {
-        send(ws, { type: 'ERROR', message: 'Session not found' });
+        send(ws, { type: 'ERROR', message: 'الجلسة غير موجودة' });
         return;
       }
       session.hostWs = ws;
@@ -640,7 +640,7 @@ async function dispatch(ws, msg) {
     }
 
     default:
-      send(ws, { type: 'ERROR', message: `Unknown message type: ${msg.type}` });
+      send(ws, { type: 'ERROR', message: `نوع رسالة غير معروف: ${msg.type}` });
   }
 }
 

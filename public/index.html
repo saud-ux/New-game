@@ -1136,6 +1136,19 @@ function handleMessage(msg) {
 
     case 'ERROR':
       toast('⚠ ' + msg.message, 'error');
+      // Show inline error on the join screen so it's more visible
+      if (!state.role) {
+        let inlineErr = qs('#join-inline-error');
+        if (!inlineErr) {
+          inlineErr = document.createElement('div');
+          inlineErr.id = 'join-inline-error';
+          inlineErr.style.cssText = 'margin-top:12px;padding:10px 14px;border-radius:10px;background:#1f0707;border:1.5px solid #ef444470;color:#fca5a5;font-size:0.9rem;font-weight:600;text-align:center';
+          const btn = qs('#player-join-name').closest('.card').querySelector('.btn-gold');
+          btn.parentNode.insertBefore(inlineErr, btn.nextSibling);
+        }
+        inlineErr.textContent = '⚠ ' + msg.message;
+        inlineErr.style.display = '';
+      }
       if (state.role === 'host') {
         qs('#generating-status').style.display = 'none';
         qs('#generate-btn').style.display = '';
@@ -1163,6 +1176,9 @@ function playerJoinDirect() {
   const code = state.pendingCode;
   if (!name) { toast('أدخل اسمك أولاً', 'error'); return; }
   if (!code)  { toast('كود الجلسة غير موجود', 'error'); return; }
+  // Clear any previous inline error
+  const inlineErr = qs('#join-inline-error');
+  if (inlineErr) inlineErr.style.display = 'none';
   if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(playerJoinDirect, 800); return; }
   send({ type: 'JOIN_SESSION', code, name, photo: state.playerPhoto || null });
 }
