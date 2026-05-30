@@ -1155,7 +1155,7 @@
         position:relative;
       ">—</div>
 
-      <div style="color:#8a5520;font-size:0.9rem;font-weight:700;letter-spacing:0.06em;position:relative">مطرود من الجلسة</div>
+      <div id="kicked-reason" style="color:#8a5520;font-size:0.9rem;font-weight:700;letter-spacing:0.06em;position:relative">مطرود من الجلسة</div>
 
       <div style="font-size:2.8rem;animation:pulse 2.5s ease-in-out infinite;position:relative">🔒</div>
 
@@ -1275,9 +1275,12 @@ function handleMessage(msg) {
       refreshWaitProfile();
 
       if (msg.roundStatus === 'active') {
-        showScreen('screen-player-round');
-        qs('#player-round-num').textContent = state.roundNumber;
-        if (state.leftDuringRound) setRoundLocked(true);
+        if (state.leftDuringRound) {
+          showPrisonScreen('cheating');
+        } else {
+          showScreen('screen-player-round');
+          qs('#player-round-num').textContent = state.roundNumber;
+        }
       } else {
         showScreen('screen-player-wait');
       }
@@ -1342,7 +1345,7 @@ function handleMessage(msg) {
 
     case 'LEFT_ROUND_LOCKED':
       state.leftDuringRound = true;
-      setRoundLocked(true);
+      showPrisonScreen('cheating');
       break;
 
     case 'GUESS_RESULT':
@@ -1366,6 +1369,7 @@ function handleMessage(msg) {
 
     case 'WAITING_FOR_ROUND':
       state.roundStatus = 'waiting';
+      state.leftDuringRound = false;
       state.clues = [];
       state.correctGuess = false;
       showScreen('screen-player-wait');
@@ -1390,10 +1394,7 @@ function handleMessage(msg) {
     case 'KICKED':
       if (reconnectTimer) clearTimeout(reconnectTimer);
       ws.onclose = null;
-      qs('#kicked-name').textContent = state.playerName || '؟';
-      qs('#kicked-avatar').innerHTML = state.playerPhoto
-        ? `<img src="${state.playerPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-        : '👤';
+      showPrisonScreen('kicked');
       state.role = null;
       state.sessionCode = null;
       state.playerName = null;
@@ -1401,7 +1402,6 @@ function handleMessage(msg) {
       state.clues = [];
       state.correctGuess = false;
       state.score = 0;
-      showScreen('screen-kicked');
       break;
 
     case 'INFO':
@@ -1466,6 +1466,15 @@ function playerJoinDirect() {
 }
 
 // ─── Photo handling ───────────────────────────────────────────────────────────
+function showPrisonScreen(reason) {
+  qs('#kicked-name').textContent = state.playerName || '؟';
+  qs('#kicked-avatar').innerHTML = state.playerPhoto
+    ? `<img src="${state.playerPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+    : '👤';
+  qs('#kicked-reason').textContent = reason === 'cheating' ? 'متهم بالغش! 🕵️' : 'مطرود من الجلسة';
+  showScreen('screen-kicked');
+}
+
 function refreshWaitProfile() {
   qs('#wait-name-input').value = state.playerName || '';
   const prev = qs('#wait-avatar-preview');
