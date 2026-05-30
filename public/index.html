@@ -571,6 +571,46 @@
   @keyframes prPulseCorrect { 0%{box-shadow:0 0 0 0 #22c55e80}70%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent} }
   .pr-card.correct.show { animation:prPulseCorrect .7s ease }
 
+  /* ── Host round 2-col layout ── */
+  .host-round-header {
+    width: 100%;
+    max-width: 960px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 0.5rem 0 0.25rem;
+    background: var(--bg);
+  }
+  .host-round-grid {
+    display: grid;
+    grid-template-columns: 1fr 270px;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 960px;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .host-round-grid { grid-template-columns: 1fr; }
+  }
+  .host-players-panel {
+    position: sticky;
+    top: 4.5rem;
+  }
+  @media (max-width: 700px) {
+    .host-players-panel { position: static; }
+  }
+  .player-compact-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.88rem;
+  }
+  .player-compact-row:last-child { border-bottom: none; }
+  .player-compact-row.correct-row { color: var(--green); }
+  .player-compact-row.disconnected-row { opacity: 0.45; }
+
   /* ── Leaderboard Reveal Overlay ── */
   #lb-reveal-overlay {
     position:fixed;inset:0;z-index:600;background:#000000f2;
@@ -773,62 +813,50 @@
 
   <!-- ════════════════ شاشة الجولة (المضيف) ════════════════ -->
   <div id="screen-host-round" class="screen">
-    <div class="spacer"></div>
-    <div class="scroll-area scroll-area-wide" style="max-width:700px">
+    <div class="spacer-sm"></div>
 
-      <div class="card card-wide">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
-          <div>
-            <div class="section-title">الجولة</div>
-            <div style="font-size:2rem;font-weight:900" id="host-round-num">1</div>
-          </div>
-          <div class="secret-box" style="flex:1;min-width:180px">
-            <div class="secret-label">الشخص السري</div>
-            <div class="secret-name" id="host-secret-name">—</div>
-          </div>
+    <!-- رأس الجولة (ثابت عند التمرير) -->
+    <div class="host-round-header">
+      <div class="card" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;padding:0.85rem 1.25rem">
+        <div style="display:flex;align-items:baseline;gap:0.35rem;flex-shrink:0">
+          <span class="section-title" style="margin:0">جولة</span>
+          <span style="font-size:1.5rem;font-weight:900" id="host-round-num">1</span>
         </div>
-
-        <div class="divider"></div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
-          <div>
-            <div class="section-title">تقدم التلميحات</div>
-            <div id="host-clue-counter" style="font-size:0.95rem;color:var(--muted)">—</div>
+        <div class="secret-box" style="flex:1;min-width:150px;padding:0.5rem 0.9rem">
+          <div class="secret-label">الشخص السري</div>
+          <div class="secret-name" style="font-size:1.1rem" id="host-secret-name">—</div>
+        </div>
+        <div style="min-width:110px">
+          <div id="host-clue-counter" style="font-size:0.8rem;color:var(--muted);margin-bottom:0.25rem;white-space:nowrap">—</div>
+          <div class="progress-bar" style="margin:0">
+            <div class="progress-fill" id="host-clue-progress" style="width:10%"></div>
           </div>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="host-clue-progress" style="width:10%"></div>
-        </div>
-
-        <div id="host-clues-list" style="display:none;margin-top:1rem;flex-direction:column;gap:0.5rem"></div>
-
-        <div class="spacer-sm"></div>
-        <div class="btn-row">
-          <button class="btn btn-primary" id="reveal-btn" onclick="revealClue()">⬇ أظهر التلميح التالي للجميع</button>
-          <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto;padding:0.85rem 1rem">إنهاء الجولة</button>
+        <div style="display:flex;gap:0.5rem;flex-shrink:0">
+          <button class="btn btn-primary btn-sm" id="reveal-btn" onclick="revealClue()" style="white-space:nowrap;width:auto">⬇ تلميح للجميع</button>
+          <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto">إنهاء الجولة</button>
         </div>
       </div>
-
-      <div class="spacer-sm"></div>
-
-      <div class="card card-wide">
-        <div class="section-title">حالة اللاعبين</div>
-        <table class="player-table">
-          <thead>
-            <tr>
-              <th>اللاعب</th>
-              <th>التلميحات</th>
-              <th>الحالة</th>
-              <th>الوقت</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="host-player-table"></tbody>
-        </table>
-      </div>
-
-      <div class="spacer-lg"></div>
     </div>
+
+    <!-- شبكة: تلميحات + لاعبون -->
+    <div class="host-round-grid">
+
+      <!-- قائمة التلميحات الكاملة -->
+      <div class="card">
+        <div class="section-title">📋 كل التلميحات</div>
+        <div id="host-clues-list" style="display:flex;flex-direction:column;gap:0.45rem"></div>
+      </div>
+
+      <!-- لوحة اللاعبين الثابتة -->
+      <div class="card host-players-panel">
+        <div class="section-title">👥 اللاعبون</div>
+        <div id="host-player-list"></div>
+      </div>
+
+    </div>
+
+    <div class="spacer-lg"></div>
   </div>
 
   <!-- ════════════════ انتظار (اللاعب) ════════════════ -->
@@ -1419,7 +1447,7 @@ function renderHostState(s) {
       cluesList.style.display = 'flex';
       cluesList.innerHTML = allClues.map((clue, i) => {
         const revealed = i < gi;
-        return `<div style="background:var(--surface2);border-radius:10px;padding:0.6rem 0.9rem;display:flex;gap:0.6rem;align-items:flex-start;opacity:${revealed ? '1' : '0.35'}">
+        return `<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.6rem 0.9rem;display:flex;gap:0.6rem;align-items:flex-start;opacity:${revealed ? '1' : '0.35'}">
           <span style="font-size:0.75rem;font-weight:800;color:${revealed ? 'var(--gold)' : 'var(--muted)'};min-width:1.6rem;padding-top:0.1rem">${i + 1}</span>
           <span style="font-size:0.9rem;line-height:1.5">${escHtml(clue)}</span>
         </div>`;
@@ -1429,27 +1457,25 @@ function renderHostState(s) {
       cluesList.innerHTML = '';
     }
 
-    const tbody = qs('#host-player-table');
+    const playerListEl = qs('#host-player-list');
     if (players.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="empty">لا يوجد لاعبون</td></tr>`;
+      playerListEl.innerHTML = `<div class="empty">لا يوجد لاعبون</div>`;
     } else {
-      tbody.innerHTML = players.map(p => {
-        const badge = p.correctGuess
-          ? `<span class="badge badge-green">✅ صحيح!</span>`
-          : !p.connected
-            ? `<span class="badge badge-gray">🔌 غير متصل</span>`
-            : `<span class="badge badge-purple">🤔 يخمّن</span>`;
-        return `<tr class="${p.correctGuess ? 'correct-row' : ''} ${!p.connected ? 'disconnected-row' : ''}">
-          <td style="display:flex;align-items:center;gap:0.5rem">
-            <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}" style="flex-shrink:0"></span>
-            ${avatarHtml(p.photo, p.name, 30)}
-            ${escHtml(p.name)}
-          </td>
-          <td><span class="badge badge-gold">🔍 ${p.cluesSeen}</span></td>
-          <td>${badge}</td>
-          <td style="color:var(--muted);font-size:0.85rem">${p.guessTime ? formatTime(p.guessTime) : '—'}</td>
-          <td><button onclick="kickPlayer(${JSON.stringify(p.name)})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.2rem 0.5rem;font-size:0.75rem;cursor:pointer">طرد</button></td>
-        </tr>`;
+      playerListEl.innerHTML = players.map(p => {
+        const statusIcon = p.correctGuess ? '✅' : (!p.connected ? '🔌' : '🤔');
+        const clueColor  = p.correctGuess ? 'var(--green)' : 'var(--gold)';
+        const timeStr    = p.guessTime
+          ? `<span style="font-size:0.72rem;color:var(--muted);white-space:nowrap">${formatTime(p.guessTime)}</span>`
+          : '';
+        return `<div class="player-compact-row${p.correctGuess ? ' correct-row' : ''}${!p.connected ? ' disconnected-row' : ''}">
+          <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>
+          ${avatarHtml(p.photo, p.name, 26)}
+          <span style="flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.name)}</span>
+          <span style="font-weight:900;color:${clueColor};min-width:1.4rem;text-align:center;font-size:0.95rem">${p.cluesSeen}</span>
+          <span style="font-size:0.9rem">${statusIcon}</span>
+          ${timeStr}
+          <button onclick="kickPlayer(${JSON.stringify(p.name)})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.15rem 0.4rem;font-size:0.7rem;cursor:pointer;flex-shrink:0">طرد</button>
+        </div>`;
       }).join('');
     }
   }
