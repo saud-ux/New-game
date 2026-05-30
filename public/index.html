@@ -1910,57 +1910,9 @@ function playerJoinDirect() {
 // ─── Photo handling ───────────────────────────────────────────────────────────
 async function playArrestSound() {
   try {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    // Must await resume — browser suspends AudioContext on tab hide
-    if (ctx.state !== 'running') await ctx.resume();
-    const t = ctx.currentTime;
-
-    // Impact thud — stamp hitting the page
-    const thud = ctx.createOscillator();
-    const thudG = ctx.createGain();
-    thud.connect(thudG); thudG.connect(ctx.destination);
-    thud.type = 'sine';
-    thud.frequency.setValueAtTime(110, t + 0.18);
-    thud.frequency.exponentialRampToValueAtTime(32, t + 0.52);
-    thudG.gain.setValueAtTime(0.75, t + 0.18);
-    thudG.gain.exponentialRampToValueAtTime(0.001, t + 0.52);
-    thud.start(t + 0.18); thud.stop(t + 0.55);
-
-    // High crackle on top of thud (stamp texture)
-    const crack = ctx.createOscillator();
-    const crackG = ctx.createGain();
-    crack.connect(crackG); crackG.connect(ctx.destination);
-    crack.type = 'sawtooth';
-    crack.frequency.setValueAtTime(2800, t + 0.18);
-    crackG.gain.setValueAtTime(0.08, t + 0.18);
-    crackG.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
-    crack.start(t + 0.18); crack.stop(t + 0.3);
-
-    // Police siren — two-tone wail, two cycles
-    const siren = ctx.createOscillator();
-    const siren2 = ctx.createOscillator();
-    const sirenG = ctx.createGain();
-    siren.connect(sirenG); siren2.connect(sirenG);
-    sirenG.connect(ctx.destination);
-    siren.type = 'sawtooth'; siren2.type = 'sawtooth';
-    const s = t + 0.6;
-    siren.frequency.setValueAtTime(620, s);
-    siren.frequency.linearRampToValueAtTime(1150, s + 0.4);
-    siren.frequency.linearRampToValueAtTime(620, s + 0.8);
-    siren.frequency.linearRampToValueAtTime(1150, s + 1.2);
-    siren.frequency.linearRampToValueAtTime(620, s + 1.6);
-    siren2.frequency.setValueAtTime(628, s);
-    siren2.frequency.linearRampToValueAtTime(1158, s + 0.4);
-    siren2.frequency.linearRampToValueAtTime(628, s + 0.8);
-    siren2.frequency.linearRampToValueAtTime(1158, s + 1.2);
-    siren2.frequency.linearRampToValueAtTime(628, s + 1.6);
-    sirenG.gain.setValueAtTime(0, s);
-    sirenG.gain.linearRampToValueAtTime(0.18, s + 0.08);
-    sirenG.gain.setValueAtTime(0.18, s + 1.5);
-    sirenG.gain.linearRampToValueAtTime(0, s + 1.8);
-    siren.start(s); siren.stop(s + 1.9);
-    siren2.start(s); siren2.stop(s + 1.9);
+    const audio = new Audio('/arrest.mp3');
+    audio.volume = 1;
+    await audio.play();
   } catch(e) { console.warn('arrest sound:', e); }
 }
 
