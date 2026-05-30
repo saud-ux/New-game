@@ -482,11 +482,6 @@
       <div style="font-size:2rem;font-weight:900;margin-bottom:0.25rem">من أنا؟</div>
       <div style="color:var(--muted);margin-bottom:1.25rem;font-size:0.9rem">أدخل اسمك وصورتك للانضمام</div>
 
-      <!-- كود الجلسة -->
-      <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:0.7rem;margin-bottom:1.25rem">
-        <div style="font-size:0.7rem;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:0.2rem">كود الجلسة</div>
-        <div id="join-code-display" style="font-size:1.8rem;font-weight:900;letter-spacing:0.2em;color:var(--gold);font-family:'Courier New',monospace">------</div>
-      </div>
 
       <!-- اختيار الصورة -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;margin-bottom:1.25rem">
@@ -1264,7 +1259,6 @@ function initRoute() {
 
   if (playMatch) {
     state.pendingCode = playMatch[1].toUpperCase();
-    qs('#join-code-display').textContent = state.pendingCode;
     showScreen('screen-player-join');
   } else if (isHost) {
     showScreen('screen-home');
