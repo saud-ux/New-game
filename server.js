@@ -118,6 +118,7 @@ function hostStatePayload(session) {
   for (const [name, p] of Object.entries(session.players)) {
     players[name] = {
       name: p.name,
+      score: p.score,
       cluesSeen: p.cluesSeen,
       correctGuess: p.correctGuess,
       guessTime: p.guessTime,
