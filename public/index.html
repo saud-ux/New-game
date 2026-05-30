@@ -769,6 +769,8 @@
           <div class="progress-fill" id="host-clue-progress" style="width:10%"></div>
         </div>
 
+        <div id="host-clues-list" style="display:none;margin-top:1rem;flex-direction:column;gap:0.5rem"></div>
+
         <div class="spacer-sm"></div>
         <div class="btn-row">
           <button class="btn btn-primary" id="reveal-btn" onclick="revealClue()">⬇ أظهر التلميح التالي للجميع</button>
@@ -1351,6 +1353,20 @@ function renderHostState(s) {
     qs('#host-clue-counter').textContent = `${gi} / ${total} تلميح مكشوف`;
     qs('#host-clue-progress').style.width = `${Math.round((gi / total) * 100)}%`;
     qs('#reveal-btn').disabled = !(s.round.status === 'active' && gi < total);
+
+    const cluesList = qs('#host-clues-list');
+    const revealedClues = (s.round.clues || []).slice(0, gi);
+    if (revealedClues.length > 0) {
+      cluesList.style.display = 'flex';
+      cluesList.innerHTML = revealedClues.map((clue, i) => `
+        <div style="background:var(--surface2);border-radius:10px;padding:0.6rem 0.9rem;display:flex;gap:0.6rem;align-items:flex-start">
+          <span style="font-size:0.75rem;font-weight:800;color:var(--gold);min-width:1.4rem;padding-top:0.1rem">تلميح ${i + 1}</span>
+          <span style="font-size:0.9rem;line-height:1.5">${escHtml(clue)}</span>
+        </div>`).join('');
+    } else {
+      cluesList.style.display = 'none';
+      cluesList.innerHTML = '';
+    }
 
     const tbody = qs('#host-player-table');
     if (players.length === 0) {
