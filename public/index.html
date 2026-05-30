@@ -613,12 +613,10 @@
 
   /* ── Prison / Kicked screen ── */
   #screen-kicked {
-    background:
-      radial-gradient(ellipse at 50% 20%, rgba(90,58,14,0.18) 0%, transparent 55%),
-      radial-gradient(ellipse at 50% 50%, #1a0e04 0%, #060300 100%);
+    background: #0c0802;
     min-height: 100vh;
   }
-  /* قضبان رأسية */
+  /* قضبان رأسية — شفافية جزئية حتى يظهر المحتوى */
   .prison-bars {
     position: fixed;
     inset: 0;
@@ -627,56 +625,60 @@
     background: repeating-linear-gradient(
       90deg,
       transparent 0px,
-      transparent 88px,
-      rgba(6,4,1,0.98)   88px,
-      rgba(32,21,6,0.96)  92px,
-      rgba(68,46,12,0.88) 97px,
-      rgba(88,61,17,0.82) 99px,
-      rgba(68,46,12,0.88) 101px,
-      rgba(32,21,6,0.96) 106px,
-      rgba(6,4,1,0.98)   108px,
-      transparent 108px
+      transparent 90px,
+      rgba(4,3,1,0.88)    90px,
+      rgba(28,18,5,0.82)  95px,
+      rgba(70,50,14,0.72) 100px,
+      rgba(90,64,18,0.65) 102px,
+      rgba(70,50,14,0.72) 104px,
+      rgba(28,18,5,0.82)  109px,
+      rgba(4,3,1,0.88)    114px,
+      transparent 114px
     );
   }
   /* قضيب أفقي علوي */
   .prison-bar-h-top {
     position: fixed;
-    top: 18%;
+    top: 16%;
     left: 0; right: 0;
-    height: 22px;
+    height: 24px;
     pointer-events: none;
     z-index: 201;
     background: linear-gradient(
       to bottom,
-      rgba(4,3,1,0.2) 0%,
-      rgba(38,25,7,0.97) 30%,
-      rgba(78,54,14,0.90) 50%,
-      rgba(38,25,7,0.97) 70%,
-      rgba(4,3,1,0.2) 100%
+      transparent 0%,
+      rgba(35,23,6,0.90) 25%,
+      rgba(82,58,15,0.82) 50%,
+      rgba(35,23,6,0.90) 75%,
+      transparent 100%
     );
-    box-shadow: 0 4px 18px rgba(0,0,0,0.7);
+    box-shadow: 0 3px 16px rgba(0,0,0,0.6);
   }
   /* قضيب أفقي سفلي */
   .prison-bar-h-bottom {
     position: fixed;
-    bottom: 18%;
+    bottom: 16%;
     left: 0; right: 0;
-    height: 22px;
+    height: 24px;
     pointer-events: none;
     z-index: 201;
     background: linear-gradient(
       to bottom,
-      rgba(4,3,1,0.2) 0%,
-      rgba(38,25,7,0.97) 30%,
-      rgba(78,54,14,0.90) 50%,
-      rgba(38,25,7,0.97) 70%,
-      rgba(4,3,1,0.2) 100%
+      transparent 0%,
+      rgba(35,23,6,0.90) 25%,
+      rgba(82,58,15,0.82) 50%,
+      rgba(35,23,6,0.90) 75%,
+      transparent 100%
     );
-    box-shadow: 0 4px 18px rgba(0,0,0,0.7);
+    box-shadow: 0 3px 16px rgba(0,0,0,0.6);
   }
   @keyframes prisonPulse {
-    0%,100% { text-shadow: 0 0 12px rgba(130,88,22,0.4); }
-    50%      { text-shadow: 0 0 35px rgba(170,118,32,0.95), 0 0 70px rgba(130,88,22,0.45); }
+    0%,100% { text-shadow: 0 0 16px rgba(200,140,40,0.5); }
+    50%      { text-shadow: 0 0 40px rgba(240,175,55,1), 0 0 80px rgba(200,140,40,0.5); }
+  }
+  @keyframes prisonFloat {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-6px); }
   }
 
   /* ── Forbidden tags ── */
@@ -1122,38 +1124,42 @@
     <div class="prison-bar-h-top"></div>
     <div class="prison-bar-h-bottom"></div>
 
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;gap:1rem;position:relative">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;gap:1.1rem;position:relative">
 
-      <!-- بقعة ضوء خافتة من الأعلى -->
+      <!-- بقعة ضوء قوية من الأعلى كأنها مصباح السجن -->
       <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);
-        width:260px;height:340px;pointer-events:none;
-        background:radial-gradient(ellipse at 50% 0%, rgba(120,80,20,0.13) 0%, transparent 70%)">
+        width:360px;height:500px;pointer-events:none;
+        background:radial-gradient(ellipse at 50% 0%, rgba(160,105,25,0.28) 0%, rgba(100,65,15,0.08) 45%, transparent 70%)">
       </div>
 
-      <div style="font-size:0.68rem;font-weight:800;color:#4a2e08;letter-spacing:0.22em;text-transform:uppercase">⛓ سجن اللاعبين ⛓</div>
+      <div style="font-size:0.68rem;font-weight:800;color:#6b4215;letter-spacing:0.22em;text-transform:uppercase;position:relative">⛓ سجن اللاعبين ⛓</div>
 
-      <!-- الصورة الشخصية -->
+      <!-- الصورة الشخصية — كبيرة وواضحة -->
       <div id="kicked-avatar" style="
-        width:120px;height:120px;border-radius:50%;
-        background:rgba(30,18,5,0.95);
-        border:3px solid #5a3810;
+        width:150px;height:150px;border-radius:50%;
+        background:rgba(25,15,4,1);
+        border:4px solid #9a6820;
         display:flex;align-items:center;justify-content:center;
-        font-size:3.8rem;overflow:hidden;
-        box-shadow:0 0 50px rgba(0,0,0,0.95), 0 8px 30px rgba(0,0,0,0.8);
+        font-size:4.8rem;overflow:hidden;
+        box-shadow:0 0 0 8px rgba(80,50,10,0.25), 0 0 60px rgba(150,100,20,0.3), 0 12px 40px rgba(0,0,0,0.9);
+        animation:prisonFloat 3.5s ease-in-out infinite;
+        position:relative;
       ">👤</div>
 
-      <!-- الاسم -->
+      <!-- الاسم — كبير وواضح -->
       <div id="kicked-name" style="
-        font-size:1.8rem;font-weight:900;color:#b87c2a;
+        font-size:2.4rem;font-weight:900;
+        color:#e8b840;
         animation:prisonPulse 2.5s ease-in-out infinite;
-        letter-spacing:0.05em;
+        letter-spacing:0.06em;
+        position:relative;
       ">—</div>
 
-      <div style="color:#6b4215;font-size:0.88rem;font-weight:700;letter-spacing:0.04em">مطرود من الجلسة</div>
+      <div style="color:#8a5520;font-size:0.9rem;font-weight:700;letter-spacing:0.06em;position:relative">مطرود من الجلسة</div>
 
-      <div style="font-size:2.8rem;animation:pulse 2.5s ease-in-out infinite;filter:grayscale(0.3)">🔒</div>
+      <div style="font-size:2.8rem;animation:pulse 2.5s ease-in-out infinite;position:relative">🔒</div>
 
-      <div style="color:#3a2008;font-size:0.76rem;max-width:190px;line-height:1.8;margin-top:0.25rem">
+      <div style="color:#4a2e0a;font-size:0.76rem;max-width:200px;line-height:1.8;position:relative">
         تواصل مع المضيف إذا أردت الانضمام مجدداً
       </div>
     </div>
