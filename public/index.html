@@ -1272,7 +1272,15 @@ function handleMessage(msg) {
       break;
 
     case 'KICKED':
-      state = {};
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      ws.onclose = null;
+      state.role = null;
+      state.sessionCode = null;
+      state.playerName = null;
+      state.roundStatus = 'waiting';
+      state.clues = [];
+      state.correctGuess = false;
+      state.score = 0;
       showScreen('screen-home');
       toast('⛔ تم طردك من الجلسة من قبل المضيف', 'error');
       break;
