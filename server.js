@@ -297,7 +297,8 @@ async function dispatch(ws, msg) {
         session.players[trimName].ws = ws;
         if (rawPhoto) session.players[trimName].photo = rawPhoto;
         const round = session.round;
-        if (round && round.status === 'active') {
+        // Only advance cluesSeen for players who haven't answered yet
+        if (round && round.status === 'active' && !session.players[trimName].correctGuess) {
           const p = session.players[trimName];
           p.cluesSeen = Math.max(p.cluesSeen, round.globalClueIndex);
         }
@@ -344,13 +345,15 @@ async function dispatch(ws, msg) {
             clueIndex: i,
             clueNumber: i + 1,
             totalRevealed: session.round.globalClueIndex,
-            leftDuringRound: player.leftDuringRound || false
+            leftDuringRound: player.leftDuringRound || false,
+            correctGuess: player.correctGuess || false
           });
         }
         if (player.correctGuess) {
           send(ws, {
             type: 'GUESS_RESULT',
             correct: true,
+            isReplay: true,
             cluesSeen: player.cluesSeen,
             guessTime: player.guessTime,
             roundScore: Math.max(1, 11 - player.cluesSeen)
