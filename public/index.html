@@ -753,7 +753,8 @@
         <div style="color:var(--muted);margin-bottom:1.5rem">الترتيب النهائي</div>
         <div id="final-leaderboard"></div>
         <div class="divider"></div>
-        <button class="btn btn-primary" onclick="goHome()">🏠 الصفحة الرئيسية</button>
+        <button id="final-home-btn" class="btn btn-primary" onclick="goHome()">🏠 الصفحة الرئيسية</button>
+        <div id="final-player-end" style="display:none;color:var(--muted);font-size:0.95rem;margin-top:0.5rem">شكراً للعب! يمكنك إغلاق هذه الصفحة.</div>
       </div>
       <div class="spacer-lg"></div>
     </div>
@@ -1190,6 +1191,9 @@ function renderFinalLeaderboard(leaderboard) {
       <div class="lb-score" style="font-size:1.4rem">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-right:0.25rem"> نقطة</span></div>
     </div>`).join('');
   showScreen('screen-final');
+  const isPlayer = state.role === 'player';
+  qs('#final-home-btn').style.display = isPlayer ? 'none' : '';
+  qs('#final-player-end').style.display = isPlayer ? '' : 'none';
 }
 
 function goHome() {
