@@ -620,6 +620,40 @@ async function dispatch(ws, msg) {
       break;
     }
 
+    // ── UPDATE_PROFILE ──────────────────────────────────────────────────────
+    case 'UPDATE_PROFILE': {
+      if (ws._role !== 'player') return;
+      const session = sessions.get(ws._code);
+      if (!session) return;
+      const player = session.players[ws._name];
+      if (!player) return;
+
+      const newName = String(msg.name || '').trim().slice(0, 30);
+      if (newName && newName !== ws._name) {
+        if (session.round?.status === 'active') {
+          send(ws, { type: 'ERROR', message: 'لا يمكن تغيير الاسم أثناء الجولة' });
+          return;
+        }
+        if (session.players[newName]) {
+          send(ws, { type: 'ERROR', message: 'هذا الاسم مستخدم بالفعل' });
+          return;
+        }
+        session.players[newName] = player;
+        player.name = newName;
+        delete session.players[ws._name];
+        ws._name = newName;
+      }
+
+      const rawPhoto = typeof msg.photo === 'string' && msg.photo.startsWith('data:image')
+        ? (msg.photo.length < 200000 ? msg.photo : null)
+        : null;
+      if (rawPhoto) player.photo = rawPhoto;
+
+      send(ws, { type: 'PROFILE_UPDATED', name: ws._name });
+      pushHostUpdate(session);
+      break;
+    }
+
     // ── KICK_PLAYER ─────────────────────────────────────────────────────────
     case 'KICK_PLAYER': {
       if (ws._role !== 'host') return;

@@ -901,7 +901,7 @@
   <!-- ════════════════ انتظار (اللاعب) ════════════════ -->
   <div id="screen-player-wait" class="screen">
     <div class="spacer-lg"></div>
-    <div class="card" style="text-align:center">
+    <div class="card" style="text-align:center;max-width:400px;width:100%">
       <div class="pulse-emoji" id="wait-emoji">⏳</div>
       <div style="font-size:1.2rem;font-weight:800;margin-bottom:0.5rem" id="wait-title">في انتظار المضيف...</div>
       <div style="color:var(--muted);font-size:0.9rem" id="wait-subtitle">ستبدأ الجولة قريباً.</div>
@@ -920,6 +920,34 @@
           <div style="font-weight:900;font-size:1.2rem;color:var(--green)" id="wait-score">0</div>
         </div>
       </div>
+
+      <!-- تعديل الملف الشخصي -->
+      <div class="divider"></div>
+      <div class="section-title" style="margin-bottom:0.75rem">✏️ تعديل الملف الشخصي</div>
+
+      <!-- الصورة -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin-bottom:0.9rem">
+        <div id="wait-avatar-preview" onclick="qs('#wait-gallery-input').click()" style="
+          width:72px;height:72px;border-radius:50%;
+          background:rgba(124,58,237,0.15);
+          border:2px dashed rgba(124,58,237,0.5);
+          display:flex;align-items:center;justify-content:center;
+          cursor:pointer;overflow:hidden;font-size:2.2rem;transition:all 0.2s">👤</div>
+        <div style="display:flex;gap:0.4rem">
+          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-gallery-input').click()" style="width:auto">🖼 معرض</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-camera-input').click()" style="width:auto">📷 كاميرا</button>
+        </div>
+      </div>
+      <input type="file" id="wait-gallery-input" accept="image/*" style="display:none" onchange="handleWaitPhotoSelect(this)">
+      <input type="file" id="wait-camera-input" accept="image/*" capture="user" style="display:none" onchange="handleWaitPhotoSelect(this)">
+
+      <!-- الاسم -->
+      <div class="input-group" style="text-align:right;margin-bottom:0.75rem">
+        <label>الاسم</label>
+        <input type="text" id="wait-name-input" maxlength="30" placeholder="اسمك في اللعبة"
+          onkeydown="if(event.key==='Enter')saveProfile()">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveProfile()" style="width:auto;padding:0.6rem 1.5rem;margin:0 auto;display:block">💾 حفظ</button>
     </div>
     <div class="spacer-lg"></div>
   </div>
@@ -1128,6 +1156,7 @@ function handleMessage(msg) {
       qs('#wait-name').textContent = msg.playerName;
       qs('#wait-score').textContent = state.score;
       qs('#player-score-display').textContent = state.score + ' نقطة';
+      refreshWaitProfile();
 
       if (msg.roundStatus === 'active') {
         showScreen('screen-player-round');
@@ -1228,6 +1257,14 @@ function handleMessage(msg) {
       qs('#wait-title').textContent = 'في انتظار المضيف...';
       qs('#wait-subtitle').textContent = 'ستبدأ الجولة التالية قريباً.';
       qs('#wait-score').textContent = state.score;
+      refreshWaitProfile();
+      break;
+
+    case 'PROFILE_UPDATED':
+      state.playerName = msg.name;
+      qs('#wait-name').textContent = msg.name;
+      qs('#wait-name-input').value = msg.name;
+      toast('✅ تم حفظ التغييرات', 'success');
       break;
 
     case 'SESSION_ENDED':
@@ -1302,6 +1339,53 @@ function playerJoinDirect() {
 }
 
 // ─── Photo handling ───────────────────────────────────────────────────────────
+function refreshWaitProfile() {
+  qs('#wait-name-input').value = state.playerName || '';
+  const prev = qs('#wait-avatar-preview');
+  if (state.playerPhoto) {
+    prev.innerHTML = `<img src="${state.playerPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+    prev.style.border = '2px solid var(--green)';
+    prev.style.fontSize = '';
+  } else {
+    prev.innerHTML = '👤';
+    prev.style.border = '2px dashed rgba(124,58,237,0.5)';
+    prev.style.fontSize = '2.2rem';
+  }
+}
+
+function handleWaitPhotoSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 120;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const src = Math.min(img.width, img.height);
+      const sx = (img.width - src) / 2;
+      const sy = (img.height - src) / 2;
+      ctx.beginPath();
+      ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, sx, sy, src, src, 0, 0, size, size);
+      state.playerPhoto = canvas.toDataURL('image/jpeg', 0.75);
+      refreshWaitProfile();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function saveProfile() {
+  const name = qs('#wait-name-input').value.trim();
+  if (!name) { toast('أدخل اسمك', 'error'); return; }
+  send({ type: 'UPDATE_PROFILE', name, photo: state.playerPhoto || null });
+}
+
 function handlePhotoSelect(input) {
   const file = input.files[0];
   if (!file) return;
