@@ -448,13 +448,45 @@
     <div class="spacer-lg"></div>
   </div>
 
+  <!-- ════════════════ انضمام مباشر (اللاعب عبر الرابط) ════════════════ -->
+  <div id="screen-player-join" class="screen">
+    <div class="spacer-lg"></div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:3rem">🎮</div>
+      <div style="font-size:1.6rem;font-weight:900;margin:0.5rem 0">من أنا؟</div>
+      <div style="color:var(--muted);margin-bottom:1.5rem;font-size:0.95rem">أدخل اسمك للانضمام للجلسة</div>
+
+      <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:0.85rem;margin-bottom:1.5rem">
+        <div style="font-size:0.7rem;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:0.3rem">كود الجلسة</div>
+        <div id="join-code-display" style="font-size:2rem;font-weight:900;letter-spacing:0.2em;color:var(--gold);font-family:'Courier New',monospace">------</div>
+      </div>
+
+      <div class="input-group" style="text-align:right">
+        <label>اسمك في اللعبة</label>
+        <input type="text" id="player-join-name" placeholder="أدخل اسمك..." maxlength="30"
+          onkeydown="if(event.key==='Enter')playerJoinDirect()">
+      </div>
+      <button class="btn btn-gold" onclick="playerJoinDirect()">انضم الآن ←</button>
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+
   <!-- ════════════════ غرفة الانتظار (المضيف) ════════════════ -->
   <div id="screen-host-lobby" class="screen">
     <div class="spacer"></div>
     <div class="card card-wide" style="width:100%">
       <div class="section-title">كود الجلسة</div>
       <div class="big-code" id="lobby-code">------</div>
-      <div style="text-align:center;color:var(--muted);font-size:0.85rem;margin-top:0.5rem">شارك هذا الكود مع اللاعبين</div>
+
+      <!-- رابط المشاركة -->
+      <div style="margin-top:1rem">
+        <div class="section-title" style="margin-bottom:0.4rem">🔗 رابط اللاعبين</div>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <div id="share-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyShareLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+        </div>
+        <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">أرسل هذا الرابط للاعبين، سيدخلون مباشرة بدون كود</div>
+      </div>
 
       <div class="divider"></div>
 
@@ -744,6 +776,7 @@ function handleMessage(msg) {
       state.sessionCode = msg.code;
       showScreen('screen-host-lobby');
       qs('#lobby-code').textContent = msg.code;
+      qs('#share-link').textContent = `${location.origin}/play/${msg.code}`;
       if (!msg.rejoined) {
         qs('#lobby-players').innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
         qs('#clue-editor').style.display = 'none';
@@ -874,6 +907,23 @@ function handleMessage(msg) {
 function createSession() {
   if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(createSession, 800); return; }
   send({ type: 'CREATE_SESSION' });
+}
+
+function copyShareLink() {
+  const link = qs('#share-link').textContent;
+  if (link === '—') return;
+  navigator.clipboard.writeText(link)
+    .then(() => toast('✅ تم نسخ الرابط!', 'success'))
+    .catch(() => toast('❌ تعذّر النسخ', 'error'));
+}
+
+function playerJoinDirect() {
+  const name = qs('#player-join-name').value.trim();
+  const code = state.pendingCode;
+  if (!name) { toast('أدخل اسمك أولاً', 'error'); return; }
+  if (!code)  { toast('كود الجلسة غير موجود', 'error'); return; }
+  if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(playerJoinDirect, 800); return; }
+  send({ type: 'JOIN_SESSION', code, name });
 }
 
 function generateClues() {
@@ -1085,8 +1135,26 @@ function toast(msg, type) {
   toastTimer = setTimeout(() => { el.className = ''; }, 3000);
 }
 
+// ─── Routing ──────────────────────────────────────────────────────────────────
+function initRoute() {
+  const playMatch = location.pathname.match(/^\/play\/([A-Za-z0-9]{4,8})$/);
+  const isHost    = location.pathname === '/host';
+
+  if (playMatch) {
+    state.pendingCode = playMatch[1].toUpperCase();
+    qs('#join-code-display').textContent = state.pendingCode;
+    showScreen('screen-player-join');
+  } else if (isHost) {
+    showScreen('screen-home');
+    // Auto-scroll to host card so it's prominent
+  } else {
+    showScreen('screen-home');
+  }
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 connect();
+initRoute();
 qs('#join-name').addEventListener('keydown', e => { if (e.key === 'Enter') joinSession(); });
 qs('#join-code').addEventListener('keydown', e => { if (e.key === 'Enter') qs('#join-name').focus(); });
 qs('#secret-input').addEventListener('keydown', e => { if (e.key === 'Enter') generateClues(); });
