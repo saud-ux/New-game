@@ -1593,7 +1593,7 @@ function renderHostState(s) {
         ${avatarHtml(p.photo, p.name, 32)}
         <span style="font-weight:700;flex:1">${escHtml(p.name)}</span>
         <span class="badge ${p.connected ? 'badge-green' : 'badge-gray'}">${p.connected ? 'متصل' : 'غائب'}</span>
-        <button onclick="kickPlayer(${JSON.stringify(p.name)})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.2rem 0.55rem;font-size:0.78rem;cursor:pointer">طرد</button>
+        <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.2rem 0.55rem;font-size:0.78rem;cursor:pointer">طرد</button>
       </div>`).join('');
   }
 
@@ -1638,7 +1638,7 @@ function renderHostState(s) {
           <span style="font-weight:900;color:${clueColor};min-width:1.4rem;text-align:center;font-size:0.95rem">${p.cluesSeen}</span>
           <span style="font-size:0.9rem">${statusIcon}</span>
           ${timeStr}
-          <button onclick="kickPlayer(${JSON.stringify(p.name)})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.15rem 0.4rem;font-size:0.7rem;cursor:pointer;flex-shrink:0">طرد</button>
+          <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.15rem 0.4rem;font-size:0.7rem;cursor:pointer;flex-shrink:0">طرد</button>
         </div>`;
       }).join('');
     }
