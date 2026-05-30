@@ -1239,6 +1239,21 @@ window.addEventListener('pagehide', () => {
   }
 });
 
+// Lock player when they switch tabs or minimize — WS stays alive so pagehide never fires
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    if (state.role === 'player' && state.roundStatus === 'active' && !state.correctGuess && !state.leftDuringRound) {
+      state.leftDuringRound = true;
+      send({ type: 'PLAYER_LEAVING' });
+    }
+  } else {
+    // Tab came back into focus — if jailed, show prison screen
+    if (state.role === 'player' && state.leftDuringRound) {
+      showPrisonScreen('cheating');
+    }
+  }
+});
+
 // ─── Message handler ──────────────────────────────────────────────────────────
 function handleMessage(msg) {
   switch (msg.type) {
