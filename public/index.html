@@ -755,16 +755,29 @@
       <div class="section-title">كود الجلسة</div>
       <div class="big-code" id="lobby-code">------</div>
 
-      <!-- رابط المشاركة -->
+      <!-- روابط المشاركة -->
       <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem">
+
+        <!-- رابط الجلسة المباشر -->
         <div>
-          <div class="section-title" style="margin-bottom:0.4rem">🔗 رابط الانضمام</div>
+          <div class="section-title" style="margin-bottom:0.4rem">⚡ رابط الجلسة (الأسرع)</div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <div id="join-session-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+            <button class="btn btn-gold btn-sm" onclick="copySessionLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+          </div>
+          <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">الكود مدمج — اللاعبون يكتبون اسمهم فقط ويدخلون مباشرة</div>
+        </div>
+
+        <!-- رابط عام -->
+        <div>
+          <div class="section-title" style="margin-bottom:0.4rem">🌐 رابط عام</div>
           <div style="display:flex;gap:0.5rem;align-items:center">
             <div id="join-base-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
             <button class="btn btn-ghost btn-sm" onclick="copyJoinLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
           </div>
-          <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">أرسل هذا الرابط — اللاعبون يدخلون الكود بأنفسهم</div>
+          <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">اللاعبون يدخلون الكود يدوياً بعد فتح الرابط</div>
         </div>
+
       </div>
 
       <div class="divider"></div>
@@ -1065,6 +1078,7 @@ function handleMessage(msg) {
       showScreen('screen-host-lobby');
       qs('#lobby-code').textContent = msg.code;
       qs('#join-base-link').textContent = `${location.origin}/join`;
+      qs('#join-session-link').textContent = `${location.origin}/play/${msg.code}`;
       if (!msg.rejoined) {
         qs('#lobby-players').innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
         qs('#clue-editor').style.display = 'none';
@@ -1236,7 +1250,15 @@ function copyJoinLink() {
   const link = qs('#join-base-link').textContent;
   if (link === '—') return;
   navigator.clipboard.writeText(link)
-    .then(() => toast('✅ تم نسخ الرابط!', 'success'))
+    .then(() => toast('✅ تم نسخ الرابط العام!', 'success'))
+    .catch(() => toast('❌ تعذّر النسخ', 'error'));
+}
+
+function copySessionLink() {
+  const link = qs('#join-session-link').textContent;
+  if (link === '—') return;
+  navigator.clipboard.writeText(link)
+    .then(() => toast('✅ تم نسخ رابط الجلسة!', 'success'))
     .catch(() => toast('❌ تعذّر النسخ', 'error'));
 }
 
@@ -1415,6 +1437,7 @@ function renderHostState(s) {
   if (!s) return;
   qs('#lobby-code').textContent = s.sessionCode;
   qs('#join-base-link').textContent = `${location.origin}/join`;
+  qs('#join-session-link').textContent = `${location.origin}/play/${s.sessionCode}`;
 
   const players = Object.values(s.players || {});
 
