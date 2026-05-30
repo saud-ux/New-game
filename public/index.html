@@ -1355,14 +1355,16 @@ function renderHostState(s) {
     qs('#reveal-btn').disabled = !(s.round.status === 'active' && gi < total);
 
     const cluesList = qs('#host-clues-list');
-    const revealedClues = (s.round.clues || []).slice(0, gi);
-    if (revealedClues.length > 0) {
+    const allClues = s.round.clues || [];
+    if (allClues.length > 0) {
       cluesList.style.display = 'flex';
-      cluesList.innerHTML = revealedClues.map((clue, i) => `
-        <div style="background:var(--surface2);border-radius:10px;padding:0.6rem 0.9rem;display:flex;gap:0.6rem;align-items:flex-start">
-          <span style="font-size:0.75rem;font-weight:800;color:var(--gold);min-width:1.4rem;padding-top:0.1rem">تلميح ${i + 1}</span>
+      cluesList.innerHTML = allClues.map((clue, i) => {
+        const revealed = i < gi;
+        return `<div style="background:var(--surface2);border-radius:10px;padding:0.6rem 0.9rem;display:flex;gap:0.6rem;align-items:flex-start;opacity:${revealed ? '1' : '0.35'}">
+          <span style="font-size:0.75rem;font-weight:800;color:${revealed ? 'var(--gold)' : 'var(--muted)'};min-width:1.6rem;padding-top:0.1rem">${i + 1}</span>
           <span style="font-size:0.9rem;line-height:1.5">${escHtml(clue)}</span>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     } else {
       cluesList.style.display = 'none';
       cluesList.innerHTML = '';
