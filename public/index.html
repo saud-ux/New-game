@@ -1356,7 +1356,7 @@ function removeForbiddenTag(val) {
 
 function renderForbiddenTags() {
   qs('#forbidden-tags').innerHTML = forbiddenItems.map(v =>
-    `<span class="forbidden-tag">${escHtml(v)}<button onclick="removeForbiddenTag(${JSON.stringify(v)})">×</button></span>`
+    `<span class="forbidden-tag">${escHtml(v)}<button onclick="removeForbiddenTag(${escHtml(JSON.stringify(v))})">×</button></span>`
   ).join('');
 }
 
