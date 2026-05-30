@@ -711,8 +711,9 @@
       <div class="divider"></div>
 
       <div class="input-group">
-        <label>🔐 اسم الشخص السري (مخفي عن اللاعبين)</label>
-        <input type="text" id="secret-input" placeholder="مثال: ناصر القصبي..." autocomplete="off">
+        <label>📝 صف الشخصية (مخفي عن اللاعبين)</label>
+        <input type="text" id="secret-input" placeholder="مثال: لاعب كرة القدم سالم الدوسري" autocomplete="off">
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">الذكاء الاصطناعي سيستخرج الإجابة ويولّد التلميحات تلقائياً</div>
       </div>
       <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">✨ توليد التلميحات</button>
       <div class="spacer-sm"></div>
@@ -728,6 +729,10 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
           <div class="section-title" style="margin-bottom:0">✏️ راجع وعدّل التلميحات</div>
           <button class="btn btn-ghost btn-sm" onclick="regenerateClues()" style="width:auto">↺ أعد التوليد</button>
+        </div>
+        <div id="extracted-answer-box" style="background:rgba(255,200,0,0.1);border:1px solid var(--gold);border-radius:10px;padding:0.7rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem">
+          <span style="font-size:0.85rem;color:var(--muted)">الإجابة الصحيحة:</span>
+          <span id="extracted-answer-text" style="font-weight:900;color:var(--gold);font-size:1rem"></span>
         </div>
         <div style="color:var(--muted);font-size:0.8rem;margin-bottom:1rem">
           التلميح ١ هو الأكثر غموضاً، والتلميح ١٠ هو الأوضح. يمكنك تعديل أي تلميح بحرية.
@@ -1051,6 +1056,7 @@ function handleMessage(msg) {
     case 'CLUES_READY':
       qs('#generating-status').style.display = 'none';
       qs('#generate-btn').style.display = '';
+      if (msg.answer) qs('#extracted-answer-text').textContent = msg.answer;
       renderClueEditor(msg.clues);
       toast(`✅ تم توليد ${msg.totalClues} تلميحات! راجعها وعدّل إن شئت.`, 'success');
       break;
@@ -1218,9 +1224,9 @@ function handlePhotoSelect(input) {
 }
 
 function generateClues() {
-  const secret = qs('#secret-input').value.trim();
-  if (!secret) { toast('أدخل اسم الشخص أولاً', 'error'); return; }
-  send({ type: 'GENERATE_CLUES', secret });
+  const description = qs('#secret-input').value.trim();
+  if (!description) { toast('أدخل وصف الشخصية أولاً', 'error'); return; }
+  send({ type: 'GENERATE_CLUES', description });
 }
 
 function regenerateClues() {

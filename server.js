@@ -46,36 +46,40 @@ function broadcastPlayers(session, obj) {
 
 // ─── Claude calls ────────────────────────────────────────────────────────────
 
-async function generateClues(personName) {
+async function generateClues(description) {
   const msg = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1500,
+    max_tokens: 1800,
     messages: [{
       role: 'user',
-      content: `أنت تدير لعبة "من أنا؟". الشخص السري هو: "${personName}"
+      content: `أنت تدير لعبة "من أنا؟". المضيف وصف الشخصية هكذا: "${description}"
 
-اكتب بالعربية بالضبط ١٠ تلميحات مرتبة من الأكثر غموضاً (التلميح ١) إلى الأكثر وضوحاً (التلميح ١٠).
+مهمتك:
+١. استخرج الاسم الصحيح للشخصية من الوصف — هذا هو ما يجب على اللاعبين تخمينه
+٢. اكتب بالعربية بالضبط ١٠ تلميحات مرتبة من الأكثر غموضاً (التلميح ١) إلى الأكثر وضوحاً (التلميح ١٠)
 
 القواعد:
 - لا تذكر اسم الشخص أو لقبه أو أي اسم مستعار في أي تلميح إطلاقاً
+- استفد من وصف المضيف لفهم السياق (مجاله، جنسيته، إلخ)
 - كل تلميح يجب أن يكون صحيحاً بالكامل
 - التلميح ١: معلومة عامة جداً (حقبة زمنية، منطقة جغرافية، مجال عام)
 - التلميح ٥-٦: يضيق دائرة التخمين بشكل ملحوظ
 - التلميح ١٠: واضح جداً لمن يعرف هذا الشخص
 - كل تلميح جملة أو جملتان كحد أقصى
-- التلميحات يجب أن تكون مثيرة للاهتمام وعادلة
 
-أجب فقط بمصفوفة JSON صحيحة تحتوي على ١٠ نصوص بالعربية — بدون ماركداون أو شرح:
-["التلميح1","التلميح2","التلميح3","التلميح4","التلميح5","التلميح6","التلميح7","التلميح8","التلميح9","التلميح10"]`
+أجب فقط بـ JSON صحيح بدون أي نص إضافي:
+{"answer":"الاسم الكامل هنا","clues":["التلميح1","التلميح2","التلميح3","التلميح4","التلميح5","التلميح6","التلميح7","التلميح8","التلميح9","التلميح10"]}`
     }]
   });
 
   const raw = msg.content[0].text.trim();
-  const match = raw.match(/\[[\s\S]*\]/);
-  if (!match) throw new Error('AI returned invalid clue format');
-  const clues = JSON.parse(match[0]);
-  if (!Array.isArray(clues) || clues.length !== 10) throw new Error('Expected 10 clues');
-  return clues;
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('AI returned invalid format');
+  const result = JSON.parse(match[0]);
+  if (!result.answer || !Array.isArray(result.clues) || result.clues.length !== 10) {
+    throw new Error('Expected answer + 10 clues from AI');
+  }
+  return result;
 }
 
 async function judgeAnswer(secret, answer) {
@@ -386,19 +390,20 @@ async function dispatch(ws, msg) {
       const session = sessions.get(ws._code);
       if (!session) return;
 
-      const secret = String(msg.secret || '').trim();
-      if (!secret) {
-        send(ws, { type: 'ERROR', message: 'أدخل اسم الشخصية أولاً' });
+      const description = String(msg.description || '').trim();
+      if (!description) {
+        send(ws, { type: 'ERROR', message: 'أدخل وصف الشخصية أولاً' });
         return;
       }
 
       send(ws, { type: 'GENERATING_CLUES' });
       broadcastPlayers(session, { type: 'ROUND_PREPARING' });
 
-      const clues = await generateClues(secret);
+      const { answer, clues } = await generateClues(description);
 
       session.round = {
-        secret,
+        secret: answer,
+        description,
         clues,
         globalClueIndex: 0,
         status: 'ready',
@@ -413,7 +418,7 @@ async function dispatch(ws, msg) {
         p.leftDuringRound = false;
       }
 
-      send(ws, { type: 'CLUES_READY', totalClues: clues.length, clues });
+      send(ws, { type: 'CLUES_READY', totalClues: clues.length, clues, answer });
       pushHostUpdate(session);
       break;
     }
