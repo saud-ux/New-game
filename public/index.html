@@ -1025,6 +1025,24 @@
     );
   }
 
+  /* ── Jail sound button ── */
+  #jail-sound-btn {
+    position: fixed; bottom: 1.4rem; right: 1.4rem;
+    z-index: 220;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.55);
+    font-size: 1.3rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+  }
+  #jail-sound-btn:active { transform: scale(0.9); }
+  #jail-sound-btn.played {
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.2);
+  }
+
   /* ── Forbidden tags ── */
   .forbidden-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
   .forbidden-tag {
@@ -1562,6 +1580,9 @@
       </div>
     </div>
 
+    <!-- Tap-to-play sound button — visible until tapped -->
+    <button id="jail-sound-btn" onclick="playArrestSound();this.classList.add('played')" title="تشغيل الصوت">🔊</button>
+
     <!-- Arrest stamp overlay — appears first, fades out after ~2.4s -->
     <div class="arrest-stamp-overlay" id="arrest-stamp-overlay">
       <div class="stamp-wrap">
@@ -1977,6 +1998,7 @@ function showPrisonScreen(reason) {
   [overlay, stampWrap, photoStamp].forEach(el => { el.style.animation = ''; });
   const bars = qs('.prison-bars');
   bars.style.animation = 'none'; bars.offsetHeight; bars.style.animation = '';
+  qs('#jail-sound-btn').classList.remove('played');
   showScreen('screen-kicked');
   playArrestSound();
 }
