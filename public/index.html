@@ -917,6 +917,96 @@
     50%      { transform: translateY(-4px); }
   }
 
+  /* ── Arrest stamp overlay ── */
+  .arrest-stamp-overlay {
+    position: fixed; inset: 0; z-index: 310;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    background: rgba(0,0,0,0.88);
+    animation: overlayOut 0.5s 2.4s ease-in forwards;
+  }
+  @keyframes overlayOut {
+    from { opacity:1; }
+    to   { opacity:0; }
+  }
+  @keyframes screenShake {
+    0%,100% { transform: translate(0,0); }
+    15%     { transform: translate(-6px, 4px); }
+    30%     { transform: translate(5px, -3px); }
+    45%     { transform: translate(-4px, 5px); }
+    60%     { transform: translate(6px, -2px); }
+    75%     { transform: translate(-3px, 3px); }
+  }
+  .stamp-wrap {
+    transform: rotate(-18deg);
+    animation: stampImpact 0.35s 0.18s both cubic-bezier(0.22,1,0.36,1),
+               screenShake 0.35s 0.18s ease-out;
+    will-change: transform;
+  }
+  @keyframes stampImpact {
+    from { transform: rotate(-18deg) scale(3.5) translateY(-20px); opacity:0; }
+    60%  { transform: rotate(-18deg) scale(0.92); opacity:1; }
+    to   { transform: rotate(-18deg) scale(1); opacity:1; }
+  }
+  /* Stamp ring — outer */
+  .stamp-outer-ring {
+    width: 230px; height: 230px;
+    border-radius: 50%;
+    border: 9px solid #c0392b;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    filter: drop-shadow(0 0 18px rgba(180,40,40,0.55))
+            drop-shadow(0 4px 24px rgba(0,0,0,0.9));
+  }
+  /* Inner ring */
+  .stamp-outer-ring::before {
+    content: '';
+    position: absolute;
+    inset: 11px;
+    border-radius: 50%;
+    border: 2.5px solid #c0392b;
+    pointer-events: none;
+  }
+  /* Ink bleed texture */
+  .stamp-outer-ring::after {
+    content: '';
+    position: absolute; inset: -3px;
+    border-radius: 50%;
+    border: 2px dashed rgba(160,30,30,0.3);
+    pointer-events: none;
+  }
+  .stamp-top-stars {
+    position: absolute; top: 18%; left: 50%;
+    transform: translateX(-50%);
+    color: #c0392b; font-size: 0.72rem;
+    letter-spacing: 7px; white-space: nowrap;
+  }
+  .stamp-bottom-stars {
+    position: absolute; bottom: 18%; left: 50%;
+    transform: translateX(-50%);
+    color: #c0392b; font-size: 0.72rem;
+    letter-spacing: 10px; white-space: nowrap;
+  }
+  .stamp-banner-el {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: #c0392b;
+    font-size: 2rem; font-weight: 900;
+    padding: 0.28rem 0;
+    width: 290px; /* wider than 230px circle */
+    text-align: center;
+    letter-spacing: 0.08em;
+    font-family: 'Tajawal', sans-serif;
+    border-top: 2.5px solid rgba(192,57,43,0.25);
+    border-bottom: 2.5px solid rgba(192,57,43,0.25);
+    /* Slight roughness for ink effect */
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 5%, 99.5% 100%,
+      0.5% 100%, 0% 95%
+    );
+  }
+
   /* ── Forbidden tags ── */
   .forbidden-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
   .forbidden-tag {
@@ -1412,6 +1502,18 @@
 
       </div>
     </div>
+
+    <!-- Arrest stamp overlay — appears first, fades out after ~2.4s -->
+    <div class="arrest-stamp-overlay" id="arrest-stamp-overlay">
+      <div class="stamp-wrap">
+        <div class="stamp-outer-ring">
+          <div class="stamp-top-stars">★ ★ ★</div>
+          <div class="stamp-bottom-stars">★ ★</div>
+          <div class="stamp-banner-el">تم القبض</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -1736,6 +1838,61 @@ function playerJoinDirect() {
 }
 
 // ─── Photo handling ───────────────────────────────────────────────────────────
+function playArrestSound() {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    const ctx = new AC();
+    const t = ctx.currentTime;
+
+    // Impact thud — stamp hitting the page
+    const thud = ctx.createOscillator();
+    const thudG = ctx.createGain();
+    thud.connect(thudG); thudG.connect(ctx.destination);
+    thud.type = 'sine';
+    thud.frequency.setValueAtTime(110, t + 0.18);
+    thud.frequency.exponentialRampToValueAtTime(32, t + 0.52);
+    thudG.gain.setValueAtTime(0.75, t + 0.18);
+    thudG.gain.exponentialRampToValueAtTime(0.001, t + 0.52);
+    thud.start(t + 0.18); thud.stop(t + 0.55);
+
+    // High crackle on top of thud (stamp texture)
+    const crack = ctx.createOscillator();
+    const crackG = ctx.createGain();
+    crack.connect(crackG); crackG.connect(ctx.destination);
+    crack.type = 'sawtooth';
+    crack.frequency.setValueAtTime(2800, t + 0.18);
+    crackG.gain.setValueAtTime(0.08, t + 0.18);
+    crackG.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+    crack.start(t + 0.18); crack.stop(t + 0.3);
+
+    // Police siren — two-tone wail, two cycles
+    const siren = ctx.createOscillator();
+    const siren2 = ctx.createOscillator();
+    const sirenG = ctx.createGain();
+    siren.connect(sirenG); siren2.connect(sirenG);
+    sirenG.connect(ctx.destination);
+    siren.type = 'sawtooth'; siren2.type = 'sawtooth';
+    const s = t + 0.6;
+    siren.frequency.setValueAtTime(620, s);
+    siren.frequency.linearRampToValueAtTime(1150, s + 0.4);
+    siren.frequency.linearRampToValueAtTime(620, s + 0.8);
+    siren.frequency.linearRampToValueAtTime(1150, s + 1.2);
+    siren.frequency.linearRampToValueAtTime(620, s + 1.6);
+    siren2.frequency.setValueAtTime(628, s);  // slight detune for richness
+    siren2.frequency.linearRampToValueAtTime(1158, s + 0.4);
+    siren2.frequency.linearRampToValueAtTime(628, s + 0.8);
+    siren2.frequency.linearRampToValueAtTime(1158, s + 1.2);
+    siren2.frequency.linearRampToValueAtTime(628, s + 1.6);
+    sirenG.gain.setValueAtTime(0, s);
+    sirenG.gain.linearRampToValueAtTime(0.18, s + 0.08);
+    sirenG.gain.setValueAtTime(0.18, s + 1.5);
+    sirenG.gain.linearRampToValueAtTime(0, s + 1.8);
+    siren.start(s); siren.stop(s + 1.9);
+    siren2.start(s); siren2.stop(s + 1.9);
+  } catch(e) {}
+}
+
 function showPrisonScreen(reason) {
   qs('#kicked-name').textContent = state.playerName || '؟';
   qs('#kicked-avatar').innerHTML = state.playerPhoto
@@ -1763,11 +1920,17 @@ function showPrisonScreen(reason) {
       document.getElementById('screen-kicked').appendChild(bolt);
     });
   }
+  // Re-trigger stamp overlay animation
+  const overlay = qs('#arrest-stamp-overlay');
+  const stampWrap = overlay.querySelector('.stamp-wrap');
+  overlay.style.animation = 'none'; stampWrap.style.animation = 'none';
+  overlay.offsetHeight; // force reflow
+  overlay.style.animation = ''; stampWrap.style.animation = '';
   // Re-trigger bar animations
   const bars = qs('.prison-bars');
-  bars.style.animation = 'none'; bars.offsetHeight;
-  bars.style.animation = '';
+  bars.style.animation = 'none'; bars.offsetHeight; bars.style.animation = '';
   showScreen('screen-kicked');
+  playArrestSound();
 }
 
 function refreshWaitProfile() {
