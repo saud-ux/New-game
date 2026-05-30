@@ -611,6 +611,20 @@
   .player-compact-row.correct-row { color: var(--green); }
   .player-compact-row.disconnected-row { opacity: 0.45; }
 
+  /* ── Forbidden tags ── */
+  .forbidden-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
+  .forbidden-tag {
+    display:inline-flex; align-items:center; gap:0.3rem;
+    background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35);
+    color:#fca5a5; border-radius:999px;
+    padding:0.2rem 0.5rem 0.2rem 0.6rem; font-size:0.8rem; font-weight:600;
+  }
+  .forbidden-tag button {
+    background:none; border:none; color:#fca5a5; cursor:pointer;
+    font-size:1rem; padding:0; line-height:1; opacity:0.65;
+  }
+  .forbidden-tag button:hover { opacity:1; }
+
   /* ── Leaderboard Reveal Overlay ── */
   #lb-reveal-overlay {
     position:fixed;inset:0;z-index:600;background:#000000f2;
@@ -794,6 +808,18 @@
         <input type="text" id="secret-input" placeholder="مثال: لاعب كرة القدم سالم الدوسري" autocomplete="off">
         <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">الذكاء الاصطناعي سيستخرج الإجابة ويولّد التلميحات تلقائياً</div>
       </div>
+
+      <div class="input-group">
+        <label>🚫 ممنوع ذكره في التلميحات <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <div style="display:flex;gap:0.5rem">
+          <input type="text" id="forbidden-input" placeholder="مثال: القرن، الدولة..." autocomplete="off"
+            onkeydown="addForbiddenTag(event)" style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="addForbiddenTagBtn()" style="width:auto;flex-shrink:0">+ أضف</button>
+        </div>
+        <div id="forbidden-tags" class="forbidden-tags"></div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">اكتب شيئاً واضغط Enter — لن يُذكر في أي تلميح</div>
+      </div>
+
       <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">✨ توليد التلميحات</button>
       <div class="spacer-sm"></div>
 
@@ -1029,6 +1055,7 @@ const state = {
 let ws = null;
 let reconnectTimer = null;
 let reconnectAttempts = 0;
+const forbiddenItems = [];
 
 // ─── WebSocket ────────────────────────────────────────────────────────────────
 function connect() {
@@ -1306,10 +1333,37 @@ function handlePhotoSelect(input) {
   input.value = ''; // reset so same file can be re-selected
 }
 
+function addForbiddenTag(e) {
+  if (e.key !== 'Enter' && e.key !== ',') return;
+  e.preventDefault();
+  const input = qs('#forbidden-input');
+  const val = input.value.trim().replace(/,+$/, '');
+  if (!val || forbiddenItems.includes(val)) { input.value = ''; return; }
+  forbiddenItems.push(val);
+  renderForbiddenTags();
+  input.value = '';
+}
+
+function addForbiddenTagBtn() {
+  addForbiddenTag({ key: 'Enter', preventDefault: () => {}, target: qs('#forbidden-input') });
+}
+
+function removeForbiddenTag(val) {
+  const idx = forbiddenItems.indexOf(val);
+  if (idx !== -1) forbiddenItems.splice(idx, 1);
+  renderForbiddenTags();
+}
+
+function renderForbiddenTags() {
+  qs('#forbidden-tags').innerHTML = forbiddenItems.map(v =>
+    `<span class="forbidden-tag">${escHtml(v)}<button onclick="removeForbiddenTag(${JSON.stringify(v)})">×</button></span>`
+  ).join('');
+}
+
 function generateClues() {
   const description = qs('#secret-input').value.trim();
   if (!description) { toast('أدخل وصف الشخصية أولاً', 'error'); return; }
-  send({ type: 'GENERATE_CLUES', description });
+  send({ type: 'GENERATE_CLUES', description, forbidden: [...forbiddenItems] });
 }
 
 function regenerateClues() {
@@ -1350,6 +1404,9 @@ function newRound() {
   qs('#generate-btn').style.display = '';
   qs('#generating-status').style.display = 'none';
   qs('#secret-input').value = '';
+  forbiddenItems.length = 0;
+  renderForbiddenTags();
+  qs('#forbidden-input').value = '';
 }
 
 function endSession() {

@@ -47,7 +47,11 @@ function broadcastPlayers(session, obj) {
 
 // ─── Claude calls ────────────────────────────────────────────────────────────
 
-async function generateClues(description) {
+async function generateClues(description, forbidden = []) {
+  const forbiddenLine = forbidden.length > 0
+    ? `\n- لا تذكر أبداً في أي تلميح: ${forbidden.join('، ')} — حتى لو كان التلميح صحيحاً، تجنّب هذه المعلومات كلياً`
+    : '';
+
   const msg = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 1800,
@@ -60,7 +64,7 @@ async function generateClues(description) {
 ٢. اكتب بالعربية بالضبط ١٠ تلميحات مرتبة من الأكثر غموضاً (التلميح ١) إلى الأكثر وضوحاً (التلميح ١٠)
 
 القواعد:
-- لا تذكر اسم الشخص أو لقبه أو أي اسم مستعار في أي تلميح إطلاقاً
+- لا تذكر اسم الشخص أو لقبه أو أي اسم مستعار في أي تلميح إطلاقاً${forbiddenLine}
 - استفد من وصف المضيف لفهم السياق (مجاله، جنسيته، إلخ)
 - كل تلميح يجب أن يكون صحيحاً بالكامل
 - التلميح ١: معلومة عامة جداً (حقبة زمنية، منطقة جغرافية، مجال عام)
@@ -397,10 +401,14 @@ async function dispatch(ws, msg) {
         return;
       }
 
+      const forbidden = Array.isArray(msg.forbidden)
+        ? msg.forbidden.map(f => String(f).trim()).filter(Boolean).slice(0, 15)
+        : [];
+
       send(ws, { type: 'GENERATING_CLUES' });
       broadcastPlayers(session, { type: 'ROUND_PREPARING' });
 
-      const { answer, clues } = await generateClues(description);
+      const { answer, clues } = await generateClues(description, forbidden);
 
       session.round = {
         secret: answer,
