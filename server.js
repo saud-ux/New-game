@@ -112,6 +112,7 @@ function hostStatePayload(session) {
       cluesSeen: p.cluesSeen,
       correctGuess: p.correctGuess,
       guessTime: p.guessTime,
+      photo: p.photo || null,
       connected: p.ws != null && p.ws.readyState === WebSocket.OPEN
     };
   }
@@ -277,9 +278,14 @@ async function dispatch(ws, msg) {
         return;
       }
 
+      // Validate photo size (max ~150 KB base64)
+      const rawPhoto = typeof msg.photo === 'string' && msg.photo.startsWith('data:image')
+        ? (msg.photo.length < 200000 ? msg.photo : null)
+        : null;
+
       if (isRejoin) {
         session.players[trimName].ws = ws;
-        // Catch up cluesSeen to globalClueIndex if behind
+        if (rawPhoto) session.players[trimName].photo = rawPhoto;
         const round = session.round;
         if (round && round.status === 'active') {
           const p = session.players[trimName];
@@ -289,6 +295,7 @@ async function dispatch(ws, msg) {
         session.players[trimName] = {
           ws,
           name: trimName,
+          photo: rawPhoto,
           cluesSeen: 0,
           cluesSeenList: [],
           correctGuess: false,

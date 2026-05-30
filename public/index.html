@@ -367,6 +367,34 @@
   .correct-banner h3 { color: var(--green); font-size: 1.5rem; margin-bottom: 0.25rem; }
   .correct-banner p  { color: var(--muted); font-size: 0.9rem; }
 
+  /* ── Player avatar ── */
+  .player-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+    background: rgba(124,58,237,0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  .player-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .lb-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(124,58,237,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .lb-avatar img { width:100%; height:100%; object-fit:cover; }
+
   /* ── Clue editor ── */
   .clue-editor-item { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
   .clue-editor-num {
@@ -452,15 +480,37 @@
   <div id="screen-player-join" class="screen">
     <div class="spacer-lg"></div>
     <div class="card" style="text-align:center">
-      <div style="font-size:3rem">🎮</div>
-      <div style="font-size:1.6rem;font-weight:900;margin:0.5rem 0">من أنا؟</div>
-      <div style="color:var(--muted);margin-bottom:1.5rem;font-size:0.95rem">أدخل اسمك للانضمام للجلسة</div>
+      <div style="font-size:2rem;font-weight:900;margin-bottom:0.25rem">من أنا؟</div>
+      <div style="color:var(--muted);margin-bottom:1.25rem;font-size:0.9rem">أدخل اسمك وصورتك للانضمام</div>
 
-      <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:0.85rem;margin-bottom:1.5rem">
-        <div style="font-size:0.7rem;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:0.3rem">كود الجلسة</div>
-        <div id="join-code-display" style="font-size:2rem;font-weight:900;letter-spacing:0.2em;color:var(--gold);font-family:'Courier New',monospace">------</div>
+      <!-- كود الجلسة -->
+      <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:0.7rem;margin-bottom:1.25rem">
+        <div style="font-size:0.7rem;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:0.2rem">كود الجلسة</div>
+        <div id="join-code-display" style="font-size:1.8rem;font-weight:900;letter-spacing:0.2em;color:var(--gold);font-family:'Courier New',monospace">------</div>
       </div>
 
+      <!-- اختيار الصورة -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;margin-bottom:1.25rem">
+        <div id="avatar-preview" onclick="qs('#gallery-input').click()" style="
+          width:90px;height:90px;border-radius:50%;
+          background:rgba(124,58,237,0.15);
+          border:2px dashed rgba(124,58,237,0.5);
+          display:flex;align-items:center;justify-content:center;
+          cursor:pointer;overflow:hidden;font-size:2.8rem;
+          transition:all 0.2s;
+        " title="اضغط لاختيار صورة">👤</div>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn btn-ghost btn-sm" onclick="qs('#gallery-input').click()" style="width:auto">🖼 المعرض</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#camera-input').click()" style="width:auto">📷 الكاميرا</button>
+        </div>
+        <div style="color:var(--muted);font-size:0.75rem">اختياري</div>
+      </div>
+
+      <!-- مدخلات الملف (مخفية) -->
+      <input type="file" id="gallery-input" accept="image/*" style="display:none" onchange="handlePhotoSelect(this)">
+      <input type="file" id="camera-input" accept="image/*" capture="user" style="display:none" onchange="handlePhotoSelect(this)">
+
+      <!-- الاسم -->
       <div class="input-group" style="text-align:right">
         <label>اسمك في اللعبة</label>
         <input type="text" id="player-join-name" placeholder="أدخل اسمك..." maxlength="30"
@@ -729,7 +779,9 @@ const state = {
   clues: [],
   correctGuess: false,
   score: 0,
-  hostState: null
+  hostState: null,
+  playerPhoto: null,
+  pendingCode: null
 };
 
 let ws = null;
@@ -923,7 +975,39 @@ function playerJoinDirect() {
   if (!name) { toast('أدخل اسمك أولاً', 'error'); return; }
   if (!code)  { toast('كود الجلسة غير موجود', 'error'); return; }
   if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(playerJoinDirect, 800); return; }
-  send({ type: 'JOIN_SESSION', code, name });
+  send({ type: 'JOIN_SESSION', code, name, photo: state.playerPhoto || null });
+}
+
+// ─── Photo handling ───────────────────────────────────────────────────────────
+function handlePhotoSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 120;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      // Center-crop to square
+      const src = Math.min(img.width, img.height);
+      const sx = (img.width - src) / 2;
+      const sy = (img.height - src) / 2;
+      ctx.beginPath();
+      ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, sx, sy, src, src, 0, 0, size, size);
+      state.playerPhoto = canvas.toDataURL('image/jpeg', 0.75);
+      // Update preview
+      const preview = qs('#avatar-preview');
+      preview.innerHTML = `<img src="${state.playerPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+      preview.style.border = '2px solid var(--green)';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = ''; // reset so same file can be re-selected
 }
 
 function generateClues() {
@@ -1030,6 +1114,7 @@ function renderHostState(s) {
     lobbyEl.innerHTML = players.map(p => `
       <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border)">
         <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>
+        ${avatarHtml(p.photo, p.name, 32)}
         <span style="font-weight:700;flex:1">${escHtml(p.name)}</span>
         <span class="badge ${p.connected ? 'badge-green' : 'badge-gray'}">${p.connected ? 'متصل' : 'غائب'}</span>
       </div>`).join('');
@@ -1054,7 +1139,11 @@ function renderHostState(s) {
             ? `<span class="badge badge-gray">🔌 غير متصل</span>`
             : `<span class="badge badge-purple">🤔 يخمّن</span>`;
         return `<tr class="${p.correctGuess ? 'correct-row' : ''} ${!p.connected ? 'disconnected-row' : ''}">
-          <td><span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>${escHtml(p.name)}</td>
+          <td style="display:flex;align-items:center;gap:0.5rem">
+            <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}" style="flex-shrink:0"></span>
+            ${avatarHtml(p.photo, p.name, 30)}
+            ${escHtml(p.name)}
+          </td>
           <td><span class="badge badge-gold">🔍 ${p.cluesSeen}</span></td>
           <td>${badge}</td>
           <td style="color:var(--muted);font-size:0.85rem">${p.guessTime ? formatTime(p.guessTime) : '—'}</td>
@@ -1068,11 +1157,15 @@ function renderResults(msg) {
   qs('#results-secret').textContent = msg.secret || '—';
   const medal = ['🥇', '🥈', '🥉'];
 
+  // Build photo lookup from current host state
+  const photoMap = buildPhotoMap();
+
   qs('#results-list').innerHTML = `
     <div class="section-title" style="margin-bottom:0.75rem">هذه الجولة</div>
     ${(msg.results || []).map((r, i) => `
       <div class="lb-row" style="animation-delay:${i * 60}ms">
         <div class="lb-rank">${medal[i] || (i + 1)}</div>
+        ${lbAvatarHtml(photoMap[r.name], r.name)}
         <div class="lb-name">${escHtml(r.name)}</div>
         <div class="lb-clues">${r.correct ? `🔍 ${r.cluesSeen}` : '❌'}</div>
         <div class="lb-time">${r.correct && r.guessTime ? formatTime(r.guessTime) : '—'}</div>
@@ -1082,6 +1175,7 @@ function renderResults(msg) {
   qs('#results-leaderboard').innerHTML = (msg.leaderboard || []).map((l, i) => `
     <div class="lb-row" style="animation-delay:${(i + (msg.results || []).length) * 60}ms">
       <div class="lb-rank">${medal[i] || (i + 1)}</div>
+      ${lbAvatarHtml(photoMap[l.name], l.name)}
       <div class="lb-name">${escHtml(l.name)}</div>
       <div class="lb-score">${l.score} نقطة</div>
     </div>`).join('');
@@ -1093,9 +1187,11 @@ function renderResults(msg) {
 
 function renderFinalLeaderboard(leaderboard) {
   const medal = ['🥇', '🥈', '🥉'];
+  const photoMap = buildPhotoMap();
   qs('#final-leaderboard').innerHTML = (leaderboard || []).map((l, i) => `
     <div class="lb-row" style="animation-delay:${i * 80}ms">
       <div class="lb-rank">${medal[i] || (i + 1)}</div>
+      ${lbAvatarHtml(photoMap[l.name], l.name)}
       <div class="lb-name">${escHtml(l.name)}</div>
       <div class="lb-score" style="font-size:1.4rem">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-right:0.25rem"> نقطة</span></div>
     </div>`).join('');
@@ -1113,6 +1209,33 @@ function showScreen(id) {
   const el = qs('#' + id);
   if (el) el.classList.add('active');
   window.scrollTo(0, 0);
+}
+
+// ─── Avatar helpers ───────────────────────────────────────────────────────────
+function avatarHtml(photo, name, size = 34) {
+  const s = `width:${size}px;height:${size}px;border-radius:50%;flex-shrink:0;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:rgba(124,58,237,0.2);border:1.5px solid rgba(255,255,255,0.12);`;
+  if (photo) return `<span style="${s}"><img src="${photo}" style="width:100%;height:100%;object-fit:cover"></span>`;
+  const initials = escHtml((name || '?')[0].toUpperCase());
+  return `<span style="${s}font-size:${Math.round(size*0.45)}px;font-weight:800;color:var(--violet)">${initials}</span>`;
+}
+
+function lbAvatarHtml(photo, name) {
+  const s = 'width:40px;height:40px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,0.2);border:2px solid rgba(255,255,255,0.12);';
+  if (photo) return `<div style="${s}"><img src="${photo}" style="width:100%;height:100%;object-fit:cover"></div>`;
+  const initials = escHtml((name || '?')[0].toUpperCase());
+  return `<div style="${s}font-size:1.1rem;font-weight:800;color:var(--violet)">${initials}</div>`;
+}
+
+function buildPhotoMap() {
+  const map = {};
+  if (state.hostState?.players) {
+    for (const [name, p] of Object.entries(state.hostState.players)) {
+      if (p.photo) map[name] = p.photo;
+    }
+  }
+  // Also include own photo if player
+  if (state.playerName && state.playerPhoto) map[state.playerName] = state.playerPhoto;
+  return map;
 }
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
