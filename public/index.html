@@ -430,9 +430,9 @@
   @keyframes dramaticPop {
     0%   { transform: scale(0.2) rotate(-8deg); opacity: 0; }
     55%  { transform: scale(1.35) rotate(2deg); opacity: 1; }
-    75%  { transform: scale(0.92) rotate(-1deg); }
-    90%  { transform: scale(1.06); }
-    100% { transform: scale(1) rotate(0deg); }
+    75%  { transform: scale(0.92) rotate(-1deg); opacity: 1; }
+    90%  { transform: scale(1.06); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
   }
   @keyframes glowPulse {
     0%, 100% { text-shadow: 0 0 20px rgba(245,158,11,0.5); }
@@ -1288,7 +1288,7 @@ function renderResults(msg) {
   qs('#results-list').innerHTML = `
     <div class="section-title" style="margin-bottom:0.75rem">هذه الجولة</div>
     ${results.map((r, i) => `
-      <div class="lb-row result-row-anim" id="rr${i}" style="opacity:0">
+      <div class="lb-row" id="rr${i}" style="opacity:0;transform:translateX(40px);transition:opacity 0.35s ease,transform 0.35s ease">
         <div class="lb-rank">${medal[i] || (i + 1)}</div>
         ${lbAvatarHtml(photoMap[r.name], r.name)}
         <div class="lb-name">${escHtml(r.name)}</div>
@@ -1298,7 +1298,7 @@ function renderResults(msg) {
       </div>`).join('')}`;
 
   qs('#results-leaderboard').innerHTML = leaderboard.map((l, i) => `
-    <div class="lb-row lb-row-anim" id="lr${i}" style="opacity:0">
+    <div class="lb-row" id="lr${i}" style="opacity:0;transform:translateY(20px);transition:opacity 0.35s ease,transform 0.35s ease">
       <div class="lb-rank">${medal[i] || (i + 1)}</div>
       ${lbAvatarHtml(photoMap[l.name], l.name)}
       <div class="lb-name">${escHtml(l.name)}</div>
@@ -1319,7 +1319,7 @@ function renderResults(msg) {
   stage.style.pointerEvents = '';
   label.classList.remove('show');
   word.classList.remove('pop');
-  word.style.opacity = '0';
+  word.style.cssText = '';   // clear any inline styles so CSS animation can control opacity
   word.textContent = '؟';
   flash.classList.remove('flash');
 
@@ -1330,32 +1330,34 @@ function renderResults(msg) {
 
   setTimeout(() => {
     word.textContent = secret;
+    void word.offsetWidth;   // reflow so animation restarts cleanly
     flash.classList.add('flash');
-    void flash.offsetWidth; // reflow
+    void flash.offsetWidth;
     word.classList.add('pop');
   }, 1800);
 
   // Fade out overlay, show results card
   setTimeout(() => {
     stage.classList.add('hidden');
-    qs('#results-card').style.transition = 'opacity 0.5s ease';
-    qs('#results-card').style.opacity = '1';
+    const card = qs('#results-card');
+    card.style.transition = 'opacity 0.5s ease';
+    card.style.opacity = '1';
   }, 3400);
 
-  // Stagger result rows
+  // Stagger result rows via inline transition (avoids animation/inline-style conflict)
   results.forEach((_, i) => {
     setTimeout(() => {
       const el = qs(`#rr${i}`);
-      if (el) el.style.animationDelay = '0ms';
+      if (el) { el.style.opacity = '1'; el.style.transform = 'translateX(0)'; }
     }, 3700 + i * 220);
   });
 
-  // Stagger leaderboard rows after results
+  // Stagger leaderboard rows
   const lbStart = 3700 + results.length * 220 + 300;
   leaderboard.forEach((_, i) => {
     setTimeout(() => {
       const el = qs(`#lr${i}`);
-      if (el) el.style.animationDelay = '0ms';
+      if (el) { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }
     }, lbStart + i * 200);
   });
 }
@@ -1394,16 +1396,16 @@ function renderFinalLeaderboard(leaderboard) {
       <div class="lb-score" style="font-size:${i === 0 ? '1.6rem' : '1.1rem'}">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-right:0.25rem"> نقطة</span></div>
     </div>`).join('');
 
-  // Reset header animations
+  // Reset header animations — clear inline styles so CSS animation can control them
   const trophy   = qs('#final-trophy-big');
   const titleEl  = qs('#final-title-big');
   const subtitleEl = qs('#final-subtitle');
   trophy.classList.remove('pop');
   titleEl.classList.remove('show');
   subtitleEl.classList.remove('show');
-  trophy.style.opacity = '0';
-  titleEl.style.opacity = '0';
-  subtitleEl.style.opacity = '0';
+  trophy.style.cssText = '';
+  titleEl.style.cssText = '';
+  subtitleEl.style.cssText = '';
 
   const isPlayer = state.role === 'player';
   qs('#final-home-btn').style.display = isPlayer ? 'none' : '';
@@ -1426,11 +1428,11 @@ function renderFinalLeaderboard(leaderboard) {
       const el = qs(`#fl${idx}`);
       if (!el) return;
       if (idx === 0) {
-        // Champion reveal
-        el.style.transition = 'none';
-        el.classList.add('champion-row');
+        // Champion reveal — use scale transition (no animation class to avoid inline conflict)
+        el.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34,1.56,0.64,1)';
         el.style.opacity = '1';
-        el.style.transform = '';
+        el.style.transform = 'translateY(0) scale(1.04)';
+        setTimeout(() => { el.style.transform = 'translateY(0) scale(1)'; }, 650);
         spawnConfetti();
       } else {
         el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
