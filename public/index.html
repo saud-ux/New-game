@@ -425,6 +425,125 @@
     direction: rtl;
   }
   .clue-editor-item textarea:focus { border-color: var(--purple); }
+
+  /* ── Dramatic reveal animations ── */
+  @keyframes dramaticPop {
+    0%   { transform: scale(0.2) rotate(-8deg); opacity: 0; }
+    55%  { transform: scale(1.35) rotate(2deg); opacity: 1; }
+    75%  { transform: scale(0.92) rotate(-1deg); }
+    90%  { transform: scale(1.06); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 20px rgba(245,158,11,0.5); }
+    50%       { text-shadow: 0 0 60px rgba(245,158,11,1), 0 0 120px rgba(245,158,11,0.5); }
+  }
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes flashWhite {
+    0%   { opacity: 0.85; }
+    100% { opacity: 0; }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes championPop {
+    0%   { transform: scale(0) rotate(-12deg); opacity: 0; }
+    50%  { transform: scale(1.5) rotate(3deg); opacity: 1; }
+    70%  { transform: scale(0.88); }
+    85%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  @keyframes shimmer {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+    50%       { box-shadow: 0 0 30px 8px rgba(245,158,11,0.5); }
+  }
+  @keyframes rankCountdown {
+    from { opacity: 0; transform: scale(2); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Reveal stage overlay */
+  #reveal-stage {
+    position: fixed; inset: 0; z-index: 30;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+    transition: opacity 0.6s ease;
+  }
+  #reveal-stage.hidden { opacity: 0; pointer-events: none; }
+
+  #reveal-label {
+    font-size: 1.1rem; color: var(--muted); margin-bottom: 1.25rem;
+    opacity: 0; transition: opacity 0.5s;
+  }
+  #reveal-label.show { opacity: 1; }
+
+  #reveal-word-big {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 900; color: var(--gold);
+    opacity: 0; transform: scale(0.3);
+    transition: none; max-width: 90vw; line-height: 1.25;
+  }
+  #reveal-word-big.pop {
+    animation: dramaticPop 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards,
+               glowPulse 1.5s ease-in-out 0.7s infinite;
+  }
+  #reveal-flash {
+    position: absolute; inset: 0;
+    background: white; opacity: 0;
+    pointer-events: none;
+  }
+  #reveal-flash.flash { animation: flashWhite 0.5s ease-out forwards; }
+
+  /* Staggered results rows */
+  .result-row-anim {
+    opacity: 0;
+    animation: slideInRight 0.4s ease forwards;
+  }
+  .lb-row-anim {
+    opacity: 0;
+    animation: slideInUp 0.45s ease forwards;
+  }
+  .champion-row {
+    animation: championPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards,
+               shimmer 1.5s ease-in-out 0.8s infinite !important;
+  }
+
+  /* Confetti particle */
+  .confetti-piece {
+    position: fixed; top: -30px;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none; z-index: 100;
+    animation: confettiFall linear forwards;
+  }
+
+  /* Final screen dramatic */
+  #final-trophy-big {
+    font-size: 5rem; opacity: 0;
+    display: block; margin-bottom: 0.5rem;
+  }
+  #final-trophy-big.pop { animation: championPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  #final-title-big {
+    font-size: 2rem; font-weight: 900; margin-bottom: 0.25rem;
+    opacity: 0;
+  }
+  #final-title-big.show { animation: fadeSlideUp 0.5s ease forwards; }
+  #final-subtitle { color: var(--muted); margin-bottom: 1.5rem; opacity: 0; }
+  #final-subtitle.show { animation: fadeSlideUp 0.5s ease 0.15s forwards; }
 </style>
 </head>
 <body>
@@ -712,9 +831,18 @@
 
   <!-- ════════════════ نتائج الجولة ════════════════ -->
   <div id="screen-results" class="screen">
+
+    <!-- ══ Full-screen dramatic reveal overlay ══ -->
+    <div id="reveal-stage">
+      <div id="reveal-label">كانت الشخصية...</div>
+      <div id="reveal-word-big">؟</div>
+      <div id="reveal-flash"></div>
+    </div>
+
+    <!-- ══ Results card (appears after reveal) ══ -->
     <div class="spacer"></div>
     <div class="scroll-area">
-      <div class="card" style="text-align:center;padding-bottom:1.5rem">
+      <div class="card" id="results-card" style="text-align:center;padding-bottom:1.5rem;opacity:0">
 
         <div style="font-size:1.5rem;font-weight:800;margin:0.25rem 0">انتهت الجولة!</div>
         <div style="color:var(--muted);margin-bottom:1rem">
@@ -748,9 +876,9 @@
     <div class="spacer"></div>
     <div class="scroll-area">
       <div class="card" style="text-align:center">
-        <div style="font-size:3.5rem">🏆</div>
-        <div style="font-size:1.7rem;font-weight:900;margin:0.5rem 0">انتهت اللعبة!</div>
-        <div style="color:var(--muted);margin-bottom:1.5rem">الترتيب النهائي</div>
+        <span id="final-trophy-big">🏆</span>
+        <div id="final-title-big">انتهت اللعبة!</div>
+        <div id="final-subtitle">الترتيب النهائي</div>
         <div id="final-leaderboard"></div>
         <div class="divider"></div>
         <button id="final-home-btn" class="btn btn-primary" onclick="goHome()">🏠 الصفحة الرئيسية</button>
@@ -1149,16 +1277,18 @@ function renderHostState(s) {
 }
 
 function renderResults(msg) {
-  qs('#results-secret').textContent = msg.secret || '—';
   const medal = ['🥇', '🥈', '🥉'];
-
-  // Build photo lookup from current host state
   const photoMap = buildPhotoMap();
+  const results   = msg.results   || [];
+  const leaderboard = msg.leaderboard || [];
+  const secret    = msg.secret || '—';
 
+  // Pre-build HTML (hidden, revealed via timers)
+  qs('#results-secret').textContent = secret;
   qs('#results-list').innerHTML = `
     <div class="section-title" style="margin-bottom:0.75rem">هذه الجولة</div>
-    ${(msg.results || []).map((r, i) => `
-      <div class="lb-row" style="animation-delay:${i * 60}ms">
+    ${results.map((r, i) => `
+      <div class="lb-row result-row-anim" id="rr${i}" style="opacity:0">
         <div class="lb-rank">${medal[i] || (i + 1)}</div>
         ${lbAvatarHtml(photoMap[r.name], r.name)}
         <div class="lb-name">${escHtml(r.name)}</div>
@@ -1167,8 +1297,8 @@ function renderResults(msg) {
         <div class="lb-score">+${r.roundScore}</div>
       </div>`).join('')}`;
 
-  qs('#results-leaderboard').innerHTML = (msg.leaderboard || []).map((l, i) => `
-    <div class="lb-row" style="animation-delay:${(i + (msg.results || []).length) * 60}ms">
+  qs('#results-leaderboard').innerHTML = leaderboard.map((l, i) => `
+    <div class="lb-row lb-row-anim" id="lr${i}" style="opacity:0">
       <div class="lb-rank">${medal[i] || (i + 1)}</div>
       ${lbAvatarHtml(photoMap[l.name], l.name)}
       <div class="lb-name">${escHtml(l.name)}</div>
@@ -1177,23 +1307,147 @@ function renderResults(msg) {
 
   qs('#host-results-controls').style.display = state.role === 'host' ? '' : 'none';
   qs('#player-results-msg').style.display   = state.role === 'host' ? 'none' : '';
+  qs('#results-card').style.opacity = '0';
+
+  // Reset reveal stage
+  const stage = qs('#reveal-stage');
+  const label = qs('#reveal-label');
+  const word  = qs('#reveal-word-big');
+  const flash = qs('#reveal-flash');
+  stage.classList.remove('hidden');
+  stage.style.opacity = '1';
+  stage.style.pointerEvents = '';
+  label.classList.remove('show');
+  word.classList.remove('pop');
+  word.style.opacity = '0';
+  word.textContent = '؟';
+  flash.classList.remove('flash');
+
   showScreen('screen-results');
+
+  // ── Dramatic sequence ──
+  setTimeout(() => { label.classList.add('show'); }, 600);
+
+  setTimeout(() => {
+    word.textContent = secret;
+    flash.classList.add('flash');
+    void flash.offsetWidth; // reflow
+    word.classList.add('pop');
+  }, 1800);
+
+  // Fade out overlay, show results card
+  setTimeout(() => {
+    stage.classList.add('hidden');
+    qs('#results-card').style.transition = 'opacity 0.5s ease';
+    qs('#results-card').style.opacity = '1';
+  }, 3400);
+
+  // Stagger result rows
+  results.forEach((_, i) => {
+    setTimeout(() => {
+      const el = qs(`#rr${i}`);
+      if (el) el.style.animationDelay = '0ms';
+    }, 3700 + i * 220);
+  });
+
+  // Stagger leaderboard rows after results
+  const lbStart = 3700 + results.length * 220 + 300;
+  leaderboard.forEach((_, i) => {
+    setTimeout(() => {
+      const el = qs(`#lr${i}`);
+      if (el) el.style.animationDelay = '0ms';
+    }, lbStart + i * 200);
+  });
+}
+
+function spawnConfetti() {
+  const colors = ['#f59e0b','#7c3aed','#10b981','#ef4444','#3b82f6','#ec4899','#fbbf24'];
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `
+        left:${Math.random() * 100}vw;
+        background:${colors[Math.floor(Math.random() * colors.length)]};
+        width:${6 + Math.random() * 8}px;
+        height:${6 + Math.random() * 14}px;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+        animation-duration:${2 + Math.random() * 2.5}s;
+        animation-delay:0s;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 5000);
+    }, Math.random() * 1500);
+  }
 }
 
 function renderFinalLeaderboard(leaderboard) {
   const medal = ['🥇', '🥈', '🥉'];
   const photoMap = buildPhotoMap();
-  qs('#final-leaderboard').innerHTML = (leaderboard || []).map((l, i) => `
-    <div class="lb-row" style="animation-delay:${i * 80}ms">
-      <div class="lb-rank">${medal[i] || (i + 1)}</div>
+
+  // Build rows (all hidden)
+  qs('#final-leaderboard').innerHTML = leaderboard.map((l, i) => `
+    <div class="lb-row" id="fl${i}" style="opacity:0;transform:translateY(20px)">
+      <div class="lb-rank" style="font-size:${i === 0 ? '2rem' : '1.4rem'}">${medal[i] || (i + 1)}</div>
       ${lbAvatarHtml(photoMap[l.name], l.name)}
-      <div class="lb-name">${escHtml(l.name)}</div>
-      <div class="lb-score" style="font-size:1.4rem">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-right:0.25rem"> نقطة</span></div>
+      <div class="lb-name" style="font-size:${i === 0 ? '1.15rem' : '1rem'}">${escHtml(l.name)}</div>
+      <div class="lb-score" style="font-size:${i === 0 ? '1.6rem' : '1.1rem'}">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-right:0.25rem"> نقطة</span></div>
     </div>`).join('');
-  showScreen('screen-final');
+
+  // Reset header animations
+  const trophy   = qs('#final-trophy-big');
+  const titleEl  = qs('#final-title-big');
+  const subtitleEl = qs('#final-subtitle');
+  trophy.classList.remove('pop');
+  titleEl.classList.remove('show');
+  subtitleEl.classList.remove('show');
+  trophy.style.opacity = '0';
+  titleEl.style.opacity = '0';
+  subtitleEl.style.opacity = '0';
+
   const isPlayer = state.role === 'player';
   qs('#final-home-btn').style.display = isPlayer ? 'none' : '';
   qs('#final-player-end').style.display = isPlayer ? '' : 'none';
+
+  showScreen('screen-final');
+
+  // ── Dramatic sequence ──
+  // Trophy bounce
+  setTimeout(() => { trophy.classList.add('pop'); }, 400);
+  // Title
+  setTimeout(() => { titleEl.classList.add('show'); }, 900);
+  // Subtitle
+  setTimeout(() => { subtitleEl.classList.add('show'); }, 1150);
+
+  // Reveal players from LAST to FIRST (bottom up), then #1 with special treatment
+  const total = leaderboard.length;
+  const revealer = (idx, delay) => {
+    setTimeout(() => {
+      const el = qs(`#fl${idx}`);
+      if (!el) return;
+      if (idx === 0) {
+        // Champion reveal
+        el.style.transition = 'none';
+        el.classList.add('champion-row');
+        el.style.opacity = '1';
+        el.style.transform = '';
+        spawnConfetti();
+      } else {
+        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }
+    }, delay);
+  };
+
+  let t = 1500;
+  for (let i = total - 1; i >= 1; i--) {
+    revealer(i, t);
+    t += 650;
+  }
+  // Long pause before #1
+  t += 800;
+  revealer(0, t);
 }
 
 function goHome() {
