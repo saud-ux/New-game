@@ -812,12 +812,28 @@
     font-size: 0.4rem; color: #30334a;
     font-family: monospace; line-height: 1;
   }
+  .photo-wrap {
+    flex: 1; position: relative; overflow: visible; height: 190px;
+  }
   #kicked-avatar {
-    flex: 1; height: 190px;
+    width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
     font-size: 5.5rem; overflow: hidden;
     background: #07080d;
     filter: saturate(0.6) contrast(1.1);
+  }
+  /* Real stamp SVG on the photo */
+  .stamp-on-photo {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 118%;
+    pointer-events: none; z-index: 5;
+    transform: translate(-50%, -50%) rotate(-18deg);
+    animation: photoStampIn 0.28s 2.55s both cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes photoStampIn {
+    from { opacity:0; transform:translate(-50%,-50%) rotate(-18deg) scale(2.8); }
+    to   { opacity:1; transform:translate(-50%,-50%) rotate(-18deg) scale(1); }
   }
 
   /* Info section */
@@ -1469,7 +1485,46 @@
 
         <!-- Photo + height ruler -->
         <div class="mugshot-photo-row">
-          <div id="kicked-avatar">👤</div>
+          <div class="photo-wrap">
+            <div id="kicked-avatar">👤</div>
+            <!-- Stamp SVG — inked directly onto the photo -->
+            <svg class="stamp-on-photo" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Grunge ink displacement -->
+                <filter id="ink" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.88" numOctaves="4" seed="9" result="n"/>
+                  <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+                </filter>
+                <!-- Arc paths for curved star text -->
+                <path id="pTopArc" d="M 18,120 A 102,102 0 0,1 222,120"/>
+                <path id="pBotArc" d="M 36,158 A 102,102 0 0,0 204,158"/>
+              </defs>
+
+              <!-- Rings + stars — with ink texture -->
+              <g filter="url(#ink)">
+                <circle cx="120" cy="120" r="109" fill="none" stroke="#c0392b" stroke-width="11"/>
+                <circle cx="120" cy="120" r="92"  fill="none" stroke="#c0392b" stroke-width="2.5"/>
+                <text fill="#c0392b" font-size="13" font-family="serif">
+                  <textPath href="#pTopArc" startOffset="50%" text-anchor="middle">★  ★  ★</textPath>
+                </text>
+                <text fill="#c0392b" font-size="13" font-family="serif">
+                  <textPath href="#pBotArc" startOffset="50%" text-anchor="middle">★   ★</textPath>
+                </text>
+              </g>
+
+              <!-- White banner — covers the rings in the middle -->
+              <rect x="-30" y="94" width="300" height="52" fill="white"/>
+
+              <!-- Banner border lines + text — with ink texture -->
+              <g filter="url(#ink)">
+                <line x1="-30" y1="94"  x2="270" y2="94"  stroke="#c0392b" stroke-width="2.5"/>
+                <line x1="-30" y1="146" x2="270" y2="146" stroke="#c0392b" stroke-width="2.5"/>
+                <text x="120" y="131" text-anchor="middle" fill="#c0392b"
+                      font-size="36" font-weight="900"
+                      font-family="Tajawal, Arial, sans-serif">تم القبض</text>
+              </g>
+            </svg>
+          </div>
           <div class="height-ruler">
             <div class="ruler-tick"><span>190</span></div>
             <div class="ruler-tick"><span>175</span></div>
@@ -1936,13 +1991,13 @@ function showPrisonScreen(reason) {
       document.getElementById('screen-kicked').appendChild(bolt);
     });
   }
-  // Re-trigger stamp overlay animation
+  // Re-trigger all animations (overlay stamp, photo stamp, bars)
   const overlay = qs('#arrest-stamp-overlay');
   const stampWrap = overlay.querySelector('.stamp-wrap');
-  overlay.style.animation = 'none'; stampWrap.style.animation = 'none';
-  overlay.offsetHeight; // force reflow
-  overlay.style.animation = ''; stampWrap.style.animation = '';
-  // Re-trigger bar animations
+  const photoStamp = qs('.stamp-on-photo');
+  [overlay, stampWrap, photoStamp].forEach(el => { el.style.animation = 'none'; });
+  overlay.offsetHeight; // single reflow
+  [overlay, stampWrap, photoStamp].forEach(el => { el.style.animation = ''; });
   const bars = qs('.prison-bars');
   bars.style.animation = 'none'; bars.offsetHeight; bars.style.animation = '';
   showScreen('screen-kicked');
