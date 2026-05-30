@@ -1322,16 +1322,19 @@ function handleMessage(msg) {
       qs('#player-round-num').textContent = state.roundNumber;
       qs('#player-clues-count').textContent = 1;
       qs('#request-clue-btn').disabled = false;
+      if (state.leftDuringRound) {
+        showPrisonScreen('cheating');
+        addClue(msg.clue, msg.clueIndex, false);
+        break;
+      }
       if (state.correctGuess) {
-        // Rejoining after already answering correctly — restore banner, hide actions
         qs('#correct-banner').style.display = '';
         qs('#player-actions').style.display = 'none';
       } else {
         qs('#correct-banner').style.display = 'none';
         qs('#guess-input').value = '';
         qs('#guess-input').disabled = false;
-        setRoundLocked(state.leftDuringRound);
-        if (!state.leftDuringRound) qs('#player-actions').style.display = '';
+        qs('#player-actions').style.display = '';
       }
       showScreen('screen-player-round');
       addClue(msg.clue, msg.clueIndex, true);
