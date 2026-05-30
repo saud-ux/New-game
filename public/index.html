@@ -1614,7 +1614,9 @@ document.addEventListener('visibilitychange', () => {
       send({ type: 'PLAYER_LEAVING' });
     }
   } else {
-    // Tab came back into focus — if jailed, show prison screen
+    // Resume AudioContext first — browser suspends it when tab is hidden
+    getAudioCtx();
+    // Then show prison if jailed
     if (state.role === 'player' && state.leftDuringRound) {
       showPrisonScreen('cheating');
     }
@@ -1851,10 +1853,12 @@ function playerJoinDirect() {
 }
 
 // ─── Photo handling ───────────────────────────────────────────────────────────
-function playArrestSound() {
+async function playArrestSound() {
   try {
     const ctx = getAudioCtx();
     if (!ctx) return;
+    // Must await resume — browser suspends AudioContext on tab hide
+    if (ctx.state !== 'running') await ctx.resume();
     const t = ctx.currentTime;
 
     // Impact thud — stamp hitting the page
@@ -1891,7 +1895,7 @@ function playArrestSound() {
     siren.frequency.linearRampToValueAtTime(620, s + 0.8);
     siren.frequency.linearRampToValueAtTime(1150, s + 1.2);
     siren.frequency.linearRampToValueAtTime(620, s + 1.6);
-    siren2.frequency.setValueAtTime(628, s);  // slight detune for richness
+    siren2.frequency.setValueAtTime(628, s);
     siren2.frequency.linearRampToValueAtTime(1158, s + 0.4);
     siren2.frequency.linearRampToValueAtTime(628, s + 0.8);
     siren2.frequency.linearRampToValueAtTime(1158, s + 1.2);
@@ -1902,7 +1906,7 @@ function playArrestSound() {
     sirenG.gain.linearRampToValueAtTime(0, s + 1.8);
     siren.start(s); siren.stop(s + 1.9);
     siren2.start(s); siren2.stop(s + 1.9);
-  } catch(e) {}
+  } catch(e) { console.warn('arrest sound:', e); }
 }
 
 function showPrisonScreen(reason) {
