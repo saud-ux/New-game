@@ -544,6 +544,56 @@
   #final-title-big.show { animation: fadeSlideUp 0.5s ease forwards; }
   #final-subtitle { color: var(--muted); margin-bottom: 1.5rem; opacity: 0; }
   #final-subtitle.show { animation: fadeSlideUp 0.5s ease 0.15s forwards; }
+
+  /* ── Player Reveal Overlay (نتائج الجولة) ── */
+  #player-reveal-overlay {
+    position:fixed;inset:0;z-index:500;background:#000000ee;
+    display:none;flex-direction:column;align-items:center;
+    overflow-y:auto;padding:20px 16px 40px;
+  }
+  #player-reveal-overlay.open { display:flex }
+  .pr-title { font-size:17px;font-weight:900;color:#e2e8f0;letter-spacing:1px;margin:14px 0 12px;text-align:center;flex-shrink:0 }
+  .pr-card {
+    width:100%;max-width:400px;display:flex;align-items:center;gap:12px;
+    padding:11px 14px;border-radius:13px;border:2px solid #ffffff15;
+    background:#ffffff08;opacity:0;transform:translateY(24px);
+    transition:opacity .35s ease,transform .45s cubic-bezier(.34,1.56,.64,1);
+    margin-bottom:8px;flex-shrink:0;
+  }
+  .pr-card.show    { opacity:1;transform:translateY(0) }
+  .pr-card.correct { border-color:#22c55e70;background:#052e1680 }
+  .pr-card.wrong   { border-color:#ef444470;background:#1f070780 }
+  .pr-icon { font-size:22px;flex-shrink:0 }
+  .pr-name { flex:1;font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+  .pr-sub  { font-size:11px;color:rgba(255,255,255,.4);flex-shrink:0;white-space:nowrap }
+  .pr-pts  { font-size:14px;font-weight:900;color:#4ade80;flex-shrink:0;white-space:nowrap }
+  .pr-pts.zero { color:var(--muted) }
+  @keyframes prPulseCorrect { 0%{box-shadow:0 0 0 0 #22c55e80}70%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent} }
+  .pr-card.correct.show { animation:prPulseCorrect .7s ease }
+
+  /* ── Leaderboard Reveal Overlay ── */
+  #lb-reveal-overlay {
+    position:fixed;inset:0;z-index:600;background:#000000f2;
+    display:none;flex-direction:column;align-items:center;
+    overflow-y:auto;padding:20px 16px 40px;
+  }
+  #lb-reveal-overlay.open { display:flex }
+  .lb-rov-title { font-size:22px;font-weight:900;color:var(--gold);letter-spacing:1px;margin:10px 0 16px;text-align:center;text-shadow:0 0 24px #f59e0b70;flex-shrink:0 }
+  .lb-rov-card {
+    width:100%;max-width:400px;display:flex;align-items:center;gap:12px;
+    padding:13px 16px;border-radius:14px;border:2px solid #ffffff15;
+    background:#ffffff08;opacity:0;transform:translateY(28px);
+    transition:opacity .38s ease,transform .45s cubic-bezier(.34,1.56,.64,1);
+    margin-bottom:8px;flex-shrink:0;
+  }
+  .lb-rov-card.show { opacity:1;transform:translateY(0) }
+  .lb-rov-card.rk2  { border-color:#94a3b860;background:#94a3b810 }
+  .lb-rov-card.rk3  { border-color:#cd7f3260;background:#cd7f3210 }
+  .lb-rov-card.rk1  { border-color:#f59e0b90;background:#f59e0b12 }
+  @keyframes rank1Enter { 0%{transform:scale(.55) translateY(50px);opacity:0}65%{transform:scale(1.1) translateY(-6px)}100%{transform:scale(1) translateY(0);opacity:1} }
+  @keyframes rank1Shine { 0%,100%{box-shadow:0 0 0 3px #f59e0b,0 0 22px #f59e0b70}50%{box-shadow:0 0 0 4px #f59e0b,0 0 45px #f59e0bc0,0 0 70px #f59e0b30} }
+  .lb-rov-card.rk1.show { animation:rank1Enter .6s cubic-bezier(.34,1.56,.64,1) forwards,rank1Shine 1.6s ease .6s infinite }
+  .lb-rov-cd { margin-top:16px;font-size:14px;font-weight:700;color:var(--muted);padding:8px 22px;border-radius:20px;background:#ffffff12;display:none;flex-shrink:0 }
 </style>
 </head>
 <body>
@@ -831,32 +881,19 @@
 
   <!-- ════════════════ نتائج الجولة ════════════════ -->
   <div id="screen-results" class="screen">
-
     <!-- ══ Full-screen dramatic reveal overlay ══ -->
     <div id="reveal-stage">
       <div id="reveal-label">كانت الشخصية...</div>
       <div id="reveal-word-big">؟</div>
       <div id="reveal-flash"></div>
     </div>
-
-    <!-- ══ Results card (appears after reveal) ══ -->
-    <div class="spacer"></div>
+    <!-- ══ Minimal controls card (shown after overlays close) ══ -->
+    <div class="spacer-lg"></div>
     <div class="scroll-area">
-      <div class="card" id="results-card" style="text-align:center;padding-bottom:1.5rem;opacity:0">
-
-        <div style="font-size:1.5rem;font-weight:800;margin:0.25rem 0">انتهت الجولة!</div>
-        <div style="color:var(--muted);margin-bottom:1rem">
-          كانت الإجابة:
-          <strong style="color:var(--gold);margin-right:0.4rem" id="results-secret">—</strong>
+      <div class="card" id="results-card" style="text-align:center;opacity:0">
+        <div style="color:var(--muted);font-size:0.95rem;margin-bottom:1rem">
+          كانت الإجابة: <strong id="results-secret" style="color:var(--gold)">—</strong>
         </div>
-
-        <div id="results-list"></div>
-        <div class="divider"></div>
-
-        <div class="section-title">لوحة المتصدرين</div>
-        <div id="results-leaderboard"></div>
-
-        <div class="spacer-sm"></div>
         <div id="host-results-controls" style="display:none">
           <div class="btn-row">
             <button class="btn btn-primary" onclick="newRound()">▶ جولة جديدة</button>
@@ -873,22 +910,29 @@
 
   <!-- ════════════════ الترتيب النهائي ════════════════ -->
   <div id="screen-final" class="screen">
-    <div class="spacer"></div>
-    <div class="scroll-area">
-      <div class="card" style="text-align:center">
-        <span id="final-trophy-big">🏆</span>
-        <div id="final-title-big">انتهت اللعبة!</div>
-        <div id="final-subtitle">الترتيب النهائي</div>
-        <div id="final-leaderboard"></div>
-        <div class="divider"></div>
-        <button id="final-home-btn" class="btn btn-primary" onclick="goHome()">🏠 الصفحة الرئيسية</button>
-        <div id="final-player-end" style="display:none"></div>
-      </div>
-      <div class="spacer-lg"></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem">
+      <span id="final-trophy-big">🏆</span>
+      <div id="final-title-big">انتهت اللعبة!</div>
+      <div id="final-subtitle">جارٍ عرض النتائج...</div>
     </div>
   </div>
 
 </div>
+
+<!-- ════ Player Reveal Overlay ════ -->
+<div id="player-reveal-overlay">
+  <div class="pr-title">🎭 نتائج الجولة</div>
+  <div id="pr-cards"></div>
+</div>
+
+<!-- ════ Leaderboard Reveal Overlay ════ -->
+<div id="lb-reveal-overlay">
+  <div class="lb-rov-title" id="lb-rov-title">📊 الترتيب</div>
+  <div id="lb-rov-cards"></div>
+  <div class="lb-rov-cd" id="lb-rov-cd"></div>
+  <div id="lb-rov-controls" style="width:100%;max-width:400px"></div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -1283,33 +1327,12 @@ function renderResults(msg) {
   const leaderboard = msg.leaderboard || [];
   const secret    = msg.secret || '—';
 
-  // Pre-build HTML (hidden, revealed via timers)
   qs('#results-secret').textContent = secret;
-  qs('#results-list').innerHTML = `
-    <div id="results-section-title" class="section-title" style="margin-bottom:0.75rem;opacity:0;transition:opacity 0.4s ease">هذه الجولة</div>
-    ${results.map((r, i) => `
-      <div class="lb-row" id="rr${i}" style="opacity:0;transform:translateY(30px) scale(0.95);transition:opacity 0.45s ease,transform 0.5s cubic-bezier(0.34,1.3,0.64,1)">
-        <div class="lb-rank" style="font-size:${i === 0 ? '1.8rem' : '1.4rem'}">${medal[i] || (i + 1)}</div>
-        ${lbAvatarHtml(photoMap[r.name], r.name)}
-        <div class="lb-name" style="font-weight:${i === 0 ? '900' : '700'}">${escHtml(r.name)}</div>
-        <div class="lb-clues">${r.correct ? `🔍 ${r.cluesSeen}` : '❌'}</div>
-        <div class="lb-time">${r.correct && r.guessTime ? formatTime(r.guessTime) : '—'}</div>
-        <div class="lb-score" style="font-size:${i === 0 ? '1.3rem' : '1.1rem'}">+${r.roundScore}</div>
-      </div>`).join('')}`;
-
-  qs('#results-leaderboard').innerHTML = leaderboard.map((l, i) => `
-    <div class="lb-row" id="lr${i}" style="opacity:0;transform:translateY(20px);transition:opacity 0.35s ease,transform 0.35s ease">
-      <div class="lb-rank">${medal[i] || (i + 1)}</div>
-      ${lbAvatarHtml(photoMap[l.name], l.name)}
-      <div class="lb-name">${escHtml(l.name)}</div>
-      <div class="lb-score">${l.score} نقطة</div>
-    </div>`).join('');
-
+  qs('#results-card').style.cssText = 'opacity:0';
   qs('#host-results-controls').style.display = state.role === 'host' ? '' : 'none';
   qs('#player-results-msg').style.display   = state.role === 'host' ? 'none' : '';
-  qs('#results-card').style.opacity = '0';
 
-  // Reset reveal stage
+  // ── Reset secret-word reveal stage ──
   const stage = qs('#reveal-stage');
   const label = qs('#reveal-label');
   const word  = qs('#reveal-word-big');
@@ -1319,69 +1342,133 @@ function renderResults(msg) {
   stage.style.pointerEvents = '';
   label.classList.remove('show');
   word.classList.remove('pop');
-  word.style.cssText = '';   // clear any inline styles so CSS animation can control opacity
+  word.style.cssText = '';
   word.textContent = '؟';
   flash.classList.remove('flash');
 
   showScreen('screen-results');
 
-  // ── Dramatic sequence ──
   setTimeout(() => { label.classList.add('show'); }, 600);
-
   setTimeout(() => {
     word.textContent = secret;
-    void word.offsetWidth;   // reflow so animation restarts cleanly
+    void word.offsetWidth;
     flash.classList.add('flash');
     void flash.offsetWidth;
     word.classList.add('pop');
   }, 1800);
 
-  // Fade out overlay, show results card
+  // ── Fade secret overlay, open player-reveal overlay ──
   setTimeout(() => {
-    stage.style.transition = 'opacity 0.6s ease';
+    stage.style.transition = 'opacity 0.5s ease';
     stage.style.opacity = '0';
     stage.style.pointerEvents = 'none';
-    const card = qs('#results-card');
-    card.style.transition = 'opacity 0.5s ease';
-    card.style.opacity = '1';
-  }, 3400);
+    openPlayerRevealOverlay(results);
+  }, 3200);
 
-  // Show section title first
+  // ── After player reveal ends, open leaderboard overlay ──
+  const prDelay = results.length * 1000 + 800;
   setTimeout(() => {
-    const t = qs('#results-section-title');
-    if (t) t.style.opacity = '1';
-  }, 3650);
+    openLbRevealOverlay(leaderboard, false, () => {
+      // After lb overlay closes, show controls card
+      const card = qs('#results-card');
+      card.style.transition = 'opacity 0.5s ease';
+      card.style.opacity = '1';
+    });
+  }, 3200 + prDelay);
+}
 
-  // Reveal result rows BOTTOM → TOP (last place first, winner last)
-  const rowDelay = results.length <= 3 ? 750 : results.length <= 5 ? 600 : 450;
-  const total = results.length;
-  for (let i = total - 1; i >= 0; i--) {
-    const order = total - 1 - i;              // 0 = last place, revealed first
-    const t = 3800 + order * rowDelay;
-    setTimeout((idx => () => {
-      const el = qs(`#rr${idx}`);
-      if (!el) return;
-      if (idx === 0) {
-        // Winner — extra bounce scale
-        el.style.transition = 'opacity 0.45s ease, transform 0.55s cubic-bezier(0.34,1.56,0.64,1)';
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0) scale(1.06)';
-        setTimeout(() => { el.style.transform = 'translateY(0) scale(1)'; }, 600);
-      } else {
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0) scale(1)';
-      }
-    })(i), t);
+function openPlayerRevealOverlay(results) {
+  const photoMap = buildPhotoMap();
+  const overlay   = qs('#player-reveal-overlay');
+  const container = qs('#pr-cards');
+  container.innerHTML = '';
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+
+  results.forEach((r, i) => {
+    const isMe = state.role === 'player' && r.name === state.playerName;
+    const card = document.createElement('div');
+    card.className = 'pr-card ' + (r.correct ? 'correct' : 'wrong') + (isMe ? ' is-me' : '');
+    card.innerHTML =
+      `<span class="pr-icon">${r.correct ? '✅' : '❌'}</span>` +
+      lbAvatarHtml(photoMap[r.name], r.name) +
+      `<span class="pr-name">${escHtml(r.name)}</span>` +
+      (r.correct ? `<span class="pr-sub">🔍${r.cluesSeen}${r.guessTime ? ' · ' + formatTime(r.guessTime) : ''}</span>` : '') +
+      `<span class="pr-pts${r.roundScore <= 0 ? ' zero' : ''}">+${r.roundScore}</span>`;
+    container.appendChild(card);
+    setTimeout(() => { card.classList.add('show'); }, i * 1000 + 300);
+  });
+
+  const closeAt = results.length * 1000 + 800;
+  setTimeout(() => overlay.classList.remove('open'), closeAt);
+}
+
+function openLbRevealOverlay(leaderboard, isFinal, onClose) {
+  const medal = ['🥇', '🥈', '🥉'];
+  const photoMap = buildPhotoMap();
+  const overlay   = qs('#lb-reveal-overlay');
+  const container = qs('#lb-rov-cards');
+  const cdEl      = qs('#lb-rov-cd');
+  const ctrlEl    = qs('#lb-rov-controls');
+
+  container.innerHTML = '';
+  cdEl.style.display  = 'none';
+  ctrlEl.innerHTML    = '';
+  overlay.scrollTop   = 0;
+  qs('#lb-rov-title').textContent = isFinal ? '🏆 الترتيب النهائي' : '📊 الترتيب الإجمالي';
+
+  leaderboard.forEach((l, i) => {
+    const rkClass = i === 0 ? 'rk1' : i === 1 ? 'rk2' : i === 2 ? 'rk3' : '';
+    const div = document.createElement('div');
+    div.className = `lb-rov-card ${rkClass}`;
+    div.innerHTML =
+      `<span style="font-size:${i<3?'18':'14'}px;font-weight:900;width:28px;text-align:center">${medal[i] || (i+1)}</span>` +
+      lbAvatarHtml(photoMap[l.name], l.name) +
+      `<span style="flex:1;font-size:${i===0?'16':'14'}px;font-weight:${i===0?'900':'700'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(l.name)}</span>` +
+      `<span style="font-size:${i===0?'18':'15'}px;font-weight:900;color:${i===0?'var(--gold)':'var(--text)'}">` +
+        `${l.score}<span style="font-size:11px;color:var(--muted);font-weight:400;margin-right:3px"> نقطة</span></span>`;
+    container.appendChild(div);
+  });
+
+  // Add final controls inside overlay
+  if (isFinal) {
+    const isPlayer = state.role === 'player';
+    if (!isPlayer) {
+      ctrlEl.innerHTML = `<button class="btn btn-primary" style="margin-top:8px" onclick="goHome()">🏠 الصفحة الرئيسية</button>`;
+    }
   }
 
-  // Stagger leaderboard rows (top → bottom, after all result rows)
-  const lbStart = 3800 + (total - 1) * rowDelay + 700;
-  leaderboard.forEach((_, i) => {
+  overlay.classList.add('open');
+
+  // Reveal cards: last place first → rank 1 last
+  const cards    = [...container.children];
+  const reversed = [...cards].reverse();
+  reversed.forEach((card, idx) => {
     setTimeout(() => {
-      const el = qs(`#lr${i}`);
-      if (el) { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }
-    }, lbStart + i * 200);
+      card.classList.add('show');
+      if (isFinal && idx === reversed.length - 1) spawnConfetti();
+    }, 300 + idx * 450);
   });
+
+  if (!isFinal) {
+    // Auto-close after ~7 s then call onClose
+    let secsLeft = 7;
+    const totalDelay = 300 + reversed.length * 450;
+    setTimeout(() => {
+      cdEl.style.display = 'block';
+      cdEl.textContent = `يختفي خلال ${secsLeft} ثوانٍ`;
+      const iv = setInterval(() => {
+        secsLeft--;
+        cdEl.textContent = secsLeft > 0 ? `يختفي خلال ${secsLeft} ثوانٍ` : '';
+        if (secsLeft <= 0) {
+          clearInterval(iv);
+          overlay.classList.remove('open');
+          cdEl.style.display = 'none';
+          if (onClose) onClose();
+        }
+      }, 1000);
+    }, totalDelay + 200);
+  }
 }
 
 function spawnConfetti() {
@@ -1406,21 +1493,9 @@ function spawnConfetti() {
 }
 
 function renderFinalLeaderboard(leaderboard) {
-  const medal = ['🥇', '🥈', '🥉'];
-  const photoMap = buildPhotoMap();
-
-  // Build rows (all hidden)
-  qs('#final-leaderboard').innerHTML = leaderboard.map((l, i) => `
-    <div class="lb-row" id="fl${i}" style="opacity:0;transform:translateY(20px)">
-      <div class="lb-rank" style="font-size:${i === 0 ? '2rem' : '1.4rem'}">${medal[i] || (i + 1)}</div>
-      ${lbAvatarHtml(photoMap[l.name], l.name)}
-      <div class="lb-name" style="font-size:${i === 0 ? '1.15rem' : '1rem'}">${escHtml(l.name)}</div>
-      <div class="lb-score" style="font-size:${i === 0 ? '1.6rem' : '1.1rem'}">${l.score}<span style="font-size:0.8rem;font-weight:400;color:var(--muted);margin-right:0.25rem"> نقطة</span></div>
-    </div>`).join('');
-
-  // Reset header animations — clear inline styles so CSS animation can control them
-  const trophy   = qs('#final-trophy-big');
-  const titleEl  = qs('#final-title-big');
+  // Reset header animations
+  const trophy     = qs('#final-trophy-big');
+  const titleEl    = qs('#final-title-big');
   const subtitleEl = qs('#final-subtitle');
   trophy.classList.remove('pop');
   titleEl.classList.remove('show');
@@ -1429,49 +1504,13 @@ function renderFinalLeaderboard(leaderboard) {
   titleEl.style.cssText = '';
   subtitleEl.style.cssText = '';
 
-  const isPlayer = state.role === 'player';
-  qs('#final-home-btn').style.display = isPlayer ? 'none' : '';
-  qs('#final-player-end').style.display = isPlayer ? '' : 'none';
-
   showScreen('screen-final');
 
-  // ── Dramatic sequence ──
-  // Trophy bounce
   setTimeout(() => { trophy.classList.add('pop'); }, 400);
-  // Title
   setTimeout(() => { titleEl.classList.add('show'); }, 900);
-  // Subtitle
   setTimeout(() => { subtitleEl.classList.add('show'); }, 1150);
 
-  // Reveal players from LAST to FIRST (bottom up), then #1 with special treatment
-  const total = leaderboard.length;
-  const revealer = (idx, delay) => {
-    setTimeout(() => {
-      const el = qs(`#fl${idx}`);
-      if (!el) return;
-      if (idx === 0) {
-        // Champion reveal — use scale transition (no animation class to avoid inline conflict)
-        el.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34,1.56,0.64,1)';
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0) scale(1.04)';
-        setTimeout(() => { el.style.transform = 'translateY(0) scale(1)'; }, 650);
-        spawnConfetti();
-      } else {
-        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-      }
-    }, delay);
-  };
-
-  let t = 1500;
-  for (let i = total - 1; i >= 1; i--) {
-    revealer(i, t);
-    t += 650;
-  }
-  // Long pause before #1
-  t += 800;
-  revealer(0, t);
+  setTimeout(() => { openLbRevealOverlay(leaderboard, true, null); }, 1600);
 }
 
 function goHome() {
