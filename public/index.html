@@ -1647,6 +1647,7 @@ function getAudioCtx() {
 }
 // Preload arrest sound buffer via AudioContext (bypasses autoplay policy)
 let _arrestBuffer = null;
+let _arrestAudio = null;   // HTMLAudioElement fallback for iOS Safari
 async function preloadArrestSound() {
   try {
     const ctx = getAudioCtx();
@@ -1656,9 +1657,16 @@ async function preloadArrestSound() {
     _arrestBuffer = await ctx.decodeAudioData(raw);
   } catch(e) { console.warn('preload arrest:', e); }
 }
-// Unlock AudioContext + preload on first touch/click
+// On first gesture: unlock AudioContext + HTMLAudioElement + preload buffer
 document.addEventListener('pointerdown', () => {
   getAudioCtx();
+  // iOS Safari: play-then-pause trick unlocks the element for future calls
+  if (!_arrestAudio) {
+    _arrestAudio = new Audio('/arrest.mp3');
+    _arrestAudio.volume = 0;
+    const p = _arrestAudio.play();
+    if (p) p.then(() => { _arrestAudio.pause(); _arrestAudio.currentTime = 0; _arrestAudio.volume = 1; }).catch(() => {});
+  }
   preloadArrestSound();
 }, { once: true });
 
@@ -1948,18 +1956,28 @@ function playerJoinDirect() {
 
 // ─── Photo handling ───────────────────────────────────────────────────────────
 async function playArrestSound() {
+  // Try AudioContext buffer first (most reliable)
   try {
     const ctx = getAudioCtx();
-    if (!ctx) return;
-    if (ctx.state !== 'running') await ctx.resume();
-    // Load buffer now if it wasn't preloaded yet
-    if (!_arrestBuffer) await preloadArrestSound();
-    if (!_arrestBuffer) return;
-    const src = ctx.createBufferSource();
-    src.buffer = _arrestBuffer;
-    src.connect(ctx.destination);
-    src.start(0);
-  } catch(e) { console.warn('arrest sound:', e); }
+    if (ctx) {
+      if (ctx.state !== 'running') await ctx.resume();
+      if (!_arrestBuffer) await preloadArrestSound();
+      if (_arrestBuffer) {
+        const src = ctx.createBufferSource();
+        src.buffer = _arrestBuffer;
+        src.connect(ctx.destination);
+        src.start(0);
+        return;
+      }
+    }
+  } catch(e) { console.warn('arrest ctx:', e); }
+  // Fallback: HTMLAudioElement (pre-unlocked on iOS via play-pause trick)
+  try {
+    if (_arrestAudio) {
+      _arrestAudio.currentTime = 0;
+      await _arrestAudio.play();
+    }
+  } catch(e) { console.warn('arrest audio:', e); }
 }
 
 function showPrisonScreen(reason) {
@@ -1998,9 +2016,11 @@ function showPrisonScreen(reason) {
   [overlay, stampWrap, photoStamp].forEach(el => { el.style.animation = ''; });
   const bars = qs('.prison-bars');
   bars.style.animation = 'none'; bars.offsetHeight; bars.style.animation = '';
-  qs('#jail-sound-btn').classList.remove('played');
+  const soundBtn = qs('#jail-sound-btn');
+  soundBtn.classList.remove('played');
   showScreen('screen-kicked');
-  playArrestSound();
+  // Simulate a real click so the browser treats it as a user gesture
+  setTimeout(() => soundBtn.click(), 80);
 }
 
 function refreshWaitProfile() {
