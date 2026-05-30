@@ -826,14 +826,16 @@
   .stamp-on-photo {
     position: absolute;
     top: 50%; left: 50%;
-    width: 118%;
+    width: 130%;
     pointer-events: none; z-index: 5;
-    transform: translate(-50%, -50%) rotate(-18deg);
-    animation: photoStampIn 0.28s 2.55s both cubic-bezier(0.22,1,0.36,1);
+    opacity: 0.93;
+    animation: photoStampIn 0.38s 2.55s both;
   }
   @keyframes photoStampIn {
-    from { opacity:0; transform:translate(-50%,-50%) rotate(-18deg) scale(2.8); }
-    to   { opacity:1; transform:translate(-50%,-50%) rotate(-18deg) scale(1); }
+    0%   { opacity:0; transform:translate(-50%,-62%) rotate(-18deg) scale(1.08); }
+    55%  { opacity:1; transform:translate(-50%,-50%) rotate(-18deg) scale(0.93); }
+    75%  { transform:translate(-50%,-50%) rotate(-18deg) scale(1.04); }
+    100% { transform:translate(-50%,-50%) rotate(-18deg) scale(1); }
   }
 
   /* Info section */
@@ -1490,38 +1492,40 @@
             <!-- Stamp SVG — inked directly onto the photo -->
             <svg class="stamp-on-photo" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <!-- Grunge ink displacement -->
-                <filter id="ink" x="-20%" y="-20%" width="140%" height="140%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.88" numOctaves="4" seed="9" result="n"/>
-                  <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+                <!-- Two-pass ink: coarse warp + fine edge roughness + bleed blur -->
+                <filter id="ink" x="-28%" y="-28%" width="156%" height="156%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" seed="7" result="coarse"/>
+                  <feTurbulence type="turbulence"   baseFrequency="0.72" numOctaves="3" seed="2" result="fine"/>
+                  <feDisplacementMap in="SourceGraphic" in2="coarse" scale="8"   xChannelSelector="R" yChannelSelector="G" result="d1"/>
+                  <feDisplacementMap in="d1"           in2="fine"   scale="2.5" xChannelSelector="R" yChannelSelector="G" result="d2"/>
+                  <feGaussianBlur in="d2" stdDeviation="0.55"/>
                 </filter>
-                <!-- Arc paths for curved star text -->
                 <path id="pTopArc" d="M 18,120 A 102,102 0 0,1 222,120"/>
                 <path id="pBotArc" d="M 36,158 A 102,102 0 0,0 204,158"/>
               </defs>
 
-              <!-- Rings + stars — with ink texture -->
+              <!-- Rings + stars — deep crimson ink -->
               <g filter="url(#ink)">
-                <circle cx="120" cy="120" r="109" fill="none" stroke="#c0392b" stroke-width="11"/>
-                <circle cx="120" cy="120" r="92"  fill="none" stroke="#c0392b" stroke-width="2.5"/>
-                <text fill="#c0392b" font-size="13" font-family="serif">
-                  <textPath href="#pTopArc" startOffset="50%" text-anchor="middle">★  ★  ★</textPath>
+                <circle cx="120" cy="120" r="109" fill="none" stroke="#8b1a1a" stroke-width="12"/>
+                <circle cx="120" cy="120" r="91"  fill="none" stroke="#8b1a1a" stroke-width="3"/>
+                <text fill="#8b1a1a" font-size="13" font-family="serif">
+                  <textPath href="#pTopArc" startOffset="50%" text-anchor="middle">&#9733;  &#9733;  &#9733;</textPath>
                 </text>
-                <text fill="#c0392b" font-size="13" font-family="serif">
-                  <textPath href="#pBotArc" startOffset="50%" text-anchor="middle">★   ★</textPath>
+                <text fill="#8b1a1a" font-size="13" font-family="serif">
+                  <textPath href="#pBotArc" startOffset="50%" text-anchor="middle">&#9733;   &#9733;</textPath>
                 </text>
               </g>
 
-              <!-- White banner — covers the rings in the middle -->
-              <rect x="-30" y="94" width="300" height="52" fill="white"/>
+              <!-- Cream banner — covers rings, paper feel -->
+              <rect x="-35" y="93" width="310" height="54" fill="#fffef8"/>
 
-              <!-- Banner border lines + text — with ink texture -->
+              <!-- Banner lines + text — same ink texture -->
               <g filter="url(#ink)">
-                <line x1="-30" y1="94"  x2="270" y2="94"  stroke="#c0392b" stroke-width="2.5"/>
-                <line x1="-30" y1="146" x2="270" y2="146" stroke="#c0392b" stroke-width="2.5"/>
-                <text x="120" y="131" text-anchor="middle" fill="#c0392b"
-                      font-size="36" font-weight="900"
-                      font-family="Tajawal, Arial, sans-serif">تم القبض</text>
+                <line x1="-35" y1="93"  x2="275" y2="93"  stroke="#8b1a1a" stroke-width="3"/>
+                <line x1="-35" y1="147" x2="275" y2="147" stroke="#8b1a1a" stroke-width="3"/>
+                <text x="120" y="132" text-anchor="middle" fill="#8b1a1a"
+                      font-size="37" font-weight="900"
+                      font-family="Tajawal, Arial, sans-serif">&#1578;&#1605; &#1575;&#1604;&#1602;&#1576;&#1590;</text>
               </g>
             </svg>
           </div>
@@ -1620,8 +1624,22 @@ function getAudioCtx() {
   if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
   return _audioCtx;
 }
-// Unlock on any early tap/click (join button, name input, etc.)
-document.addEventListener('pointerdown', () => getAudioCtx(), { once: true });
+// Preload arrest sound buffer via AudioContext (bypasses autoplay policy)
+let _arrestBuffer = null;
+async function preloadArrestSound() {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx || _arrestBuffer) return;
+    const resp = await fetch('/arrest.mp3');
+    const raw  = await resp.arrayBuffer();
+    _arrestBuffer = await ctx.decodeAudioData(raw);
+  } catch(e) { console.warn('preload arrest:', e); }
+}
+// Unlock AudioContext + preload on first touch/click
+document.addEventListener('pointerdown', () => {
+  getAudioCtx();
+  preloadArrestSound();
+}, { once: true });
 
 // ─── WebSocket ────────────────────────────────────────────────────────────────
 function connect() {
@@ -1910,9 +1928,16 @@ function playerJoinDirect() {
 // ─── Photo handling ───────────────────────────────────────────────────────────
 async function playArrestSound() {
   try {
-    const audio = new Audio('/arrest.mp3');
-    audio.volume = 1;
-    await audio.play();
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    if (ctx.state !== 'running') await ctx.resume();
+    // Load buffer now if it wasn't preloaded yet
+    if (!_arrestBuffer) await preloadArrestSound();
+    if (!_arrestBuffer) return;
+    const src = ctx.createBufferSource();
+    src.buffer = _arrestBuffer;
+    src.connect(ctx.destination);
+    src.start(0);
   } catch(e) { console.warn('arrest sound:', e); }
 }
 
