@@ -216,7 +216,12 @@ wss.on('connection', ws => {
     if (ws._code && ws._role === 'player' && ws._name) {
       const session = sessions.get(ws._code);
       if (session && session.players[ws._name]) {
-        session.players[ws._name].ws = null;
+        const player = session.players[ws._name];
+        player.ws = null;
+        // Lock out from answering if they disconnect mid-round
+        if (session.round?.status === 'active' && !player.correctGuess) {
+          player.leftDuringRound = true;
+        }
         pushHostUpdate(session);
       }
     }
@@ -300,6 +305,7 @@ async function dispatch(ws, msg) {
           cluesSeenList: [],
           correctGuess: false,
           guessTime: null,
+          leftDuringRound: false,
           score: 0,
           roundResults: []
         };
@@ -319,7 +325,8 @@ async function dispatch(ws, msg) {
         roundStatus: session.round?.status || 'waiting',
         roundNumber: session.roundNumber,
         correctGuess: player.correctGuess,
-        cluesSeen: player.cluesSeen
+        cluesSeen: player.cluesSeen,
+        leftDuringRound: player.leftDuringRound || false
       });
 
       // Replay clues for rejoining / active round
@@ -394,6 +401,7 @@ async function dispatch(ws, msg) {
         p.cluesSeenList = [];
         p.correctGuess = false;
         p.guessTime = null;
+        p.leftDuringRound = false;
       }
 
       send(ws, { type: 'CLUES_READY', totalClues: clues.length, clues });
@@ -483,7 +491,7 @@ async function dispatch(ws, msg) {
       if (!round || round.status !== 'active') return;
 
       const player = session.players[ws._name];
-      if (!player || player.correctGuess) return;
+      if (!player || player.correctGuess || player.leftDuringRound) return;
 
       const nextIdx = player.cluesSeen; // 0-based
       if (nextIdx >= round.clues.length) {
@@ -522,6 +530,10 @@ async function dispatch(ws, msg) {
       const player = session.players[ws._name];
       if (!player || player.correctGuess) {
         send(ws, { type: 'ERROR', message: 'Already guessed correctly this round' });
+        return;
+      }
+      if (player.leftDuringRound) {
+        send(ws, { type: 'LEFT_ROUND_LOCKED' });
         return;
       }
 

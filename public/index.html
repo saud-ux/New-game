@@ -1012,6 +1012,7 @@ function handleMessage(msg) {
       state.score = msg.score || 0;
       state.roundNumber = msg.roundNumber || 0;
       state.correctGuess = msg.correctGuess || false;
+      state.leftDuringRound = msg.leftDuringRound || false;
 
       qs('#wait-code').textContent = msg.sessionCode;
       qs('#wait-name').textContent = msg.playerName;
@@ -1021,6 +1022,7 @@ function handleMessage(msg) {
       if (msg.roundStatus === 'active') {
         showScreen('screen-player-round');
         qs('#player-round-num').textContent = state.roundNumber;
+        if (state.leftDuringRound) setRoundLocked(true);
       } else {
         showScreen('screen-player-wait');
       }
@@ -1056,6 +1058,7 @@ function handleMessage(msg) {
       state.roundNumber = msg.roundNumber || state.roundNumber;
       state.clues = [];
       state.correctGuess = false;
+      state.leftDuringRound = false;
       qs('#correct-banner').style.display = 'none';
       qs('#player-actions').style.display = '';
       qs('#guess-input').value = '';
@@ -1064,6 +1067,7 @@ function handleMessage(msg) {
       qs('#player-round-num').textContent = state.roundNumber;
       qs('#player-clues-count').textContent = 1;
       qs('#request-clue-btn').disabled = false;
+      setRoundLocked(false);
       showScreen('screen-player-round');
       addClue(msg.clue, msg.clueIndex, true);
       break;
@@ -1072,6 +1076,11 @@ function handleMessage(msg) {
       addClue(msg.clue, msg.clueIndex, true);
       qs('#player-clues-count').textContent = msg.clueNumber;
       if (msg.clueNumber >= 10) qs('#request-clue-btn').disabled = true;
+      break;
+
+    case 'LEFT_ROUND_LOCKED':
+      state.leftDuringRound = true;
+      setRoundLocked(true);
       break;
 
     case 'GUESS_RESULT':
@@ -1236,6 +1245,25 @@ function joinSession() {
   if (!name) { toast('أدخل اسمك', 'error'); return; }
   if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(joinSession, 800); return; }
   send({ type: 'JOIN_SESSION', code, name });
+}
+
+function setRoundLocked(locked) {
+  const actions = qs('#player-actions');
+  let lockedMsg = qs('#round-locked-msg');
+  if (locked) {
+    actions.style.display = 'none';
+    if (!lockedMsg) {
+      lockedMsg = document.createElement('div');
+      lockedMsg.id = 'round-locked-msg';
+      lockedMsg.style.cssText = 'width:100%;max-width:480px;margin:0 auto;text-align:center;padding:16px;border-radius:12px;background:#1f0707;border:2px solid #ef444470;color:#fca5a5;font-size:0.95rem;font-weight:600';
+      lockedMsg.textContent = '⛔ غادرت الجولة — لا يمكنك الإجابة في هذه الجولة';
+      actions.parentNode.insertBefore(lockedMsg, actions);
+    }
+    lockedMsg.style.display = '';
+  } else {
+    actions.style.display = '';
+    if (lockedMsg) lockedMsg.style.display = 'none';
+  }
 }
 
 function requestClue() {
