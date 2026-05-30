@@ -217,10 +217,15 @@ wss.on('connection', ws => {
       const session = sessions.get(ws._code);
       if (session && session.players[ws._name]) {
         const player = session.players[ws._name];
-        player.ws = null;
-        // Lock out from answering if they disconnect mid-round
+        // Only clear ws if it still points to this closing connection
+        if (player.ws === ws) player.ws = null;
+        // Lock out regardless of whether they've already reconnected
         if (session.round?.status === 'active' && !player.correctGuess) {
           player.leftDuringRound = true;
+          // If they already reconnected with a new ws, push the lock to them now
+          if (player.ws && player.ws !== ws) {
+            send(player.ws, { type: 'LEFT_ROUND_LOCKED' });
+          }
         }
         pushHostUpdate(session);
       }
@@ -561,6 +566,19 @@ async function dispatch(ws, msg) {
         if (allDone) endRound(session);
       } else {
         send(ws, { type: 'GUESS_RESULT', correct: false });
+      }
+      break;
+    }
+
+    // ── PLAYER_LEAVING (client fires on pagehide) ───────────────────────────
+    case 'PLAYER_LEAVING': {
+      if (ws._role !== 'player') return;
+      const session = sessions.get(ws._code);
+      if (!session) return;
+      const player = session.players[ws._name];
+      if (player && session.round?.status === 'active' && !player.correctGuess) {
+        player.leftDuringRound = true;
+        pushHostUpdate(session);
       }
       break;
     }

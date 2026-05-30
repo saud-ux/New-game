@@ -986,6 +986,13 @@ function send(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
+// Tell server immediately when page unloads so it doesn't wait for ws close event
+window.addEventListener('pagehide', () => {
+  if (state.role === 'player' && state.roundStatus === 'active' && !state.correctGuess) {
+    send({ type: 'PLAYER_LEAVING' });
+  }
+});
+
 // ─── Message handler ──────────────────────────────────────────────────────────
 function handleMessage(msg) {
   switch (msg.type) {
