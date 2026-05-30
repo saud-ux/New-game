@@ -1314,7 +1314,7 @@ function renderResults(msg) {
   const label = qs('#reveal-label');
   const word  = qs('#reveal-word-big');
   const flash = qs('#reveal-flash');
-  stage.classList.remove('hidden');
+  stage.style.transition = 'none';
   stage.style.opacity = '1';
   stage.style.pointerEvents = '';
   label.classList.remove('show');
@@ -1338,7 +1338,9 @@ function renderResults(msg) {
 
   // Fade out overlay, show results card
   setTimeout(() => {
-    stage.classList.add('hidden');
+    stage.style.transition = 'opacity 0.6s ease';
+    stage.style.opacity = '0';
+    stage.style.pointerEvents = 'none';
     const card = qs('#results-card');
     card.style.transition = 'opacity 0.5s ease';
     card.style.opacity = '1';
