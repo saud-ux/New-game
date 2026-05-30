@@ -611,6 +611,21 @@ async function dispatch(ws, msg) {
       break;
     }
 
+    // ── KICK_PLAYER ─────────────────────────────────────────────────────────
+    case 'KICK_PLAYER': {
+      if (ws._role !== 'host') return;
+      const session = sessions.get(ws._code);
+      if (!session) return;
+      const targetName = String(msg.name || '').trim();
+      const player = session.players[targetName];
+      if (!player) return;
+      send(player.ws, { type: 'KICKED' });
+      if (player.ws) player.ws.close();
+      delete session.players[targetName];
+      pushHostUpdate(session);
+      break;
+    }
+
     // ── END_SESSION ─────────────────────────────────────────────────────────
     case 'END_SESSION': {
       if (ws._role !== 'host') return;
