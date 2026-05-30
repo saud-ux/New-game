@@ -823,18 +823,73 @@
     filter: saturate(0.6) contrast(1.1);
   }
   /* Real stamp SVG on the photo */
+  /* ── Seal handle drop animation ── */
+  .seal-anim {
+    position: absolute;
+    top: 5%; left: 50%;
+    transform: translateX(-50%) translateY(-280px);
+    width: 94px;
+    display: flex; flex-direction: column; align-items: center;
+    pointer-events: none; z-index: 9;
+    transform-origin: bottom center;
+    animation: sealDrop 1.0s 2.35s both;
+  }
+  .seal-grip {
+    width: 22px; height: 54px;
+    background: linear-gradient(90deg,
+      #2e1505 0%, #7a4010 25%, #c8841e 50%, #7a4010 75%, #2e1505 100%);
+    border-radius: 5px 5px 2px 2px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.55), inset 1px 0 2px rgba(255,200,100,0.15);
+  }
+  .seal-base {
+    width: 94px; height: 28px;
+    background: linear-gradient(180deg,
+      #1e0e04 0%, #4a2008 35%, #6b3010 55%, #4a2008 80%, #1e0e04 100%);
+    border-radius: 3px 3px 0 0;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,180,80,0.08);
+  }
+  .seal-face {
+    width: 94px; height: 11px;
+    background: linear-gradient(180deg, #6b1212 0%, #8b1a1a 50%, #a02020 100%);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 3px 8px rgba(100,10,10,0.5);
+  }
+  /* Red ink burst on impact */
+  .seal-impact {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%,
+      rgba(120,20,20,0.45) 0%, transparent 70%);
+    pointer-events: none; z-index: 7; opacity: 0;
+    animation: sealImpact 0.4s 2.77s ease-out both;
+  }
+  @keyframes sealDrop {
+    0%   { transform: translateX(-50%) translateY(-280px); opacity:0; }
+    7%   { opacity:1; }
+    44%  { transform: translateX(-50%) translateY(0px) scaleY(1); }          /* contact */
+    50%  { transform: translateX(-50%) translateY(6px)  scaleY(0.80); }      /* squash */
+    58%  { transform: translateX(-50%) translateY(-5px) scaleY(1.10); }      /* rebound */
+    66%  { transform: translateX(-50%) translateY(0px)  scaleY(1); }         /* settle */
+    74%  { transform: translateX(-50%) translateY(0px)  scaleY(1); opacity:1; } /* hold */
+    100% { transform: translateX(-50%) translateY(-280px) scaleY(1); opacity:0; } /* lift */
+  }
+  @keyframes sealImpact {
+    0%   { opacity:0; transform:scale(0.2); }
+    30%  { opacity:1; transform:scale(1.05); }
+    100% { opacity:0; transform:scale(1.5); }
+  }
+
+  /* Ink stamp — appears exactly at seal impact */
   .stamp-on-photo {
     position: absolute;
     top: 50%; left: 50%;
     width: 130%;
     pointer-events: none; z-index: 5;
     opacity: 0.93;
-    animation: photoStampIn 0.38s 2.55s both;
+    animation: photoStampIn 0.32s 2.77s both;
   }
   @keyframes photoStampIn {
-    0%   { opacity:0; transform:translate(-50%,-62%) rotate(-18deg) scale(1.08); }
-    55%  { opacity:1; transform:translate(-50%,-50%) rotate(-18deg) scale(0.93); }
-    75%  { transform:translate(-50%,-50%) rotate(-18deg) scale(1.04); }
+    0%   { opacity:0; transform:translate(-50%,-50%) rotate(-18deg) scale(0.6); }
+    60%  { opacity:1; transform:translate(-50%,-50%) rotate(-18deg) scale(1.04); }
     100% { transform:translate(-50%,-50%) rotate(-18deg) scale(1); }
   }
 
@@ -1507,6 +1562,14 @@
         <div class="mugshot-photo-row">
           <div class="photo-wrap">
             <div id="kicked-avatar">👤</div>
+            <!-- Seal handle animation -->
+            <div class="seal-anim" id="seal-anim">
+              <div class="seal-grip"></div>
+              <div class="seal-base"></div>
+              <div class="seal-face"></div>
+            </div>
+            <!-- Red ink burst on impact -->
+            <div class="seal-impact" id="seal-impact"></div>
             <!-- Stamp SVG — inked directly onto the photo -->
             <svg class="stamp-on-photo" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
               <defs>
@@ -2007,13 +2070,15 @@ function showPrisonScreen(reason) {
       document.getElementById('screen-kicked').appendChild(bolt);
     });
   }
-  // Re-trigger all animations (overlay stamp, photo stamp, bars)
-  const overlay = qs('#arrest-stamp-overlay');
+  // Re-trigger all animations
+  const overlay   = qs('#arrest-stamp-overlay');
   const stampWrap = overlay.querySelector('.stamp-wrap');
-  const photoStamp = qs('.stamp-on-photo');
-  [overlay, stampWrap, photoStamp].forEach(el => { el.style.animation = 'none'; });
+  const photoStamp  = qs('.stamp-on-photo');
+  const sealAnim    = qs('#seal-anim');
+  const sealImpact  = qs('#seal-impact');
+  [overlay, stampWrap, photoStamp, sealAnim, sealImpact].forEach(el => { el.style.animation = 'none'; });
   overlay.offsetHeight; // single reflow
-  [overlay, stampWrap, photoStamp].forEach(el => { el.style.animation = ''; });
+  [overlay, stampWrap, photoStamp, sealAnim, sealImpact].forEach(el => { el.style.animation = ''; });
   const bars = qs('.prison-bars');
   bars.style.animation = 'none'; bars.offsetHeight; bars.style.animation = '';
   const soundBtn = qs('#jail-sound-btn');
