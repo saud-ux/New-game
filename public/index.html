@@ -611,74 +611,310 @@
   .player-compact-row.correct-row { color: var(--green); }
   .player-compact-row.disconnected-row { opacity: 0.45; }
 
-  /* ── Prison / Kicked screen ── */
+  /* ══════════════════════════════════════════
+     PRISON SCREEN
+  ══════════════════════════════════════════ */
   #screen-kicked {
-    background: #0c0802;
+    background: #070810;
     min-height: 100vh;
+    overflow: hidden;
   }
-  /* قضبان رأسية — شفافية جزئية حتى يظهر المحتوى */
+
+  /* Concrete wall texture */
+  .jail-wall {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background:
+      repeating-linear-gradient(180deg,
+        transparent 0px, transparent 52px,
+        rgba(0,0,0,0.55) 52px, rgba(0,0,0,0.55) 55px),
+      repeating-linear-gradient(90deg,
+        rgba(255,255,255,0.008) 0px, rgba(255,255,255,0.008) 88px,
+        rgba(0,0,0,0.4) 88px, rgba(0,0,0,0.4) 92px),
+      linear-gradient(160deg, #0f1018 0%, #0a0b0f 55%, #080810 100%);
+  }
+
+  /* Flickering fluorescent light cone from ceiling */
+  .jail-spotlight {
+    position: fixed; top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 110vw; height: 100vh;
+    pointer-events: none; z-index: 5;
+    background: radial-gradient(
+      ellipse 50% 65% at 50% 0%,
+      rgba(150,185,230,0.10) 0%,
+      rgba(110,145,200,0.05) 28%,
+      transparent 62%
+    );
+    animation: jailFlicker 9s ease-in-out infinite;
+  }
+  @keyframes jailFlicker {
+    0%,86%,100% { opacity:1; }
+    87%,91%     { opacity:0.45; }
+    88%,92%     { opacity:0.9; }
+    89%,93%     { opacity:0.6; }
+    90%,94%     { opacity:0.85; }
+  }
+
+  /* Ceiling light fixture strip */
+  .jail-ceiling-strip {
+    position: fixed; top: 0; left: 10%; right: 10%;
+    height: 6px; pointer-events: none; z-index: 6;
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(170,200,240,0.18) 20%,
+      rgba(190,215,250,0.28) 50%,
+      rgba(170,200,240,0.18) 80%, transparent 100%);
+    filter: blur(1px);
+    animation: jailFlicker 9s ease-in-out infinite;
+  }
+
+  /* Heavy iron bars — vertical */
   .prison-bars {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 200;
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 200;
     background: repeating-linear-gradient(
       90deg,
-      transparent 0px,
-      transparent 90px,
-      rgba(4,3,1,0.88)    90px,
-      rgba(28,18,5,0.82)  95px,
-      rgba(70,50,14,0.72) 100px,
-      rgba(90,64,18,0.65) 102px,
-      rgba(70,50,14,0.72) 104px,
-      rgba(28,18,5,0.82)  109px,
-      rgba(4,3,1,0.88)    114px,
-      transparent 114px
+      transparent                 0px,
+      transparent                66px,
+      #04040a                    66px,
+      #0c0d14                    68px,
+      #181922                    70px,
+      #262834                    72px,
+      #323444                    74px,
+      #404358                    75px,
+      #4e5268                    76px,   /* metallic highlight */
+      #585c74                    76.5px,
+      #4e5268                    77px,
+      #404358                    78px,
+      #32344a                    80px,
+      #24263a                    82px,
+      #161820                    84px,
+      #0a0b12                    86px,
+      #04040a                    88px,
+      transparent                88px
+    );
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.7);
+  }
+
+  /* Rust / age overlay on bars */
+  .prison-bars-rust {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 201;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent  0px,
+      transparent 69px,
+      rgba(55,28,8,0.18) 69px,
+      rgba(55,28,8,0.10) 78px,
+      transparent 79px,
+      transparent 88px
     );
   }
-  /* قضيب أفقي علوي */
-  .prison-bar-h-top {
-    position: fixed;
-    top: 16%;
-    left: 0; right: 0;
-    height: 24px;
-    pointer-events: none;
-    z-index: 201;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(35,23,6,0.90) 25%,
-      rgba(82,58,15,0.82) 50%,
-      rgba(35,23,6,0.90) 75%,
-      transparent 100%
-    );
-    box-shadow: 0 3px 16px rgba(0,0,0,0.6);
+
+  /* Horizontal iron bars */
+  .prison-bar-h-top, .prison-bar-h-bottom {
+    position: fixed; left: 0; right: 0;
+    height: 20px; pointer-events: none; z-index: 202;
+    background: linear-gradient(to bottom,
+      #03030a 0%, #0c0d16 8%, #1c1e2a 20%,
+      #2e3040 33%, #424660 45%,
+      #525670 50%,
+      #484c66 55%, #343650 67%,
+      #1e2030 80%, #0e0f1a 92%, #03030a 100%);
+    box-shadow: 0 5px 28px rgba(0,0,0,0.95), 0 -5px 28px rgba(0,0,0,0.95),
+                inset 0 1px 1px rgba(255,255,255,0.04);
   }
-  /* قضيب أفقي سفلي */
-  .prison-bar-h-bottom {
-    position: fixed;
-    bottom: 16%;
-    left: 0; right: 0;
-    height: 24px;
-    pointer-events: none;
-    z-index: 201;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(35,23,6,0.90) 25%,
-      rgba(82,58,15,0.82) 50%,
-      rgba(35,23,6,0.90) 75%,
-      transparent 100%
-    );
-    box-shadow: 0 3px 16px rgba(0,0,0,0.6);
+  .prison-bar-h-top    { top: 13%; }
+  .prison-bar-h-bottom { bottom: 13%; }
+
+  /* Bolts where bars cross */
+  .bar-bolt {
+    position: fixed; width: 14px; height: 14px;
+    border-radius: 50%; pointer-events: none; z-index: 203;
+    background: radial-gradient(circle at 36% 33%, #606472, #1c1e28);
+    border: 2px solid #080910;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.10);
   }
+
+  /* Floor shadow */
+  .jail-floor {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 32%; pointer-events: none; z-index: 4;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+  }
+
+  /* ── Mugshot card ── */
+  .jail-inner {
+    position: relative; z-index: 100;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 1.5rem 1rem;
+  }
+
+  .mugshot-card {
+    background: linear-gradient(170deg, #0e0f18 0%, #0b0c14 100%);
+    border: 1px solid #252736;
+    border-radius: 3px;
+    width: 100%; max-width: 320px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.03),
+      0 8px 40px rgba(0,0,0,0.9),
+      0 0 100px rgba(0,0,0,0.7);
+    animation: cardDrop 0.55s 0.1s both cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes cardDrop {
+    from { opacity:0; transform:scale(0.9) translateY(20px); }
+    to   { opacity:1; transform:scale(1)   translateY(0); }
+  }
+
+  /* Card header bar */
+  .mugshot-header {
+    background: #08090f;
+    border-bottom: 1px solid #1c1e28;
+    padding: 0.55rem 0.9rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .mugshot-dept {
+    font-size: 0.52rem; font-weight: 800; letter-spacing: 0.22em;
+    color: #353848; text-transform: uppercase;
+  }
+  .mugshot-id {
+    font-size: 0.65rem; font-weight: 700;
+    color: #454860; font-family: monospace; letter-spacing: 0.08em;
+  }
+
+  /* Photo row: ruler + avatar */
+  .mugshot-photo-row {
+    display: flex; align-items: stretch;
+    background: #06070d;
+    border-bottom: 1px solid #1c1e28;
+  }
+  .height-ruler {
+    width: 26px; flex-shrink: 0;
+    background: #080910;
+    border-left: 1px solid #1c1e28;
+    order: 1;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+  .ruler-tick {
+    display: flex; align-items: center;
+    padding-left: 3px; gap: 2px; position: relative;
+  }
+  .ruler-tick::before {
+    content: '';
+    width: 6px; height: 1px;
+    background: #252838; flex-shrink: 0;
+  }
+  .ruler-tick span {
+    font-size: 0.4rem; color: #30334a;
+    font-family: monospace; line-height: 1;
+  }
+  #kicked-avatar {
+    flex: 1; height: 190px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5.5rem; overflow: hidden;
+    background: #07080d;
+    filter: saturate(0.6) contrast(1.1);
+  }
+
+  /* Info section */
+  .mugshot-info {
+    padding: 0.85rem 1rem 0.7rem;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.35rem; position: relative;
+  }
+  .name-plate {
+    background: #09090f; border: 1px solid #1c1e28;
+    border-radius: 2px; padding: 0.3rem 1rem;
+    text-align: center; width: 100%;
+  }
+  #kicked-name {
+    font-size: 1.5rem; font-weight: 900;
+    color: #b8bace; letter-spacing: 0.06em; display: block;
+  }
+  .charge-row {
+    display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+    margin-top: 0.25rem;
+  }
+  .charge-label-txt {
+    font-size: 0.48rem; font-weight: 800; letter-spacing: 0.22em;
+    color: #2c2e3c; text-transform: uppercase;
+  }
+  #kicked-reason {
+    font-size: 0.82rem; font-weight: 700;
+    color: #7a3535; letter-spacing: 0.06em;
+  }
+
+  /* GUILTY stamp */
+  .guilty-stamp {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-52%) rotate(-16deg);
+    border: 3px solid rgba(155,30,30,0.65);
+    border-radius: 5px;
+    padding: 0.2rem 0.7rem;
+    font-size: 1.35rem; font-weight: 900;
+    color: rgba(180,35,35,0.65);
+    letter-spacing: 0.14em; pointer-events: none;
+    white-space: nowrap;
+    animation: stampThud 0.25s 0.75s both cubic-bezier(0.22,1,0.36,1);
+    text-shadow: 0 0 12px rgba(180,35,35,0.3);
+  }
+  @keyframes stampThud {
+    from { opacity:0; transform:translate(-50%,-52%) rotate(-16deg) scale(2.8); }
+    to   { opacity:1; transform:translate(-50%,-52%) rotate(-16deg) scale(1); }
+  }
+
+  /* Footer: barcode + date */
+  .mugshot-footer {
+    background: #07080e;
+    border-top: 1px solid #181a24;
+    padding: 0.55rem 0.9rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .fake-barcode {
+    height: 22px; width: 90px; flex-shrink: 0;
+    background: repeating-linear-gradient(90deg,
+      #1c1e2c 0px,  #1c1e2c 2px,  transparent 2px,  transparent 3px,
+      #1c1e2c 3px,  #1c1e2c 4px,  transparent 4px,  transparent 7px,
+      #1c1e2c 7px,  #1c1e2c 9px,  transparent 9px,  transparent 11px,
+      #1c1e2c 11px, #1c1e2c 12px, transparent 12px, transparent 15px,
+      #1c1e2c 15px, #1c1e2c 18px, transparent 18px, transparent 20px,
+      #1c1e2c 20px, #1c1e2c 21px, transparent 21px, transparent 24px,
+      #1c1e2c 24px, #1c1e2c 26px, transparent 26px, transparent 28px,
+      #1c1e2c 28px, #1c1e2c 29px, transparent 29px, transparent 31px,
+      #1c1e2c 31px, #1c1e2c 34px, transparent 34px, transparent 36px,
+      #1c1e2c 36px, #1c1e2c 37px, transparent 37px, transparent 40px,
+      #1c1e2c 40px, #1c1e2c 42px, transparent 42px, transparent 44px,
+      #1c1e2c 44px, #1c1e2c 46px, transparent 46px, transparent 48px,
+      #1c1e2c 48px, #1c1e2c 50px, transparent 50px, transparent 53px,
+      #1c1e2c 53px, #1c1e2c 54px, transparent 54px, transparent 56px,
+      #1c1e2c 56px, #1c1e2c 59px, transparent 59px, transparent 62px,
+      #1c1e2c 62px, #1c1e2c 63px, transparent 63px, transparent 66px,
+      #1c1e2c 66px, #1c1e2c 68px, transparent 68px, transparent 70px,
+      #1c1e2c 70px, #1c1e2c 72px, transparent 72px, transparent 75px,
+      #1c1e2c 75px, #1c1e2c 77px, transparent 77px, transparent 80px,
+      #1c1e2c 80px, #1c1e2c 81px, transparent 81px, transparent 90px
+    );
+  }
+  .footer-meta {
+    text-align: right;
+    display: flex; flex-direction: column; gap: 0.15rem;
+  }
+  .footer-meta span {
+    font-size: 0.45rem; font-family: monospace;
+    color: #252838; letter-spacing: 0.05em;
+  }
+
   @keyframes prisonPulse {
-    0%,100% { text-shadow: 0 0 16px rgba(200,140,40,0.5); }
-    50%      { text-shadow: 0 0 40px rgba(240,175,55,1), 0 0 80px rgba(200,140,40,0.5); }
+    0%,100% { opacity: 0.8; }
+    50%      { opacity: 1; }
   }
   @keyframes prisonFloat {
     0%,100% { transform: translateY(0px); }
-    50%      { transform: translateY(-6px); }
+    50%      { transform: translateY(-4px); }
   }
 
   /* ── Forbidden tags ── */
@@ -1118,47 +1354,63 @@
 
   <!-- ════════════════ شاشة الطرد (السجن) ════════════════ -->
   <div id="screen-kicked" class="screen">
-    <!-- القضبان الرأسية -->
+    <!-- Environment layers (behind bars) -->
+    <div class="jail-wall"></div>
+    <div class="jail-spotlight"></div>
+    <div class="jail-ceiling-strip"></div>
+    <div class="jail-floor"></div>
+
+    <!-- Iron bars -->
     <div class="prison-bars"></div>
-    <!-- القضبان الأفقية -->
+    <div class="prison-bars-rust"></div>
     <div class="prison-bar-h-top"></div>
     <div class="prison-bar-h-bottom"></div>
+    <!-- bolts injected by showPrisonScreen() -->
 
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;gap:1.1rem;position:relative">
+    <!-- Mugshot content -->
+    <div class="jail-inner">
+      <div class="mugshot-card">
 
-      <!-- بقعة ضوء قوية من الأعلى كأنها مصباح السجن -->
-      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);
-        width:360px;height:500px;pointer-events:none;
-        background:radial-gradient(ellipse at 50% 0%, rgba(160,105,25,0.28) 0%, rgba(100,65,15,0.08) 45%, transparent 70%)">
+        <!-- Header -->
+        <div class="mugshot-header">
+          <span class="mugshot-dept">PRISONER · سجين</span>
+          <span class="mugshot-id">#<span id="inmate-number">0000</span></span>
+        </div>
+
+        <!-- Photo + height ruler -->
+        <div class="mugshot-photo-row">
+          <div id="kicked-avatar">👤</div>
+          <div class="height-ruler">
+            <div class="ruler-tick"><span>190</span></div>
+            <div class="ruler-tick"><span>175</span></div>
+            <div class="ruler-tick"><span>160</span></div>
+            <div class="ruler-tick"><span>145</span></div>
+          </div>
+        </div>
+
+        <!-- Name + charge -->
+        <div class="mugshot-info">
+          <div class="name-plate">
+            <span id="kicked-name">—</span>
+          </div>
+          <div class="charge-row">
+            <span class="charge-label-txt">التهمة · CHARGE</span>
+            <span id="kicked-reason">مطرود من الجلسة</span>
+          </div>
+          <!-- GUILTY stamp (always rendered, shown via animation) -->
+          <div class="guilty-stamp">مُدان</div>
+        </div>
+
+        <!-- Footer: barcode + date -->
+        <div class="mugshot-footer">
+          <div class="fake-barcode"></div>
+          <div class="footer-meta">
+            <span id="arrest-date">—</span>
+            <span>GAME SECURITY DEPT.</span>
+          </div>
+        </div>
+
       </div>
-
-      <div style="font-size:0.68rem;font-weight:800;color:#6b4215;letter-spacing:0.22em;text-transform:uppercase;position:relative">⛓ سجن اللاعبين ⛓</div>
-
-      <!-- الصورة الشخصية — كبيرة وواضحة -->
-      <div id="kicked-avatar" style="
-        width:150px;height:150px;border-radius:50%;
-        background:rgba(25,15,4,1);
-        border:4px solid #9a6820;
-        display:flex;align-items:center;justify-content:center;
-        font-size:4.8rem;overflow:hidden;
-        box-shadow:0 0 0 8px rgba(80,50,10,0.25), 0 0 60px rgba(150,100,20,0.3), 0 12px 40px rgba(0,0,0,0.9);
-        animation:prisonFloat 3.5s ease-in-out infinite;
-        position:relative;
-      ">👤</div>
-
-      <!-- الاسم — كبير وواضح -->
-      <div id="kicked-name" style="
-        font-size:2.4rem;font-weight:900;
-        color:#e8b840;
-        animation:prisonPulse 2.5s ease-in-out infinite;
-        letter-spacing:0.06em;
-        position:relative;
-      ">—</div>
-
-      <div id="kicked-reason" style="color:#8a5520;font-size:0.9rem;font-weight:700;letter-spacing:0.06em;position:relative">مطرود من الجلسة</div>
-
-      <div style="font-size:2.8rem;animation:pulse 2.5s ease-in-out infinite;position:relative">🔒</div>
-
     </div>
   </div>
 
@@ -1487,9 +1739,34 @@ function playerJoinDirect() {
 function showPrisonScreen(reason) {
   qs('#kicked-name').textContent = state.playerName || '؟';
   qs('#kicked-avatar').innerHTML = state.playerPhoto
-    ? `<img src="${state.playerPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+    ? `<img src="${state.playerPhoto}" style="width:100%;height:100%;object-fit:cover;">`
     : '👤';
-  qs('#kicked-reason').textContent = reason === 'cheating' ? 'متهم بالغش! 🕵️' : 'مطرود من الجلسة';
+  qs('#kicked-reason').textContent = reason === 'cheating' ? 'الغش والتهرب من الأسئلة' : 'طُرد من الجلسة بأمر المضيف';
+  // Random inmate number
+  qs('#inmate-number').textContent = String(Math.floor(1000 + Math.random() * 9000));
+  // Arrest date/time
+  const now = new Date();
+  qs('#arrest-date').textContent =
+    now.toLocaleDateString('ar-SA') + '  ' +
+    now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  // Inject bolts where horizontal bars meet vertical bars
+  document.querySelectorAll('.bar-bolt').forEach(el => el.remove());
+  const barSpacing = 88, barCenter = 76, hTopPct = 0.13, hBotPct = 0.13;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const topY = Math.round(vh * hTopPct) - 7;
+  const botY = Math.round(vh * (1 - hBotPct)) - 7;
+  for (let x = barCenter; x < vw; x += barSpacing) {
+    [topY, botY].forEach(y => {
+      const bolt = document.createElement('div');
+      bolt.className = 'bar-bolt';
+      bolt.style.cssText = `left:${x - 7}px;top:${y}px`;
+      document.getElementById('screen-kicked').appendChild(bolt);
+    });
+  }
+  // Re-trigger bar animations
+  const bars = qs('.prison-bars');
+  bars.style.animation = 'none'; bars.offsetHeight;
+  bars.style.animation = '';
   showScreen('screen-kicked');
 }
 
