@@ -338,7 +338,8 @@ async function dispatch(ws, msg) {
             clue: session.round.clues[i],
             clueIndex: i,
             clueNumber: i + 1,
-            totalRevealed: session.round.globalClueIndex
+            totalRevealed: session.round.globalClueIndex,
+            leftDuringRound: player.leftDuringRound || false
           });
         }
         if (player.correctGuess) {
