@@ -14,9 +14,10 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const path = require('path');
 app.use(express.static('public'));
 
-// SPA routing — serve index.html for /host and /play/:code
+// SPA routing
 app.get('/host', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/play/:code', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/join', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 // sessions: Map<code, Session>
 const sessions = new Map();

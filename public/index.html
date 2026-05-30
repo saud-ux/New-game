@@ -644,6 +644,30 @@
     <div class="spacer-lg"></div>
   </div>
 
+  <!-- ════════════════ انضمام يدوي (/join) ════════════════ -->
+  <div id="screen-join-manual" class="screen">
+    <div class="spacer-lg"></div>
+    <div class="title" style="font-size:2rem">من أنا؟</div>
+    <div class="spacer"></div>
+    <div class="card" style="max-width:380px;width:100%">
+      <div style="font-size:1.15rem;font-weight:800;margin-bottom:1.25rem;text-align:center">انضم للعبة</div>
+      <div class="input-group">
+        <label>كود الجلسة</label>
+        <input type="text" id="manual-join-code" placeholder="ABC123" maxlength="6"
+          style="text-transform:uppercase;letter-spacing:0.18em;font-weight:800;text-align:center;font-size:1.4rem"
+          oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="input-group">
+        <label>اسمك في اللعبة</label>
+        <input type="text" id="manual-join-name" placeholder="أدخل اسمك..." maxlength="30"
+          onkeydown="if(event.key==='Enter') manualJoin()">
+      </div>
+      <div id="manual-join-error" style="display:none;color:#ff6b6b;font-size:0.85rem;margin-bottom:0.75rem;text-align:center"></div>
+      <button class="btn btn-gold" onclick="manualJoin()">انضم الآن</button>
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+
   <!-- ════════════════ انضمام مباشر (اللاعب عبر الرابط) ════════════════ -->
   <div id="screen-player-join" class="screen">
     <div class="spacer-lg"></div>
@@ -692,13 +716,15 @@
       <div class="big-code" id="lobby-code">------</div>
 
       <!-- رابط المشاركة -->
-      <div style="margin-top:1rem">
-        <div class="section-title" style="margin-bottom:0.4rem">🔗 رابط اللاعبين</div>
-        <div style="display:flex;gap:0.5rem;align-items:center">
-          <div id="share-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
-          <button class="btn btn-ghost btn-sm" onclick="copyShareLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem">
+        <div>
+          <div class="section-title" style="margin-bottom:0.4rem">🔗 رابط الانضمام</div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <div id="join-base-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+            <button class="btn btn-ghost btn-sm" onclick="copyJoinLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+          </div>
+          <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">أرسل هذا الرابط — اللاعبون يدخلون الكود بأنفسهم</div>
         </div>
-        <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">أرسل هذا الرابط للاعبين، سيدخلون مباشرة بدون كود</div>
       </div>
 
       <div class="divider"></div>
@@ -1010,7 +1036,7 @@ function handleMessage(msg) {
       state.sessionCode = msg.code;
       showScreen('screen-host-lobby');
       qs('#lobby-code').textContent = msg.code;
-      qs('#share-link').textContent = `${location.origin}/play/${msg.code}`;
+      qs('#join-base-link').textContent = `${location.origin}/join`;
       if (!msg.rejoined) {
         qs('#lobby-players').innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
         qs('#clue-editor').style.display = 'none';
@@ -1178,8 +1204,8 @@ function createSession() {
   send({ type: 'CREATE_SESSION' });
 }
 
-function copyShareLink() {
-  const link = qs('#share-link').textContent;
+function copyJoinLink() {
+  const link = qs('#join-base-link').textContent;
   if (link === '—') return;
   navigator.clipboard.writeText(link)
     .then(() => toast('✅ تم نسخ الرابط!', 'success'))
@@ -1287,6 +1313,19 @@ function kickPlayer(name) {
 }
 
 // ─── Player actions ───────────────────────────────────────────────────────────
+function manualJoin() {
+  const code = qs('#manual-join-code').value.trim().toUpperCase();
+  const name = qs('#manual-join-name').value.trim();
+  const errEl = qs('#manual-join-error');
+  errEl.style.display = 'none';
+  if (!code) { errEl.textContent = 'أدخل كود الجلسة'; errEl.style.display = ''; return; }
+  if (!name) { errEl.textContent = 'أدخل اسمك'; errEl.style.display = ''; return; }
+  state.pendingCode = code;
+  state.pendingName = name;
+  connectWs();
+  send({ type: 'JOIN', code, name, photo: state.playerPhoto || null });
+}
+
 function joinSession() {
   const code = qs('#join-code').value.trim().toUpperCase();
   const name = qs('#join-name').value.trim();
@@ -1347,6 +1386,7 @@ function addClue(clueText, clueIndex, isNew) {
 function renderHostState(s) {
   if (!s) return;
   qs('#lobby-code').textContent = s.sessionCode;
+  qs('#join-base-link').textContent = `${location.origin}/join`;
 
   const players = Object.values(s.players || {});
 
@@ -1672,13 +1712,15 @@ function toast(msg, type) {
 function initRoute() {
   const playMatch = location.pathname.match(/^\/play\/([A-Za-z0-9]{4,8})$/);
   const isHost    = location.pathname === '/host';
+  const isJoin    = location.pathname === '/join';
 
   if (playMatch) {
     state.pendingCode = playMatch[1].toUpperCase();
     showScreen('screen-player-join');
+  } else if (isJoin) {
+    showScreen('screen-join-manual');
   } else if (isHost) {
     showScreen('screen-home');
-    // Auto-scroll to host card so it's prominent
   } else {
     showScreen('screen-home');
   }
