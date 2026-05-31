@@ -2366,7 +2366,7 @@ function renderHostState(s) {
         <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}" style="flex-shrink:0"></span>
         ${avatarHtml(p.photo, p.name, 34)}
         <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.name)}</div>
+          <div style="font-weight:800;font-size:1rem;word-break:break-word">${escHtml(p.name)}</div>
           <div style="font-size:0.75rem;color:${p.connected ? 'var(--green)' : 'var(--muted)'};margin-top:0.1rem">${p.connected ? '● متصل' : '○ غائب'}${p.score > 0 ? ` · ⭐ ${p.score}` : ''}</div>
         </div>
         <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="flex-shrink:0;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.25rem 0.65rem;font-size:0.8rem;cursor:pointer;font-weight:700">طرد</button>
