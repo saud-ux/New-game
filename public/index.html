@@ -1336,6 +1336,17 @@
       </div>
 
       <div class="input-group">
+        <label>✔️ الإجابات المقبولة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <div style="display:flex;gap:0.5rem">
+          <input type="text" id="aliases-input" placeholder="مثال: رونالدو، CR7..." autocomplete="off"
+            onkeydown="addAliasTag(event)" style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="addAliasTagBtn()" style="width:auto;flex-shrink:0">+ أضف</button>
+        </div>
+        <div id="aliases-tags" class="forbidden-tags"></div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">أسماء بديلة تُقبل فوراً بدون الرجوع للذكاء الاصطناعي</div>
+      </div>
+
+      <div class="input-group">
         <label>🚫 ممنوع ذكره في التلميحات <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
         <div style="display:flex;gap:0.5rem">
           <input type="text" id="forbidden-input" placeholder="مثال: القرن، الدولة..." autocomplete="off"
@@ -1390,6 +1401,7 @@
         <div class="secret-box" style="flex:1;min-width:150px;padding:0.5rem 0.9rem">
           <div class="secret-label">الشخص السري</div>
           <div class="secret-name" style="font-size:1.1rem" id="host-secret-name">—</div>
+          <div id="host-aliases-bar" style="display:none;font-size:0.72rem;color:var(--muted);margin-top:0.2rem"></div>
         </div>
         <div style="min-width:110px">
           <div id="host-clue-counter" style="font-size:0.8rem;color:var(--muted);margin-bottom:0.25rem;white-space:nowrap">—</div>
@@ -2464,6 +2476,103 @@ const CHARS_DB = {
   ],
 };
 
+// ─── Accepted Aliases ────────────────────────────────────────────────────────
+const CHAR_ALIASES = {
+  'كريستيانو رونالدو':['رونالدو','CR7','كريستيانو'],
+  'نيمار':['نيمار جونيور'],
+  'كريم بنزيمة':['بنزيمة'],
+  'ريياد محرز':['محرز'],
+  'سيديو مانيه':['مانيه'],
+  'إن غولو كانتي':['كانتي'],
+  'روبرتو فيرمينو':['فيرمينو'],
+  'مالكوم':['Malcolm'],
+  'أليكساندر ميتروفيتش':['ميتروفيتش'],
+  'سامي الجابر':['الجابر'],
+  'ياسر القحطاني':['القحطاني','ملك السالف'],
+  'محمد الدعيع':['الدعيع','الحائط الصيني'],
+  'سالم الدوسري':['الدوسري'],
+  'نواف العابد':['العابد'],
+  'مايكل جاكسون':['MJ','جاكسون','ملك البوب'],
+  'تايلور سويفت':['تايلور','Taylor'],
+  'بيونسيه':['بيونسي','Beyonce'],
+  'ريهانا':['Rihanna'],
+  'إد شيران':['شيران','Ed Sheeran'],
+  'أديل':['Adele'],
+  'شاكيرا':['Shakira'],
+  'إمينم':['Eminem'],
+  'دريك':['Drake'],
+  'أريانا غراندي':['أريانا','Ariana'],
+  'برونو مارس':['Bruno Mars'],
+  'ليدي غاغا':['غاغا','Lady Gaga'],
+  'ذا ويكند':['The Weeknd','Weeknd'],
+  'بيلي إيليش':['Billie Eilish'],
+  'مايكل جوردان':['جوردان','Jordan','MJ'],
+  'كوبي براينت':['الماما','Kobe'],
+  'ليبرون جيمس':['ليبرون','LeBron'],
+  'أوسين بولت':['بولت','Bolt'],
+  'محمد علي':['Cassius Clay','علي'],
+  'مايك تايسون':['تايسون','Tyson'],
+  'فلويد مايويذر':['مايويذر','Money'],
+  'روجر فيدرر':['فيدرر','Federer'],
+  'رافاييل نادال':['نادال','Nadal'],
+  'سيرينا ويليامز':['ويليامز','Serena'],
+  'تايغر وودز':['وودز','Tiger'],
+  'لويس هاميلتون':['هاميلتون','Hamilton'],
+  'إيلون ماسك':['ماسك','Musk'],
+  'ستيف جوبز':['جوبز','Jobs'],
+  'بيل غيتس':['غيتس','Gates'],
+  'مارك زوكربيرغ':['زوكر','زوكربيرغ','Zuckerberg'],
+  'جيف بيزوس':['بيزوس','Bezos'],
+  'الأمير الوليد بن طلال':['الوليد بن طلال','الوليد'],
+  'جاك ما':['Jack Ma'],
+  'صلاح الدين الأيوبي':['صلاح الدين'],
+  'الملك عبدالعزيز':['ابن سعود','عبدالعزيز'],
+  'الإسكندر الأكبر':['الإسكندر','Alexander'],
+  'نابليون بونابرت':['نابليون','Napoleon'],
+  'محمد الفاتح':['الفاتح'],
+  'نيلسون مانديلا':['مانديلا','Mandela'],
+  'مارتن لوثر كينغ':['Martin Luther King','MLK'],
+  'محمد عبده':['فنان العرب'],
+  'كاظم الساهر':['قيصر الأغنية'],
+  'عمرو دياب':['الهضبة','هضبة'],
+  'ناصر القصبي':['القصبي'],
+  'عبدالله السدحان':['السدحان'],
+  'أحمد الشقيري':['الشقيري'],
+  'وليد الفراج':['الفراج'],
+  'سبايدرمان':['بيتر باركر','Spiderman','Spider-Man'],
+  'باتمان':['بروس واين','Bruce Wayne','Batman'],
+  'آيرون مان':['توني ستارك','Tony Stark','Iron Man'],
+  'جوكر':['Joker'],
+  'ناروتو':['Naruto','ناروتو أوزوماكي'],
+  'غوكو':['Goku','Son Goku'],
+  'لوفي':['Luffy','مونكي دي لوفي'],
+};
+
+const aliasItems = [];
+
+function addAliasTag(e) {
+  if (e.key !== 'Enter') return;
+  addAliasTagBtn();
+}
+function addAliasTagBtn() {
+  const val = qs('#aliases-input').value.trim();
+  if (!val || aliasItems.includes(val)) return;
+  aliasItems.push(val);
+  qs('#aliases-input').value = '';
+  renderAliasTags();
+}
+function removeAliasTag(i) {
+  aliasItems.splice(i, 1);
+  renderAliasTags();
+}
+function renderAliasTags() {
+  qs('#aliases-tags').innerHTML = aliasItems.map((v, i) =>
+    `<span class="forbidden-tag" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.35);color:#6ee7b7">
+      ${escHtml(v)}<button onclick="removeAliasTag(${i})">×</button>
+    </span>`
+  ).join('');
+}
+
 let _currentCat = null;
 
 function toggleCharBrowser() {
@@ -2510,6 +2619,11 @@ function selectCharByIndex(i) {
   if (!c) return;
   qs('#secret-input').value = c.d;
   qs('#answer-input').value = c.n;
+  // Pre-fill aliases
+  aliasItems.length = 0;
+  const presetAliases = CHAR_ALIASES[c.n] || [];
+  aliasItems.push(...presetAliases);
+  renderAliasTags();
   qs('#char-browser').style.display = 'none';
   qs('#char-browser-btn').textContent = '📚 اختر شخصية جاهزة';
   toast(`✅ تم اختيار: ${c.n}`, 'success');
@@ -2520,7 +2634,7 @@ function generateClues() {
   const description = qs('#secret-input').value.trim();
   if (!description) { toast('أدخل وصف الشخصية أولاً', 'error'); return; }
   const answer = qs('#answer-input').value.trim();
-  const msg = { type: 'GENERATE_CLUES', description, forbidden: [...forbiddenItems] };
+  const msg = { type: 'GENERATE_CLUES', description, forbidden: [...forbiddenItems], aliases: [...aliasItems] };
   if (answer) msg.answer = answer;
   send(msg);
 }
@@ -2707,6 +2821,16 @@ function renderHostState(s) {
   if (s.round) {
     qs('#host-round-num').textContent = s.roundNumber;
     qs('#host-secret-name').textContent = s.round.secret;
+    const aliasBar = qs('#host-aliases-bar');
+    if (aliasBar) {
+      const al = s.round.aliases || [];
+      if (al.length > 0) {
+        aliasBar.textContent = '✔ يُقبل أيضاً: ' + al.join('، ');
+        aliasBar.style.display = '';
+      } else {
+        aliasBar.style.display = 'none';
+      }
+    }
     const gi = s.round.globalClueIndex, total = s.round.totalClues;
     qs('#host-clue-counter').textContent = `${gi} / ${total} تلميح مكشوف`;
     qs('#host-clue-progress').style.width = `${Math.round((gi / total) * 100)}%`;

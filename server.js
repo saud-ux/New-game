@@ -157,6 +157,7 @@ function hostStatePayload(session) {
       round: session.round ? {
         status: session.round.status,
         secret: session.round.secret,
+        aliases: session.round.aliases || [],
         globalClueIndex: session.round.globalClueIndex,
         totalClues: session.round.clues.length,
         clues: session.round.clues
@@ -421,6 +422,10 @@ async function dispatch(ws, msg) {
 
       const knownAnswer = String(msg.answer || '').trim() || null;
 
+      const aliases = Array.isArray(msg.aliases)
+        ? msg.aliases.map(a => String(a).trim()).filter(Boolean).slice(0, 10)
+        : [];
+
       send(ws, { type: 'GENERATING_CLUES' });
       broadcastPlayers(session, { type: 'ROUND_PREPARING' });
 
@@ -429,6 +434,7 @@ async function dispatch(ws, msg) {
       session.round = {
         secret: answer,
         description,
+        aliases,
         clues,
         globalClueIndex: 0,
         status: 'ready',
@@ -586,7 +592,12 @@ async function dispatch(ws, msg) {
       if (!guess) return;
 
       player.guessesUsed++;
-      const correct = await judgeAnswer(round.secret, guess);
+
+      // Fast alias check — skip Claude if exact match (normalized)
+      const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, ' ');
+      const aliasMatch = norm(guess) === norm(round.secret) ||
+        (round.aliases || []).some(a => norm(a) === norm(guess));
+      const correct = aliasMatch || await judgeAnswer(round.secret, guess);
 
       if (correct) {
         player.correctGuess = true;
