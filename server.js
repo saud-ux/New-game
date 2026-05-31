@@ -307,8 +307,8 @@ async function dispatch(ws, msg) {
       }
 
       const isRejoin = Boolean(session.players[trimName]);
-      if (!isRejoin && Object.keys(session.players).length >= 15) {
-        send(ws, { type: 'ERROR', message: 'الجلسة ممتلئة (الحد الأقصى 15 لاعباً)' });
+      if (!isRejoin && Object.keys(session.players).length >= 20) {
+        send(ws, { type: 'ERROR', message: 'الجلسة ممتلئة (الحد الأقصى 20 لاعباً)' });
         return;
       }
 
