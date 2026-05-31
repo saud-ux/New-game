@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: who-am-i-game
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
