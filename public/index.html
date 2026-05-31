@@ -2362,13 +2362,14 @@ function renderHostState(s) {
     lobbyEl.innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
   } else {
     lobbyEl.innerHTML = players.map(p => `
-      <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border)">
-        <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>
-        ${avatarHtml(p.photo, p.name, 32)}
-        <span style="font-weight:700;flex:1">${escHtml(p.name)}</span>
-        ${p.score > 0 ? `<span class="badge badge-gold">⭐ ${p.score}</span>` : ''}
-        <span class="badge ${p.connected ? 'badge-green' : 'badge-gray'}">${p.connected ? 'متصل' : 'غائب'}</span>
-        <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.2rem 0.55rem;font-size:0.78rem;cursor:pointer">طرد</button>
+      <div style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0;border-bottom:1px solid var(--border)">
+        <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}" style="flex-shrink:0"></span>
+        ${avatarHtml(p.photo, p.name, 34)}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.name)}</div>
+          <div style="font-size:0.75rem;color:${p.connected ? 'var(--green)' : 'var(--muted)'};margin-top:0.1rem">${p.connected ? '● متصل' : '○ غائب'}${p.score > 0 ? ` · ⭐ ${p.score}` : ''}</div>
+        </div>
+        <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="flex-shrink:0;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.25rem 0.65rem;font-size:0.8rem;cursor:pointer;font-weight:700">طرد</button>
       </div>`).join('');
   }
 
