@@ -2480,9 +2480,11 @@ function toggleCharBrowser() {
   }
 }
 
+let _currentChars = [];
+
 function renderCatTabs() {
   qs('#cat-tabs').innerHTML = Object.keys(CHARS_DB).map(cat =>
-    `<button class="cat-tab${cat === _currentCat ? ' active' : ''}" onclick="switchCat(${JSON.stringify(cat)})">${cat}</button>`
+    `<button class="cat-tab${cat === _currentCat ? ' active' : ''}" data-cat="${escHtml(cat)}" onclick="switchCat(this.dataset.cat)">${escHtml(cat)}</button>`
   ).join('');
 }
 
@@ -2493,22 +2495,24 @@ function switchCat(cat) {
 }
 
 function renderCharGrid(cat) {
-  const chars = CHARS_DB[cat] || [];
+  _currentChars = CHARS_DB[cat] || [];
   const diff = ['', '⭐', '⭐⭐', '⭐⭐⭐'];
-  qs('#char-grid').innerHTML = chars.map(c =>
-    `<div class="char-card" onclick="selectCharacter(${JSON.stringify(c.n)}, ${JSON.stringify(c.d)})">
+  qs('#char-grid').innerHTML = _currentChars.map((c, i) =>
+    `<div class="char-card" onclick="selectCharByIndex(${i})">
       <div class="char-card-name">${escHtml(c.n)}</div>
       <div class="char-card-diff">${diff[c.e] || ''}</div>
     </div>`
   ).join('');
 }
 
-function selectCharacter(name, desc) {
-  qs('#secret-input').value = desc;
-  qs('#answer-input').value = name;
+function selectCharByIndex(i) {
+  const c = _currentChars[i];
+  if (!c) return;
+  qs('#secret-input').value = c.d;
+  qs('#answer-input').value = c.n;
   qs('#char-browser').style.display = 'none';
   qs('#char-browser-btn').textContent = '📚 اختر شخصية جاهزة';
-  toast(`✅ تم اختيار: ${name}`, 'success');
+  toast(`✅ تم اختيار: ${c.n}`, 'success');
 }
 
 // ─── Generate Clues ───────────────────────────────────────────────────────────
