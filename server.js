@@ -47,43 +47,60 @@ function broadcastPlayers(session, obj) {
 
 // ─── Claude calls ────────────────────────────────────────────────────────────
 
-async function generateClues(description, forbidden = []) {
+async function generateClues(description, forbidden = [], knownAnswer = null) {
   const forbiddenLine = forbidden.length > 0
     ? `\n- لا تذكر أبداً في أي تلميح: ${forbidden.join('، ')} — حتى لو كان التلميح صحيحاً، تجنّب هذه المعلومات كلياً`
     : '';
 
+  const answerBlock = knownAnswer
+    ? `الإجابة الصحيحة: "${knownAnswer}" ← اكتب التلميحات بناءً على هذه الشخصية تحديداً`
+    : `استخرج أولاً الاسم الصحيح للشخصية من وصف المضيف، ثم اكتب التلميحات بناءً عليه`;
+
+  const jsonExample = knownAnswer
+    ? `{"answer":"${knownAnswer}","clues":["١","٢","٣","٤","٥","٦","٧","٨","٩","١٠"]}`
+    : `{"answer":"الاسم الكامل","clues":["١","٢","٣","٤","٥","٦","٧","٨","٩","١٠"]}`;
+
+  const content = `أنت خبير في تصميم ألعاب التخمين. مهمتك كتابة ١٠ تلميحات ذكية ودقيقة عن شخصية معروفة.
+
+معلومات المضيف: "${description}"
+${answerBlock}
+
+━━ قواعد الدقة (الأهم) ━━
+- اكتب فقط معلومات أنت متأكد منها ١٠٠٪ من وصف المضيف أو معرفتك الثابتة بهذه الشخصية
+- إذا شككت في أي تفصيل — تجنّبه تماماً واختر غيره، لا تخترع تفاصيل حتى لو بدت منطقية
+- لا تذكر الاسم أو اللقب أو أي اسم مستعار في أي تلميح إطلاقاً${forbiddenLine}
+
+━━ بناء التلميحات (من الأكثر غموضاً إلى الأكثر وضوحاً) ━━
+- التلميح ١-٢: مجال عام + حقبة زمنية أو منطقة جغرافية واسعة
+- التلميح ٣-٤: صفة مميزة أو أسلوب خاص في مجاله
+- التلميح ٥-٦: إنجاز بارز أو لحظة في مسيرته
+- التلميح ٧-٨: تفصيل ضيّق لا يتطابق إلا مع قلة
+- التلميح ٩-١٠: واضح لمن يعرف — فريق، مكان، أو حدث شهير
+
+━━ أسلوب الكتابة ━━
+- قصصي وحي — لا معلومات جافة ومملة
+- لا تبدأ كل تلميح بـ "هو" — نوّع البداية
+- جمل قصيرة تشعر اللاعب أنه يحل لغزاً، لا يقرأ ويكيبيديا
+
+أجب فقط بـ JSON صحيح بدون أي نص إضافي:
+${jsonExample}`;
+
   const msg = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 1800,
-    messages: [{
-      role: 'user',
-      content: `أنت تدير لعبة "من أنا؟". المضيف وصف الشخصية هكذا: "${description}"
-
-مهمتك:
-١. استخرج الاسم الصحيح للشخصية من الوصف — هذا هو ما يجب على اللاعبين تخمينه
-٢. اكتب بالعربية بالضبط ١٠ تلميحات مرتبة من الأكثر غموضاً (التلميح ١) إلى الأكثر وضوحاً (التلميح ١٠)
-
-القواعد:
-- لا تذكر اسم الشخص أو لقبه أو أي اسم مستعار في أي تلميح إطلاقاً${forbiddenLine}
-- استفد من وصف المضيف لفهم السياق (مجاله، جنسيته، إلخ)
-- كل تلميح يجب أن يكون صحيحاً بالكامل
-- التلميح ١: معلومة عامة جداً (حقبة زمنية، منطقة جغرافية، مجال عام)
-- التلميح ٥-٦: يضيق دائرة التخمين بشكل ملحوظ
-- التلميح ١٠: واضح جداً لمن يعرف هذا الشخص
-- كل تلميح جملة أو جملتان كحد أقصى
-
-أجب فقط بـ JSON صحيح بدون أي نص إضافي:
-{"answer":"الاسم الكامل هنا","clues":["التلميح1","التلميح2","التلميح3","التلميح4","التلميح5","التلميح6","التلميح7","التلميح8","التلميح9","التلميح10"]}`
-    }]
+    messages: [{ role: 'user', content }]
   });
 
   const raw = msg.content[0].text.trim();
   const match = raw.match(/\{[\s\S]*\}/);
   if (!match) throw new Error('AI returned invalid format');
   const result = JSON.parse(match[0]);
-  if (!result.answer || !Array.isArray(result.clues) || result.clues.length !== 10) {
+  if (!Array.isArray(result.clues) || result.clues.length !== 10) {
     throw new Error('Expected answer + 10 clues from AI');
   }
+  // If host provided the answer directly, use it (Claude echoes it back but we trust the input)
+  if (knownAnswer) result.answer = knownAnswer;
+  if (!result.answer) throw new Error('Expected answer + 10 clues from AI');
   return result;
 }
 
@@ -96,7 +113,12 @@ async function judgeAnswer(secret, answer) {
       content: `في لعبة "من أنا؟" الإجابة الصحيحة هي "${secret}".
 اللاعب أجاب: "${answer}"
 
-اقبل الإجابة إذا كانت: الاسم الكامل، أو اسم مختصر شائع، أو اسم العائلة فقط إذا كان واضحاً، أو خطأ إملائي بسيط، أو أي شكل لا لبس فيه.
+قواعد القبول:
+- اقبل: الاسم الكامل مع خطأ إملائي بسيط
+- اقبل: اسم العائلة (اللقب) وحده إذا كان مميزاً ونادراً
+- اقبل: اسم شهرة مشهور يعرفه الجميع (مثل "ميسي" بدل "ليونيل ميسي")
+- ارفض: الاسم الأول وحده إذا كان الاسم الصحيح مكوناً من أكثر من كلمة (مثل "سعود" وحدها لا تكفي إذا الإجابة "سعود عبدالحميد")
+- ارفض: أي إجابة ناقصة يمكن أن تنطبق على أشخاص كثيرين
 
 أجب فقط بـ JSON صحيح بدون أي نص إضافي: {"correct":true} أو {"correct":false}`
     }]
@@ -135,6 +157,7 @@ function hostStatePayload(session) {
       round: session.round ? {
         status: session.round.status,
         secret: session.round.secret,
+        aliases: session.round.aliases || [],
         globalClueIndex: session.round.globalClueIndex,
         totalClues: session.round.clues.length,
         clues: session.round.clues
@@ -229,14 +252,6 @@ wss.on('connection', ws => {
         const player = session.players[ws._name];
         // Only clear ws if it still points to this closing connection
         if (player.ws === ws) player.ws = null;
-        // Lock out regardless of whether they've already reconnected
-        if (session.round?.status === 'active' && !player.correctGuess) {
-          player.leftDuringRound = true;
-          // If they already reconnected with a new ws, push the lock to them now
-          if (player.ws && player.ws !== ws) {
-            send(player.ws, { type: 'LEFT_ROUND_LOCKED' });
-          }
-        }
         pushHostUpdate(session);
       }
     }
@@ -292,9 +307,17 @@ async function dispatch(ws, msg) {
         return;
       }
 
-      const isRejoin = Boolean(session.players[trimName]);
-      if (!isRejoin && Object.keys(session.players).length >= 15) {
-        send(ws, { type: 'ERROR', message: 'الجلسة ممتلئة (الحد الأقصى 15 لاعباً)' });
+      const existingPlayer = session.players[trimName];
+      const isRejoin = Boolean(existingPlayer);
+
+      // إصلاح ١: اسم مستخدم لا يدخله إلا صاحب نفس الـ token (يمنع سرقة حساب لاعب آخر)
+      if (isRejoin && (!msg.token || msg.token !== existingPlayer.token)) {
+        send(ws, { type: 'ERROR', message: 'هذا الاسم مستخدم بالفعل — اختر اسماً آخر' });
+        return;
+      }
+
+      if (!isRejoin && Object.keys(session.players).length >= 20) {
+        send(ws, { type: 'ERROR', message: 'الجلسة ممتلئة (الحد الأقصى 20 لاعباً)' });
         return;
       }
 
@@ -304,18 +327,14 @@ async function dispatch(ws, msg) {
         : null;
 
       if (isRejoin) {
-        session.players[trimName].ws = ws;
-        if (rawPhoto) session.players[trimName].photo = rawPhoto;
-        const round = session.round;
-        // Only advance cluesSeen for players who haven't answered yet
-        if (round && round.status === 'active' && !session.players[trimName].correctGuess) {
-          const p = session.players[trimName];
-          p.cluesSeen = Math.max(p.cluesSeen, round.globalClueIndex);
-        }
+        existingPlayer.ws = ws;
+        if (rawPhoto) existingPlayer.photo = rawPhoto;
+        // إصلاح ٢: لا نرفع cluesSeen — يرجع اللاعب على نفس تلميحاته بالضبط
       } else {
         session.players[trimName] = {
           ws,
           name: trimName,
+          token: makeId() + makeId(),
           photo: rawPhoto,
           cluesSeen: 0,
           cluesSeenList: [],
@@ -323,7 +342,8 @@ async function dispatch(ws, msg) {
           guessTime: null,
           leftDuringRound: false,
           score: 0,
-          roundResults: []
+          roundResults: [],
+          guessesUsed: 0
         };
       }
 
@@ -337,11 +357,13 @@ async function dispatch(ws, msg) {
         type: 'SESSION_JOINED',
         sessionCode: session.code,
         playerName: trimName,
+        token: player.token,
         score: player.score,
         roundStatus: session.round?.status || 'waiting',
         roundNumber: session.roundNumber,
         correctGuess: player.correctGuess,
         cluesSeen: player.cluesSeen,
+        guessesUsed: player.guessesUsed || 0,
         leftDuringRound: player.leftDuringRound || false
       });
 
@@ -355,7 +377,6 @@ async function dispatch(ws, msg) {
             clueIndex: i,
             clueNumber: i + 1,
             totalRevealed: session.round.globalClueIndex,
-            leftDuringRound: player.leftDuringRound || false,
             correctGuess: player.correctGuess || false
           });
         }
@@ -406,14 +427,21 @@ async function dispatch(ws, msg) {
         ? msg.forbidden.map(f => String(f).trim()).filter(Boolean).slice(0, 15)
         : [];
 
+      const knownAnswer = String(msg.answer || '').trim() || null;
+
+      const aliases = Array.isArray(msg.aliases)
+        ? msg.aliases.map(a => String(a).trim()).filter(Boolean).slice(0, 10)
+        : [];
+
       send(ws, { type: 'GENERATING_CLUES' });
       broadcastPlayers(session, { type: 'ROUND_PREPARING' });
 
-      const { answer, clues } = await generateClues(description, forbidden);
+      const { answer, clues } = await generateClues(description, forbidden, knownAnswer);
 
       session.round = {
         secret: answer,
         description,
+        aliases,
         clues,
         globalClueIndex: 0,
         status: 'ready',
@@ -426,6 +454,7 @@ async function dispatch(ws, msg) {
         p.correctGuess = false;
         p.guessTime = null;
         p.leftDuringRound = false;
+        p.guessesUsed = 0;
       }
 
       send(ws, { type: 'CLUES_READY', totalClues: clues.length, clues, answer });
@@ -456,13 +485,16 @@ async function dispatch(ws, msg) {
       for (const p of Object.values(session.players)) {
         p.cluesSeen = 1;
         p.cluesSeenList = [round.clues[0]];
+        p.guessesUsed = 0;
         send(p.ws, {
           type: 'ROUND_STARTED',
           roundNumber: session.roundNumber,
           clue: round.clues[0],
           clueIndex: 0,
           clueNumber: 1,
-          totalRevealed: 1
+          totalRevealed: 1,
+          guessesUsed: 0,
+          guessesAllowed: 2
         });
       }
 
@@ -561,10 +593,22 @@ async function dispatch(ws, msg) {
         return;
       }
 
+      const guessesAllowed = player.cluesSeen * 2;
+      if (player.guessesUsed >= guessesAllowed) {
+        send(ws, { type: 'ERROR', message: 'لقد استنفدت جميع محاولاتك في هذه الجولة' });
+        return;
+      }
+
       const guess = String(msg.guess || '').trim();
       if (!guess) return;
 
-      const correct = await judgeAnswer(round.secret, guess);
+      player.guessesUsed++;
+
+      // Fast alias check — skip Claude if exact match (normalized)
+      const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, ' ');
+      const aliasMatch = norm(guess) === norm(round.secret) ||
+        (round.aliases || []).some(a => norm(a) === norm(guess));
+      const correct = aliasMatch || await judgeAnswer(round.secret, guess);
 
       if (correct) {
         player.correctGuess = true;
@@ -575,7 +619,9 @@ async function dispatch(ws, msg) {
           correct: true,
           cluesSeen: player.cluesSeen,
           guessTime: player.guessTime,
-          roundScore: Math.max(1, 11 - player.cluesSeen)
+          roundScore: Math.max(1, 11 - player.cluesSeen),
+          guessesUsed: player.guessesUsed,
+          guessesAllowed
         });
 
         pushHostUpdate(session);
@@ -583,12 +629,13 @@ async function dispatch(ws, msg) {
         const allDone = Object.values(session.players).every(p => p.correctGuess);
         if (allDone) endRound(session);
       } else {
-        send(ws, { type: 'GUESS_RESULT', correct: false });
+        const remaining = guessesAllowed - player.guessesUsed;
+        send(ws, { type: 'GUESS_RESULT', correct: false, guessesUsed: player.guessesUsed, guessesAllowed, remaining });
       }
       break;
     }
 
-    // ── PLAYER_LEAVING (client fires on pagehide) ───────────────────────────
+    // ── PLAYER_LEAVING (يرسلها المتصفح بعد غياب ٥ ثوانٍ عن شاشة السؤال) ──────
     case 'PLAYER_LEAVING': {
       if (ws._role !== 'player') return;
       const session = sessions.get(ws._code);
@@ -596,6 +643,7 @@ async function dispatch(ws, msg) {
       const player = session.players[ws._name];
       if (player && session.round?.status === 'active' && !player.correctGuess) {
         player.leftDuringRound = true;
+        send(ws, { type: 'LEFT_ROUND_LOCKED' });
         pushHostUpdate(session);
       }
       break;
@@ -607,6 +655,25 @@ async function dispatch(ws, msg) {
       const session = sessions.get(ws._code);
       if (!session?.round || session.round.status !== 'active') return;
       endRound(session);
+      break;
+    }
+
+    // ── SKIP_ROUND ──────────────────────────────────────────────────────────
+    case 'SKIP_ROUND': {
+      if (ws._role !== 'host') return;
+      const session = sessions.get(ws._code);
+      if (!session?.round) return;
+      session.round = null;
+      for (const p of Object.values(session.players)) {
+        p.correctGuess   = false;
+        p.cluesSeen      = 0;
+        p.cluesSeenList  = [];
+        p.guessTime      = null;
+        p.guessesUsed    = 0;
+        p.leftDuringRound = false;
+      }
+      pushHostUpdate(session);
+      broadcastPlayers(session, { type: 'WAITING_FOR_ROUND' });
       break;
     }
 
