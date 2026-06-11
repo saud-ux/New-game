@@ -1,0 +1,3159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>من أنا؟</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #0d0b1e;
+    --surface: rgba(255,255,255,0.06);
+    --border:  rgba(255,255,255,0.10);
+    --purple:  #7c3aed;
+    --violet:  #a855f7;
+    --gold:    #f59e0b;
+    --green:   #10b981;
+    --red:     #ef4444;
+    --text:    #f1f5f9;
+    --muted:   #94a3b8;
+    --radius:  14px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* ── Screens ── */
+  #app { width: 100%; min-height: 100vh; }
+  .screen { display: none; min-height: 100vh; padding: 1rem; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 480px;
+  }
+  .card-wide { max-width: 700px; }
+
+  /* ── Typography ── */
+  .title {
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--violet) 0%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    line-height: 1.1;
+    margin-bottom: 0.25rem;
+  }
+  .subtitle { color: var(--muted); text-align: center; font-size: 0.95rem; }
+  .section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  .big-code {
+    font-size: clamp(2rem, 10vw, 3.5rem);
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    font-family: var(--font);
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-primary { background: var(--purple); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #6d28d9; }
+  .btn-gold { background: var(--gold); color: #111; }
+  .btn-gold:hover:not(:disabled) { background: #d97706; }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-green:hover:not(:disabled) { background: #059669; }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-red:hover:not(:disabled) { background: #dc2626; }
+  .btn-ghost {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+  .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+  .btn-row { display: flex; gap: 0.75rem; }
+  .btn-row .btn { flex: 1; }
+
+  /* ── Inputs ── */
+  .input-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+  .input-group label { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+  input[type="text"] {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    font-family: var(--font);
+    transition: border-color 0.15s;
+    outline: none;
+    text-align: right;
+  }
+  input[type="text"]:focus { border-color: var(--purple); }
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .badge-purple { background: rgba(124,58,237,0.25); color: var(--violet); }
+  .badge-gold   { background: rgba(245,158,11,0.2);  color: var(--gold); }
+  .badge-green  { background: rgba(16,185,129,0.2);  color: var(--green); }
+  .badge-red    { background: rgba(239,68,68,0.2);   color: var(--red); }
+  .badge-gray   { background: rgba(148,163,184,0.15); color: var(--muted); }
+
+  /* ── Clue cards ── */
+  .clue-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .clue-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .clue-card.clue-new {
+    border-color: var(--purple);
+    background: rgba(124,58,237,0.12);
+    box-shadow: 0 0 0 1px rgba(124,58,237,0.3);
+  }
+  .clue-card.clue-new::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--violet), var(--purple));
+    animation: shimmer 1.5s ease-in-out;
+  }
+  .clue-number {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--violet);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+  .clue-text { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
+  .clue-card:not(.clue-new) .clue-number { color: var(--muted); }
+  .clue-card:not(.clue-new) .clue-text { color: var(--muted); font-size: 0.95rem; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes shimmer {
+    0%   { opacity: 0; transform: scaleX(0); transform-origin: right; }
+    50%  { opacity: 1; transform: scaleX(1); }
+    100% { opacity: 0; }
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes bounceIn {
+    0%   { transform: scale(0.8); opacity: 0; }
+    60%  { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ── Player table (host) ── */
+  .player-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .player-table th {
+    text-align: right;
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .player-table td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+  .player-table tr:last-child td { border-bottom: none; }
+  .player-table tr.correct-row td { color: var(--green); }
+  .player-table tr.disconnected-row td { opacity: 0.45; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 0.4rem; }
+  .dot-green { background: var(--green); box-shadow: 0 0 4px var(--green); }
+  .dot-gray  { background: var(--muted); }
+  .dot-gold  { background: var(--gold); box-shadow: 0 0 4px var(--gold); }
+
+  /* ── Leaderboard ── */
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    animation: bounceIn 0.35s ease forwards;
+  }
+  .lb-row:nth-child(1) { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+  .lb-row:nth-child(2) { border-color: rgba(148,163,184,0.4); background: rgba(148,163,184,0.06); }
+  .lb-row:nth-child(3) { border-color: rgba(205,127,50,0.4);  background: rgba(205,127,50,0.06); }
+  .lb-rank  { font-size: 1.4rem; width: 2rem; text-align: center; }
+  .lb-name  { flex: 1; font-weight: 700; font-size: 1rem; }
+  .lb-clues { color: var(--muted); font-size: 0.85rem; text-align: center; min-width: 3rem; }
+  .lb-time  { color: var(--muted); font-size: 0.85rem; text-align: left; min-width: 4rem; }
+  .lb-score { font-weight: 800; font-size: 1.1rem; color: var(--gold); min-width: 3rem; text-align: left; }
+
+  /* ── Status bar ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* ── Misc ── */
+  .divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+  .spacer-sm { height: 0.75rem; }
+  .spacer    { height: 1.25rem; }
+  .spacer-lg { height: 2rem; }
+  .empty { text-align: center; color: var(--muted); padding: 2rem 0; font-size: 0.9rem; }
+  .spinner {
+    width: 2rem; height: 2rem;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: var(--purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+  }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(2rem);
+    background: rgba(30,27,50,0.95);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    color: var(--text);
+    z-index: 1000;
+    transition: transform 0.25s, opacity 0.25s;
+    opacity: 0;
+    max-width: 320px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+  }
+  #toast.show  { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #toast.error { border-color: var(--red);   color: #fca5a5; }
+  #toast.success { border-color: var(--green); color: #6ee7b7; }
+
+  /* ── Secret box ── */
+  .secret-box {
+    background: rgba(245,158,11,0.08);
+    border: 1px dashed rgba(245,158,11,0.35);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .secret-label { font-size: 0.75rem; color: var(--gold); font-weight: 700; letter-spacing: 0.05em; }
+  .secret-name  { font-size: 1.5rem; font-weight: 900; color: var(--text); margin-top: 0.25rem; }
+
+  /* ── Progress bar ── */
+  .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; margin: 0.5rem 0; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--violet));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Guess area ── */
+  .guess-area {
+    position: sticky;
+    bottom: 0;
+    padding: 0.75rem 0;
+    background: linear-gradient(to top, var(--bg) 80%, transparent);
+  }
+  .guess-row { display: flex; gap: 0.5rem; }
+  .guess-row input { flex: 1; }
+  .guess-row .btn { width: auto; padding: 0.75rem 1.25rem; white-space: nowrap; }
+
+  /* ── Home layout ── */
+  .home-options { display: grid; grid-template-columns: 1fr; gap: 1rem; width: 100%; max-width: 480px; }
+  @media (min-width: 640px) { .home-options { grid-template-columns: 1fr 1fr; } }
+
+  /* ── Clues pill ── */
+  .clues-pill {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 99px;
+    font-size: 0.9rem; font-weight: 700; color: var(--violet);
+    margin: 0.5rem auto; width: fit-content;
+  }
+
+  /* ── Scroll container ── */
+  .scroll-area { flex: 1; overflow-y: auto; width: 100%; max-width: 480px; padding-bottom: 0.5rem; }
+  .scroll-area-wide { max-width: 700px; }
+
+  /* ── Pulse ── */
+  .pulse-emoji { font-size: 4rem; animation: pulse 2s ease-in-out infinite; }
+
+  /* ── Correct banner ── */
+  .correct-banner {
+    background: rgba(16,185,129,0.15);
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    animation: bounceIn 0.4s ease;
+  }
+  .correct-banner h3 { color: var(--green); font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .correct-banner p  { color: var(--muted); font-size: 0.9rem; }
+
+  /* ── Player avatar ── */
+  .player-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+    background: rgba(124,58,237,0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  .player-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .lb-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(124,58,237,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .lb-avatar img { width:100%; height:100%; object-fit:cover; }
+
+  /* ── Clue editor ── */
+  .clue-editor-item { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .clue-editor-num {
+    min-width: 2rem; height: 2rem;
+    border-radius: 50%;
+    background: rgba(124,58,237,0.2);
+    color: var(--violet);
+    font-weight: 800; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 0.5rem;
+  }
+  .clue-editor-item textarea {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    font-family: var(--font);
+    resize: vertical;
+    min-height: 3rem;
+    outline: none;
+    transition: border-color 0.15s;
+    line-height: 1.5;
+    width: 100%;
+    text-align: right;
+    direction: rtl;
+  }
+  .clue-editor-item textarea:focus { border-color: var(--purple); }
+
+  /* ── Dramatic reveal animations ── */
+  @keyframes dramaticPop {
+    0%   { transform: scale(0.2) rotate(-8deg); opacity: 0; }
+    55%  { transform: scale(1.35) rotate(2deg); opacity: 1; }
+    75%  { transform: scale(0.92) rotate(-1deg); opacity: 1; }
+    90%  { transform: scale(1.06); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 20px rgba(245,158,11,0.5); }
+    50%       { text-shadow: 0 0 60px rgba(245,158,11,1), 0 0 120px rgba(245,158,11,0.5); }
+  }
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes flashWhite {
+    0%   { opacity: 0.85; }
+    100% { opacity: 0; }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes championPop {
+    0%   { transform: scale(0) rotate(-12deg); opacity: 0; }
+    50%  { transform: scale(1.5) rotate(3deg); opacity: 1; }
+    70%  { transform: scale(0.88); }
+    85%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  @keyframes shimmer {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+    50%       { box-shadow: 0 0 30px 8px rgba(245,158,11,0.5); }
+  }
+  @keyframes rankCountdown {
+    from { opacity: 0; transform: scale(2); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Reveal stage overlay */
+  #reveal-stage {
+    position: fixed; inset: 0; z-index: 30;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+    transition: opacity 0.6s ease;
+  }
+  #reveal-stage.hidden { opacity: 0; pointer-events: none; }
+
+  #reveal-label {
+    font-size: 1.1rem; color: var(--muted); margin-bottom: 1.25rem;
+    opacity: 0; transition: opacity 0.5s;
+  }
+  #reveal-label.show { opacity: 1; }
+
+  #reveal-word-big {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 900; color: var(--gold);
+    opacity: 0; transform: scale(0.3);
+    transition: none; max-width: 90vw; line-height: 1.25;
+  }
+  #reveal-word-big.pop {
+    animation: dramaticPop 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards,
+               glowPulse 1.5s ease-in-out 0.7s infinite;
+  }
+  #reveal-flash {
+    position: absolute; inset: 0;
+    background: white; opacity: 0;
+    pointer-events: none;
+  }
+  #reveal-flash.flash { animation: flashWhite 0.5s ease-out forwards; }
+
+  /* Staggered results rows */
+  .result-row-anim {
+    opacity: 0;
+    animation: slideInRight 0.4s ease forwards;
+  }
+  .lb-row-anim {
+    opacity: 0;
+    animation: slideInUp 0.45s ease forwards;
+  }
+  .champion-row {
+    animation: championPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards,
+               shimmer 1.5s ease-in-out 0.8s infinite !important;
+  }
+
+  /* Confetti particle */
+  .confetti-piece {
+    position: fixed; top: -30px;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none; z-index: 100;
+    animation: confettiFall linear forwards;
+  }
+
+  /* Final screen dramatic */
+  #final-trophy-big {
+    font-size: 5rem; opacity: 0;
+    display: block; margin-bottom: 0.5rem;
+  }
+  #final-trophy-big.pop { animation: championPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  #final-title-big {
+    font-size: 2rem; font-weight: 900; margin-bottom: 0.25rem;
+    opacity: 0;
+  }
+  #final-title-big.show { animation: fadeSlideUp 0.5s ease forwards; }
+  #final-subtitle { color: var(--muted); margin-bottom: 1.5rem; opacity: 0; }
+  #final-subtitle.show { animation: fadeSlideUp 0.5s ease 0.15s forwards; }
+
+  /* ── Player Reveal Overlay (نتائج الجولة) ── */
+  #player-reveal-overlay {
+    position:fixed;inset:0;z-index:500;background:#000000ee;
+    display:none;flex-direction:column;align-items:center;
+    overflow-y:auto;padding:20px 16px 40px;
+  }
+  #player-reveal-overlay.open { display:flex }
+  .pr-title { font-size:17px;font-weight:900;color:#e2e8f0;letter-spacing:1px;margin:14px 0 12px;text-align:center;flex-shrink:0 }
+  .pr-card {
+    width:100%;max-width:400px;display:flex;align-items:center;gap:12px;
+    padding:11px 14px;border-radius:13px;border:2px solid #ffffff15;
+    background:#ffffff08;opacity:0;transform:translateY(24px);
+    transition:opacity .35s ease,transform .45s cubic-bezier(.34,1.56,.64,1);
+    margin-bottom:8px;flex-shrink:0;
+  }
+  .pr-card.show    { opacity:1;transform:translateY(0) }
+  .pr-card.correct { border-color:#22c55e70;background:#052e1680 }
+  .pr-card.wrong   { border-color:#ef444470;background:#1f070780 }
+  .pr-icon { font-size:22px;flex-shrink:0 }
+  .pr-name { flex:1;font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+  .pr-sub  { font-size:11px;color:rgba(255,255,255,.4);flex-shrink:0;white-space:nowrap }
+  .pr-pts  { font-size:14px;font-weight:900;color:#4ade80;flex-shrink:0;white-space:nowrap }
+  .pr-pts.zero { color:var(--muted) }
+  @keyframes prPulseCorrect { 0%{box-shadow:0 0 0 0 #22c55e80}70%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent} }
+  .pr-card.correct.show { animation:prPulseCorrect .7s ease }
+
+  /* ── Host round 2-col layout ── */
+  .host-round-header {
+    width: 100%;
+    max-width: 960px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 0.5rem 0 0.25rem;
+    background: var(--bg);
+  }
+  .host-round-grid {
+    display: grid;
+    grid-template-columns: 1fr 270px;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 960px;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .host-round-grid { grid-template-columns: 1fr; }
+  }
+  .host-players-panel {
+    position: sticky;
+    top: 4.5rem;
+  }
+  @media (max-width: 700px) {
+    .host-players-panel { position: static; }
+  }
+  .player-compact-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.88rem;
+  }
+  .player-compact-row:last-child { border-bottom: none; }
+  .player-compact-row.correct-row { color: var(--green); }
+  .player-compact-row.disconnected-row { opacity: 0.45; }
+
+  /* ══════════════════════════════════════════
+     PRISON SCREEN
+  ══════════════════════════════════════════ */
+  #screen-kicked {
+    background: #070810;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Concrete wall texture */
+  .jail-wall {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background:
+      repeating-linear-gradient(180deg,
+        transparent 0px, transparent 52px,
+        rgba(0,0,0,0.55) 52px, rgba(0,0,0,0.55) 55px),
+      repeating-linear-gradient(90deg,
+        rgba(255,255,255,0.008) 0px, rgba(255,255,255,0.008) 88px,
+        rgba(0,0,0,0.4) 88px, rgba(0,0,0,0.4) 92px),
+      linear-gradient(160deg, #0f1018 0%, #0a0b0f 55%, #080810 100%);
+  }
+
+  /* Flickering fluorescent light cone from ceiling */
+  .jail-spotlight {
+    position: fixed; top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 110vw; height: 100vh;
+    pointer-events: none; z-index: 5;
+    background: radial-gradient(
+      ellipse 50% 65% at 50% 0%,
+      rgba(150,185,230,0.10) 0%,
+      rgba(110,145,200,0.05) 28%,
+      transparent 62%
+    );
+    animation: jailFlicker 9s ease-in-out infinite;
+  }
+  @keyframes jailFlicker {
+    0%,86%,100% { opacity:1; }
+    87%,91%     { opacity:0.45; }
+    88%,92%     { opacity:0.9; }
+    89%,93%     { opacity:0.6; }
+    90%,94%     { opacity:0.85; }
+  }
+
+  /* Ceiling light fixture strip */
+  .jail-ceiling-strip {
+    position: fixed; top: 0; left: 10%; right: 10%;
+    height: 6px; pointer-events: none; z-index: 6;
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(170,200,240,0.18) 20%,
+      rgba(190,215,250,0.28) 50%,
+      rgba(170,200,240,0.18) 80%, transparent 100%);
+    filter: blur(1px);
+    animation: jailFlicker 9s ease-in-out infinite;
+  }
+
+  /* Heavy iron bars — vertical */
+  .prison-bars {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 200;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent                 0px,
+      transparent                66px,
+      #04040a                    66px,
+      #0c0d14                    68px,
+      #181922                    70px,
+      #262834                    72px,
+      #323444                    74px,
+      #404358                    75px,
+      #4e5268                    76px,   /* metallic highlight */
+      #585c74                    76.5px,
+      #4e5268                    77px,
+      #404358                    78px,
+      #32344a                    80px,
+      #24263a                    82px,
+      #161820                    84px,
+      #0a0b12                    86px,
+      #04040a                    88px,
+      transparent                88px
+    );
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.7);
+  }
+
+  /* Rust / age overlay on bars */
+  .prison-bars-rust {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 201;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent  0px,
+      transparent 69px,
+      rgba(55,28,8,0.18) 69px,
+      rgba(55,28,8,0.10) 78px,
+      transparent 79px,
+      transparent 88px
+    );
+  }
+
+  /* Horizontal iron bars */
+  .prison-bar-h-top, .prison-bar-h-bottom {
+    position: fixed; left: 0; right: 0;
+    height: 20px; pointer-events: none; z-index: 202;
+    background: linear-gradient(to bottom,
+      #03030a 0%, #0c0d16 8%, #1c1e2a 20%,
+      #2e3040 33%, #424660 45%,
+      #525670 50%,
+      #484c66 55%, #343650 67%,
+      #1e2030 80%, #0e0f1a 92%, #03030a 100%);
+    box-shadow: 0 5px 28px rgba(0,0,0,0.95), 0 -5px 28px rgba(0,0,0,0.95),
+                inset 0 1px 1px rgba(255,255,255,0.04);
+  }
+  .prison-bar-h-top    { top: 13%; }
+  .prison-bar-h-bottom { bottom: 13%; }
+
+  /* Bolts where bars cross */
+  .bar-bolt {
+    position: fixed; width: 14px; height: 14px;
+    border-radius: 50%; pointer-events: none; z-index: 203;
+    background: radial-gradient(circle at 36% 33%, #606472, #1c1e28);
+    border: 2px solid #080910;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.10);
+  }
+
+  /* Floor shadow */
+  .jail-floor {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 32%; pointer-events: none; z-index: 4;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+  }
+
+  /* ── Mugshot card ── */
+  .jail-inner {
+    position: relative; z-index: 100;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 1.5rem 1rem;
+  }
+
+  .mugshot-card {
+    background: linear-gradient(170deg, #0e0f18 0%, #0b0c14 100%);
+    border: 1px solid #252736;
+    border-radius: 3px;
+    width: 100%; max-width: 320px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.03),
+      0 8px 40px rgba(0,0,0,0.9),
+      0 0 100px rgba(0,0,0,0.7);
+    animation: cardDrop 0.55s 0.1s both cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes cardDrop {
+    from { opacity:0; transform:scale(0.9) translateY(20px); }
+    to   { opacity:1; transform:scale(1)   translateY(0); }
+  }
+
+  /* Card header bar */
+  .mugshot-header {
+    background: #08090f;
+    border-bottom: 1px solid #1c1e28;
+    padding: 0.55rem 0.9rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .mugshot-dept {
+    font-size: 0.52rem; font-weight: 800; letter-spacing: 0.22em;
+    color: #353848; text-transform: uppercase;
+  }
+  .mugshot-id {
+    font-size: 0.65rem; font-weight: 700;
+    color: #454860; font-family: monospace; letter-spacing: 0.08em;
+  }
+
+  /* Photo row: ruler + avatar */
+  .mugshot-photo-row {
+    display: flex; align-items: stretch;
+    background: #06070d;
+    border-bottom: 1px solid #1c1e28;
+  }
+  .height-ruler {
+    width: 26px; flex-shrink: 0;
+    background: #080910;
+    border-left: 1px solid #1c1e28;
+    order: 1;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+  .ruler-tick {
+    display: flex; align-items: center;
+    padding-left: 3px; gap: 2px; position: relative;
+  }
+  .ruler-tick::before {
+    content: '';
+    width: 6px; height: 1px;
+    background: #252838; flex-shrink: 0;
+  }
+  .ruler-tick span {
+    font-size: 0.4rem; color: #30334a;
+    font-family: monospace; line-height: 1;
+  }
+  .photo-wrap {
+    flex: 1; position: relative; overflow: visible; height: 190px;
+  }
+  #kicked-avatar {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5.5rem; overflow: hidden;
+    background: #07080d;
+    filter: saturate(0.6) contrast(1.1);
+  }
+  /* Real stamp SVG on the photo */
+  /* ── Seal handle drop animation ── */
+  .seal-anim {
+    position: absolute;
+    top: 5%; left: 50%;
+    transform: translateX(-50%) translateY(-280px);
+    width: 94px;
+    display: flex; flex-direction: column; align-items: center;
+    pointer-events: none; z-index: 9;
+    transform-origin: bottom center;
+    animation: sealDrop 1.0s 2.35s both;
+  }
+  .seal-grip {
+    width: 22px; height: 54px;
+    background: linear-gradient(90deg,
+      #2e1505 0%, #7a4010 25%, #c8841e 50%, #7a4010 75%, #2e1505 100%);
+    border-radius: 5px 5px 2px 2px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.55), inset 1px 0 2px rgba(255,200,100,0.15);
+  }
+  .seal-base {
+    width: 94px; height: 28px;
+    background: linear-gradient(180deg,
+      #1e0e04 0%, #4a2008 35%, #6b3010 55%, #4a2008 80%, #1e0e04 100%);
+    border-radius: 3px 3px 0 0;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,180,80,0.08);
+  }
+  .seal-face {
+    width: 94px; height: 11px;
+    background: linear-gradient(180deg, #6b1212 0%, #8b1a1a 50%, #a02020 100%);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 3px 8px rgba(100,10,10,0.5);
+  }
+  /* Red ink burst on impact */
+  .seal-impact {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%,
+      rgba(120,20,20,0.45) 0%, transparent 70%);
+    pointer-events: none; z-index: 7; opacity: 0;
+    animation: sealImpact 0.4s 2.77s ease-out both;
+  }
+  @keyframes sealDrop {
+    0%   { transform: translateX(-50%) translateY(-280px); opacity:0; }
+    7%   { opacity:1; }
+    44%  { transform: translateX(-50%) translateY(0px) scaleY(1); }          /* contact */
+    50%  { transform: translateX(-50%) translateY(6px)  scaleY(0.80); }      /* squash */
+    58%  { transform: translateX(-50%) translateY(-5px) scaleY(1.10); }      /* rebound */
+    66%  { transform: translateX(-50%) translateY(0px)  scaleY(1); }         /* settle */
+    74%  { transform: translateX(-50%) translateY(0px)  scaleY(1); opacity:1; } /* hold */
+    100% { transform: translateX(-50%) translateY(-280px) scaleY(1); opacity:0; } /* lift */
+  }
+  @keyframes sealImpact {
+    0%   { opacity:0; transform:scale(0.2); }
+    30%  { opacity:1; transform:scale(1.05); }
+    100% { opacity:0; transform:scale(1.5); }
+  }
+
+  /* Ink stamp — appears exactly at seal impact */
+  .stamp-on-photo {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 130%;
+    pointer-events: none; z-index: 5;
+    opacity: 0.93;
+    animation: photoStampIn 0.32s 3.3s both;
+  }
+  @keyframes photoStampIn {
+    0%   { opacity:0; transform:translate(-50%,-50%) rotate(-18deg) scale(0.6); }
+    60%  { opacity:1; transform:translate(-50%,-50%) rotate(-18deg) scale(1.04); }
+    100% { transform:translate(-50%,-50%) rotate(-18deg) scale(1); }
+  }
+
+  /* Info section */
+  .mugshot-info {
+    padding: 0.85rem 1rem 0.7rem;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.35rem; position: relative;
+  }
+  .name-plate {
+    background: #09090f; border: 1px solid #1c1e28;
+    border-radius: 2px; padding: 0.3rem 1rem;
+    text-align: center; width: 100%;
+  }
+  #kicked-name {
+    font-size: 1.5rem; font-weight: 900;
+    color: #b8bace; letter-spacing: 0.06em; display: block;
+  }
+  .charge-row {
+    display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+    margin-top: 0.25rem;
+  }
+  .charge-label-txt {
+    font-size: 0.48rem; font-weight: 800; letter-spacing: 0.22em;
+    color: #2c2e3c; text-transform: uppercase;
+  }
+  #kicked-reason {
+    font-size: 0.82rem; font-weight: 700;
+    color: #7a3535; letter-spacing: 0.06em;
+  }
+
+  /* GUILTY stamp */
+  .guilty-stamp {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-52%) rotate(-16deg);
+    border: 3px solid rgba(155,30,30,0.65);
+    border-radius: 5px;
+    padding: 0.2rem 0.7rem;
+    font-size: 1.35rem; font-weight: 900;
+    color: rgba(180,35,35,0.65);
+    letter-spacing: 0.14em; pointer-events: none;
+    white-space: nowrap;
+    animation: stampThud 0.25s 0.75s both cubic-bezier(0.22,1,0.36,1);
+    text-shadow: 0 0 12px rgba(180,35,35,0.3);
+  }
+  @keyframes stampThud {
+    from { opacity:0; transform:translate(-50%,-52%) rotate(-16deg) scale(2.8); }
+    to   { opacity:1; transform:translate(-50%,-52%) rotate(-16deg) scale(1); }
+  }
+
+  /* Footer: barcode + date */
+  .mugshot-footer {
+    background: #07080e;
+    border-top: 1px solid #181a24;
+    padding: 0.55rem 0.9rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .fake-barcode {
+    height: 22px; width: 90px; flex-shrink: 0;
+    background: repeating-linear-gradient(90deg,
+      #1c1e2c 0px,  #1c1e2c 2px,  transparent 2px,  transparent 3px,
+      #1c1e2c 3px,  #1c1e2c 4px,  transparent 4px,  transparent 7px,
+      #1c1e2c 7px,  #1c1e2c 9px,  transparent 9px,  transparent 11px,
+      #1c1e2c 11px, #1c1e2c 12px, transparent 12px, transparent 15px,
+      #1c1e2c 15px, #1c1e2c 18px, transparent 18px, transparent 20px,
+      #1c1e2c 20px, #1c1e2c 21px, transparent 21px, transparent 24px,
+      #1c1e2c 24px, #1c1e2c 26px, transparent 26px, transparent 28px,
+      #1c1e2c 28px, #1c1e2c 29px, transparent 29px, transparent 31px,
+      #1c1e2c 31px, #1c1e2c 34px, transparent 34px, transparent 36px,
+      #1c1e2c 36px, #1c1e2c 37px, transparent 37px, transparent 40px,
+      #1c1e2c 40px, #1c1e2c 42px, transparent 42px, transparent 44px,
+      #1c1e2c 44px, #1c1e2c 46px, transparent 46px, transparent 48px,
+      #1c1e2c 48px, #1c1e2c 50px, transparent 50px, transparent 53px,
+      #1c1e2c 53px, #1c1e2c 54px, transparent 54px, transparent 56px,
+      #1c1e2c 56px, #1c1e2c 59px, transparent 59px, transparent 62px,
+      #1c1e2c 62px, #1c1e2c 63px, transparent 63px, transparent 66px,
+      #1c1e2c 66px, #1c1e2c 68px, transparent 68px, transparent 70px,
+      #1c1e2c 70px, #1c1e2c 72px, transparent 72px, transparent 75px,
+      #1c1e2c 75px, #1c1e2c 77px, transparent 77px, transparent 80px,
+      #1c1e2c 80px, #1c1e2c 81px, transparent 81px, transparent 90px
+    );
+  }
+  .footer-meta {
+    text-align: right;
+    display: flex; flex-direction: column; gap: 0.15rem;
+  }
+  .footer-meta span {
+    font-size: 0.45rem; font-family: monospace;
+    color: #252838; letter-spacing: 0.05em;
+  }
+
+  @keyframes prisonPulse {
+    0%,100% { opacity: 0.8; }
+    50%      { opacity: 1; }
+  }
+  @keyframes prisonFloat {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-4px); }
+  }
+
+  /* ── Arrest stamp overlay ── */
+  .arrest-stamp-overlay {
+    position: fixed; inset: 0; z-index: 310;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    background: rgba(0,0,0,0.88);
+    animation: overlayOut 0.5s 2.4s ease-in forwards;
+  }
+  @keyframes overlayOut {
+    from { opacity:1; }
+    to   { opacity:0; }
+  }
+  @keyframes screenShake {
+    0%,100% { transform: translate(0,0); }
+    15%     { transform: translate(-6px, 4px); }
+    30%     { transform: translate(5px, -3px); }
+    45%     { transform: translate(-4px, 5px); }
+    60%     { transform: translate(6px, -2px); }
+    75%     { transform: translate(-3px, 3px); }
+  }
+  .stamp-wrap {
+    transform: rotate(-18deg);
+    animation: stampImpact 0.35s 0.18s both cubic-bezier(0.22,1,0.36,1),
+               screenShake 0.35s 0.18s ease-out;
+    will-change: transform;
+  }
+  @keyframes stampImpact {
+    from { transform: rotate(-18deg) scale(3.5) translateY(-20px); opacity:0; }
+    60%  { transform: rotate(-18deg) scale(0.92); opacity:1; }
+    to   { transform: rotate(-18deg) scale(1); opacity:1; }
+  }
+  /* Stamp ring — outer */
+  .stamp-outer-ring {
+    width: 230px; height: 230px;
+    border-radius: 50%;
+    border: 9px solid #c0392b;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    filter: drop-shadow(0 0 18px rgba(180,40,40,0.55))
+            drop-shadow(0 4px 24px rgba(0,0,0,0.9));
+  }
+  /* Inner ring */
+  .stamp-outer-ring::before {
+    content: '';
+    position: absolute;
+    inset: 11px;
+    border-radius: 50%;
+    border: 2.5px solid #c0392b;
+    pointer-events: none;
+  }
+  /* Ink bleed texture */
+  .stamp-outer-ring::after {
+    content: '';
+    position: absolute; inset: -3px;
+    border-radius: 50%;
+    border: 2px dashed rgba(160,30,30,0.3);
+    pointer-events: none;
+  }
+  .stamp-top-stars {
+    position: absolute; top: 18%; left: 50%;
+    transform: translateX(-50%);
+    color: #c0392b; font-size: 0.72rem;
+    letter-spacing: 7px; white-space: nowrap;
+  }
+  .stamp-bottom-stars {
+    position: absolute; bottom: 18%; left: 50%;
+    transform: translateX(-50%);
+    color: #c0392b; font-size: 0.72rem;
+    letter-spacing: 10px; white-space: nowrap;
+  }
+  .stamp-banner-el {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: #c0392b;
+    font-size: 2rem; font-weight: 900;
+    padding: 0.28rem 0;
+    width: 290px; /* wider than 230px circle */
+    text-align: center;
+    letter-spacing: 0.08em;
+    font-family: 'Tajawal', sans-serif;
+    border-top: 2.5px solid rgba(192,57,43,0.25);
+    border-bottom: 2.5px solid rgba(192,57,43,0.25);
+    /* Slight roughness for ink effect */
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 5%, 99.5% 100%,
+      0.5% 100%, 0% 95%
+    );
+  }
+
+  /* ── Jail sound button ── */
+  #jail-sound-btn {
+    position: fixed; bottom: 1.4rem; right: 1.4rem;
+    z-index: 220;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.55);
+    font-size: 1.3rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+  }
+  #jail-sound-btn:active { transform: scale(0.9); }
+  #jail-sound-btn.played {
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* ── Forbidden tags ── */
+  .forbidden-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
+  .forbidden-tag {
+    display:inline-flex; align-items:center; gap:0.3rem;
+    background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35);
+    color:#fca5a5; border-radius:999px;
+    padding:0.2rem 0.5rem 0.2rem 0.6rem; font-size:0.8rem; font-weight:600;
+  }
+  .forbidden-tag button {
+    background:none; border:none; color:#fca5a5; cursor:pointer;
+    font-size:1rem; padding:0; line-height:1; opacity:0.65;
+  }
+  .forbidden-tag button:hover { opacity:1; }
+
+  /* ── Leaderboard Reveal Overlay ── */
+  #lb-reveal-overlay {
+    position:fixed;inset:0;z-index:600;background:#000000f2;
+    display:none;flex-direction:column;align-items:center;
+    overflow-y:auto;padding:20px 16px 40px;
+  }
+  #lb-reveal-overlay.open { display:flex }
+  .lb-rov-title { font-size:22px;font-weight:900;color:var(--gold);letter-spacing:1px;margin:10px 0 16px;text-align:center;text-shadow:0 0 24px #f59e0b70;flex-shrink:0 }
+  .lb-rov-card {
+    width:100%;max-width:400px;display:flex;align-items:center;gap:12px;
+    padding:13px 16px;border-radius:14px;border:2px solid #ffffff15;
+    background:#ffffff08;opacity:0;transform:translateY(28px);
+    transition:opacity .38s ease,transform .45s cubic-bezier(.34,1.56,.64,1);
+    margin-bottom:8px;flex-shrink:0;
+  }
+  .lb-rov-card.show { opacity:1;transform:translateY(0) }
+  .lb-rov-card.rk2  { border-color:#94a3b860;background:#94a3b810 }
+  .lb-rov-card.rk3  { border-color:#cd7f3260;background:#cd7f3210 }
+  .lb-rov-card.rk1  { border-color:#f59e0b90;background:#f59e0b12 }
+  @keyframes rank1Enter { 0%{transform:scale(.55) translateY(50px);opacity:0}65%{transform:scale(1.1) translateY(-6px)}100%{transform:scale(1) translateY(0);opacity:1} }
+  @keyframes rank1Shine { 0%,100%{box-shadow:0 0 0 3px #f59e0b,0 0 22px #f59e0b70}50%{box-shadow:0 0 0 4px #f59e0b,0 0 45px #f59e0bc0,0 0 70px #f59e0b30} }
+  .lb-rov-card.rk1.show { animation:rank1Enter .6s cubic-bezier(.34,1.56,.64,1) forwards,rank1Shine 1.6s ease .6s infinite }
+  .lb-rov-cd { margin-top:16px;font-size:14px;font-weight:700;color:var(--muted);padding:8px 22px;border-radius:20px;background:#ffffff12;display:none;flex-shrink:0 }
+
+  /* ── Characters Browser ── */
+  .cat-tabs { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem; }
+  .cat-tab {
+    padding:0.3rem 0.75rem; border-radius:999px; font-size:0.8rem; font-weight:700;
+    background:var(--surface); border:1px solid var(--border); color:var(--muted);
+    cursor:pointer; transition:all 0.15s;
+  }
+  .cat-tab:hover { border-color:var(--purple); color:var(--text); }
+  .cat-tab.active { background:rgba(124,58,237,0.2); border-color:var(--purple); color:var(--violet); }
+  .char-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:0.5rem; max-height:260px; overflow-y:auto; }
+  .char-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:0.6rem 0.75rem; cursor:pointer; transition:all 0.15s;
+    display:flex; flex-direction:column; gap:0.25rem;
+  }
+  .char-card:hover { border-color:var(--purple); background:rgba(124,58,237,0.12); transform:translateY(-1px); }
+  .char-card:active { transform:scale(0.97); }
+  .char-card-name { font-weight:800; font-size:0.88rem; line-height:1.3; }
+  .char-card-diff { font-size:0.65rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ════════════════ الصفحة الرئيسية ════════════════ -->
+  <div id="screen-home" class="screen active">
+    <div class="spacer-lg"></div>
+    <div class="title">من أنا؟</div>
+    <div class="subtitle">لعبة تخمين الشخصيات الجماعية</div>
+    <div class="spacer-lg"></div>
+
+    <div class="home-options">
+      <!-- المضيف -->
+      <div class="card" style="display:flex;flex-direction:column;gap:1rem">
+        <div>
+          <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem">أنشئ جلسة</div>
+          <div style="color:var(--muted);font-size:0.85rem">كون جلسة يدخلها اللاعبون</div>
+        </div>
+        <button class="btn btn-primary" onclick="createSession()">إنشاء جلسة</button>
+      </div>
+
+      <!-- اللاعب -->
+      <div class="card" style="display:flex;flex-direction:column;gap:1rem">
+        <div style="font-size:2.5rem;text-align:center">📱</div>
+        <div>
+          <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem">انضم للعبة</div>
+          <div style="color:var(--muted);font-size:0.85rem">أدخل كود الجلسة للعب</div>
+        </div>
+        <div class="input-group">
+          <label>كود الجلسة</label>
+          <input type="text" id="join-code" placeholder="ABC123" maxlength="6"
+            style="text-transform:uppercase;letter-spacing:0.15em;font-weight:700;text-align:center;font-size:1.2rem"
+            oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="input-group">
+          <label>اسمك في اللعبة</label>
+          <input type="text" id="join-name" placeholder="أدخل اسمك..." maxlength="30">
+        </div>
+        <button class="btn btn-gold" onclick="joinSession()">انضم الآن</button>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+    <div style="color:var(--muted);font-size:0.75rem;text-align:center;max-width:360px">
+      ٥–١٥ لاعب · مدعوم بـ Claude AI · نقاط لحظية
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+
+  <!-- ════════════════ انضمام يدوي (/join) ════════════════ -->
+  <div id="screen-join-manual" class="screen">
+    <div class="spacer-lg"></div>
+    <div class="title" style="font-size:2rem">من أنا؟</div>
+    <div class="spacer"></div>
+    <div class="card" style="max-width:380px;width:100%">
+      <div style="font-size:1.15rem;font-weight:800;margin-bottom:1.25rem;text-align:center">انضم للعبة</div>
+      <div class="input-group">
+        <label>كود الجلسة</label>
+        <input type="text" id="manual-join-code" placeholder="ABC123" maxlength="6"
+          style="text-transform:uppercase;letter-spacing:0.18em;font-weight:800;text-align:center;font-size:1.4rem"
+          oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="input-group">
+        <label>اسمك في اللعبة</label>
+        <input type="text" id="manual-join-name" placeholder="أدخل اسمك..." maxlength="30"
+          onkeydown="if(event.key==='Enter') manualJoin()">
+      </div>
+      <div id="manual-join-error" style="display:none;color:#ff6b6b;font-size:0.85rem;margin-bottom:0.75rem;text-align:center"></div>
+      <button class="btn btn-gold" onclick="manualJoin()">انضم الآن</button>
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+
+  <!-- ════════════════ انضمام مباشر (اللاعب عبر الرابط) ════════════════ -->
+  <div id="screen-player-join" class="screen">
+    <div class="spacer-lg"></div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:900;margin-bottom:0.25rem">من أنا؟</div>
+      <div style="color:var(--muted);margin-bottom:1.25rem;font-size:0.9rem">أدخل اسمك وصورتك للانضمام</div>
+
+
+      <!-- اختيار الصورة -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;margin-bottom:1.25rem">
+        <div id="avatar-preview" onclick="qs('#gallery-input').click()" style="
+          width:90px;height:90px;border-radius:50%;
+          background:rgba(124,58,237,0.15);
+          border:2px dashed rgba(124,58,237,0.5);
+          display:flex;align-items:center;justify-content:center;
+          cursor:pointer;overflow:hidden;font-size:2.8rem;
+          transition:all 0.2s;
+        " title="اضغط لاختيار صورة">👤</div>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn btn-ghost btn-sm" onclick="qs('#gallery-input').click()" style="width:auto">🖼 المعرض</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#camera-input').click()" style="width:auto">📷 الكاميرا</button>
+        </div>
+        <div style="color:var(--muted);font-size:0.75rem">اختياري</div>
+      </div>
+
+      <!-- مدخلات الملف (مخفية) -->
+      <input type="file" id="gallery-input" accept="image/*" style="display:none" onchange="handlePhotoSelect(this)">
+      <input type="file" id="camera-input" accept="image/*" capture="user" style="display:none" onchange="handlePhotoSelect(this)">
+
+      <!-- الاسم -->
+      <div class="input-group" style="text-align:right">
+        <label>اسمك في اللعبة</label>
+        <input type="text" id="player-join-name" placeholder="أدخل اسمك..." maxlength="30"
+          onkeydown="if(event.key==='Enter')playerJoinDirect()">
+      </div>
+      <button class="btn btn-gold" onclick="playerJoinDirect()">انضم الآن ←</button>
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+
+  <!-- ════════════════ غرفة الانتظار (المضيف) ════════════════ -->
+  <div id="screen-host-lobby" class="screen">
+    <div class="spacer"></div>
+    <div class="card card-wide" style="width:100%">
+      <div class="section-title">كود الجلسة</div>
+      <div class="big-code" id="lobby-code">------</div>
+
+      <!-- روابط المشاركة -->
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem">
+
+        <!-- رابط الجلسة المباشر -->
+        <div>
+          <div class="section-title" style="margin-bottom:0.4rem">⚡ رابط الجلسة (الأسرع)</div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <div id="join-session-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+            <button class="btn btn-gold btn-sm" onclick="copySessionLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+          </div>
+          <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">الكود مدمج — اللاعبون يكتبون اسمهم فقط ويدخلون مباشرة</div>
+        </div>
+
+        <!-- رابط عام -->
+        <div>
+          <div class="section-title" style="margin-bottom:0.4rem">🌐 رابط عام</div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <div id="join-base-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+            <button class="btn btn-ghost btn-sm" onclick="copyJoinLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+          </div>
+          <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">اللاعبون يدخلون الكود يدوياً بعد فتح الرابط</div>
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">اللاعبون</div>
+      <div id="lobby-players">
+        <div class="empty">في انتظار اللاعبين...</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ── Characters Browser ── -->
+      <div style="margin-bottom:1rem">
+        <button onclick="toggleCharBrowser()" class="btn btn-ghost btn-sm" id="char-browser-btn" style="width:auto;margin-bottom:0.75rem">
+          📚 اختر شخصية جاهزة
+        </button>
+        <div id="char-browser" style="display:none">
+          <div class="cat-tabs" id="cat-tabs"></div>
+          <div class="char-grid" id="char-grid"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="input-group">
+        <label>📝 صف الشخصية (مخفي عن اللاعبين)</label>
+        <input type="text" id="secret-input" placeholder="مثال: لاعب كرة القدم سالم الدوسري" autocomplete="off">
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">الذكاء الاصطناعي سيستخرج الإجابة ويولّد التلميحات تلقائياً</div>
+      </div>
+
+      <div class="input-group">
+        <label>✅ الإجابة الصحيحة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <input type="text" id="answer-input" placeholder="مثال: سالم الدوسري" autocomplete="off">
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">إذا تركته فارغاً سيستخرجها الذكاء الاصطناعي من الوصف</div>
+      </div>
+
+      <div class="input-group">
+        <label>✔️ الإجابات المقبولة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <div style="display:flex;gap:0.5rem">
+          <input type="text" id="aliases-input" placeholder="مثال: رونالدو، CR7..." autocomplete="off"
+            onkeydown="addAliasTag(event)" style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="addAliasTagBtn()" style="width:auto;flex-shrink:0">+ أضف</button>
+        </div>
+        <div id="aliases-tags" class="forbidden-tags"></div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">أسماء بديلة تُقبل فوراً بدون الرجوع للذكاء الاصطناعي</div>
+      </div>
+
+      <div class="input-group">
+        <label>🚫 ممنوع ذكره في التلميحات <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <div style="display:flex;gap:0.5rem">
+          <input type="text" id="forbidden-input" placeholder="مثال: القرن، الدولة..." autocomplete="off"
+            onkeydown="addForbiddenTag(event)" style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="addForbiddenTagBtn()" style="width:auto;flex-shrink:0">+ أضف</button>
+        </div>
+        <div id="forbidden-tags" class="forbidden-tags"></div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">اكتب شيئاً واضغط Enter — لن يُذكر في أي تلميح</div>
+      </div>
+
+      <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">✨ توليد التلميحات</button>
+      <div class="spacer-sm"></div>
+
+      <div id="generating-status" style="display:none;text-align:center">
+        <div class="spinner"></div>
+        <div style="color:var(--muted);margin-top:0.75rem;font-size:0.9rem">كلود يبتكر التلميحات...</div>
+      </div>
+
+      <!-- محرر التلميحات — يظهر بعد التوليد -->
+      <div id="clue-editor" style="display:none">
+        <div class="divider"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+          <div class="section-title" style="margin-bottom:0">✏️ راجع وعدّل التلميحات</div>
+          <button class="btn btn-ghost btn-sm" onclick="regenerateClues()" style="width:auto">↺ أعد التوليد</button>
+        </div>
+        <div id="extracted-answer-box" style="background:rgba(255,200,0,0.1);border:1px solid var(--gold);border-radius:10px;padding:0.7rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem">
+          <span style="font-size:0.85rem;color:var(--muted)">الإجابة الصحيحة:</span>
+          <span id="extracted-answer-text" style="font-weight:900;color:var(--gold);font-size:1rem"></span>
+        </div>
+        <div style="color:var(--muted);font-size:0.8rem;margin-bottom:1rem">
+          التلميح ١ هو الأكثر غموضاً، والتلميح ١٠ هو الأوضح. يمكنك تعديل أي تلميح بحرية.
+        </div>
+        <div id="clue-editor-list"></div>
+        <div class="spacer-sm"></div>
+        <button class="btn btn-green" id="start-round-btn" onclick="startRound()">▶ ابدأ الجولة بهذه التلميحات</button>
+      </div>
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+
+  <!-- ════════════════ شاشة الجولة (المضيف) ════════════════ -->
+  <div id="screen-host-round" class="screen">
+    <div class="spacer-sm"></div>
+
+    <!-- رأس الجولة (ثابت عند التمرير) -->
+    <div class="host-round-header">
+      <div class="card" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;padding:0.85rem 1.25rem">
+        <div style="display:flex;align-items:baseline;gap:0.35rem;flex-shrink:0">
+          <span class="section-title" style="margin:0">جولة</span>
+          <span style="font-size:1.5rem;font-weight:900" id="host-round-num">1</span>
+        </div>
+        <div class="secret-box" style="flex:1;min-width:150px;padding:0.5rem 0.9rem">
+          <div class="secret-label">الشخص السري</div>
+          <div class="secret-name" style="font-size:1.1rem" id="host-secret-name">—</div>
+          <div id="host-aliases-bar" style="display:none;font-size:0.72rem;color:var(--muted);margin-top:0.2rem"></div>
+        </div>
+        <div style="min-width:110px">
+          <div id="host-clue-counter" style="font-size:0.8rem;color:var(--muted);margin-bottom:0.25rem;white-space:nowrap">—</div>
+          <div class="progress-bar" style="margin:0">
+            <div class="progress-fill" id="host-clue-progress" style="width:10%"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-shrink:0">
+          <button class="btn btn-primary btn-sm" id="reveal-btn" onclick="revealClue()" style="white-space:nowrap;width:auto">⬇ تلميح للجميع</button>
+          <button class="btn btn-gold btn-sm" onclick="skipRound()" style="width:auto">⏭ جولة جديدة</button>
+          <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto">إنهاء الجولة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- شبكة: تلميحات + لاعبون -->
+    <div class="host-round-grid">
+
+      <!-- قائمة التلميحات الكاملة -->
+      <div class="card">
+        <div class="section-title">📋 كل التلميحات</div>
+        <div id="host-clues-list" style="display:flex;flex-direction:column;gap:0.45rem"></div>
+      </div>
+
+      <!-- لوحة اللاعبين الثابتة -->
+      <div class="card host-players-panel">
+        <div class="section-title">👥 اللاعبون</div>
+        <div id="host-player-list"></div>
+      </div>
+
+    </div>
+
+    <div class="spacer-lg"></div>
+  </div>
+
+  <!-- ════════════════ انتظار (اللاعب) ════════════════ -->
+  <div id="screen-player-wait" class="screen">
+    <div class="spacer-lg"></div>
+    <div class="card" style="text-align:center;max-width:400px;width:100%">
+      <div class="pulse-emoji" id="wait-emoji">⏳</div>
+      <div style="font-size:1.2rem;font-weight:800;margin-bottom:0.5rem" id="wait-title">في انتظار المضيف...</div>
+      <div style="color:var(--muted);font-size:0.9rem" id="wait-subtitle">ستبدأ الجولة قريباً.</div>
+      <div class="spacer"></div>
+      <div style="display:flex;justify-content:center;gap:1.5rem">
+        <div>
+          <div class="section-title">الجلسة</div>
+          <div style="font-weight:900;font-size:1.2rem;color:var(--gold)" id="wait-code">—</div>
+        </div>
+        <div>
+          <div class="section-title">أنت</div>
+          <div style="font-weight:900;font-size:1.2rem;color:var(--violet)" id="wait-name">—</div>
+        </div>
+        <div>
+          <div class="section-title">نقاطك</div>
+          <div style="font-weight:900;font-size:1.2rem;color:var(--green)" id="wait-score">0</div>
+        </div>
+      </div>
+
+      <!-- تعديل الملف الشخصي -->
+      <div class="divider"></div>
+      <div class="section-title" style="margin-bottom:0.75rem">✏️ تعديل الملف الشخصي</div>
+
+      <!-- الصورة -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin-bottom:0.9rem">
+        <div id="wait-avatar-preview" onclick="qs('#wait-gallery-input').click()" style="
+          width:72px;height:72px;border-radius:50%;
+          background:rgba(124,58,237,0.15);
+          border:2px dashed rgba(124,58,237,0.5);
+          display:flex;align-items:center;justify-content:center;
+          cursor:pointer;overflow:hidden;font-size:2.2rem;transition:all 0.2s">👤</div>
+        <div style="display:flex;gap:0.4rem">
+          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-gallery-input').click()" style="width:auto">🖼 معرض</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-camera-input').click()" style="width:auto">📷 كاميرا</button>
+        </div>
+      </div>
+      <input type="file" id="wait-gallery-input" accept="image/*" style="display:none" onchange="handleWaitPhotoSelect(this)">
+      <input type="file" id="wait-camera-input" accept="image/*" capture="user" style="display:none" onchange="handleWaitPhotoSelect(this)">
+
+      <!-- الاسم -->
+      <div class="input-group" style="text-align:right;margin-bottom:0.75rem">
+        <label>الاسم</label>
+        <input type="text" id="wait-name-input" maxlength="30" placeholder="اسمك في اللعبة"
+          onkeydown="if(event.key==='Enter')saveProfile()">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveProfile()" style="width:auto;padding:0.6rem 1.5rem;margin:0 auto;display:block">💾 حفظ</button>
+    </div>
+    <div class="spacer-lg"></div>
+  </div>
+
+  <!-- ════════════════ شاشة الجولة (اللاعب) ════════════════ -->
+  <div id="screen-player-round" class="screen">
+    <div class="scroll-area" style="display:flex;flex-direction:column;gap:0;padding-top:0.75rem">
+
+      <!-- شريط الحالة -->
+      <div class="status-bar" style="max-width:480px;margin:0 auto;width:100%">
+        <div>
+          جولة <strong id="player-round-num" style="margin-right:0.3rem">1</strong>
+        </div>
+        <div class="clues-pill" style="margin:0">
+          <span>🔍</span>
+          <span id="player-clues-count">1</span>
+          <span style="font-weight:400;color:var(--muted)">/10</span>
+          <span>تلميحات</span>
+        </div>
+        <div style="font-weight:800;color:var(--gold)" id="player-score-display">0 نقطة</div>
+      </div>
+
+      <div class="spacer-sm"></div>
+
+      <!-- لافتة الإجابة الصحيحة -->
+      <div id="correct-banner" style="display:none;max-width:480px;margin:0 auto;width:100%">
+        <div class="correct-banner">
+          <h3>🎉 أحسنت!</h3>
+          <p id="correct-detail"></p>
+        </div>
+        <div class="spacer-sm"></div>
+      </div>
+
+      <!-- قائمة التلميحات -->
+      <div class="card" style="width:100%;max-width:480px;margin:0 auto">
+        <div class="section-title">التلميحات المكشوفة</div>
+        <div id="clue-list" class="clue-list"></div>
+      </div>
+
+      <div class="spacer-sm"></div>
+
+      <!-- أزرار اللاعب -->
+      <div id="player-actions" style="width:100%;max-width:480px;margin:0 auto">
+        <button class="btn btn-ghost" id="request-clue-btn" onclick="requestClue()">
+          🔍 اطلب تلميحاً آخر <span style="color:var(--muted);font-size:0.85rem">(تكلفك نقطة)</span>
+        </button>
+        <div class="spacer-sm"></div>
+        <div class="guess-area">
+          <div id="guess-limit-bar" style="text-align:center;font-size:0.82rem;color:var(--muted);margin-bottom:0.5rem">
+            المحاولات المتبقية: <strong id="guesses-remaining" style="color:var(--gold)">2</strong>
+          </div>
+          <div class="guess-row">
+            <input type="text" id="guess-input" placeholder="من أنا؟ أدخل تخمينك..." autocomplete="off"
+              onkeydown="if(event.key==='Enter')submitGuess()">
+            <button class="btn btn-gold" id="guess-btn" onclick="submitGuess()" style="width:auto">خمّن!</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="spacer-lg"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ نتائج الجولة ════════════════ -->
+  <div id="screen-results" class="screen">
+    <!-- ══ Full-screen dramatic reveal overlay ══ -->
+    <div id="reveal-stage">
+      <div id="reveal-label">كانت الشخصية...</div>
+      <div id="reveal-word-big">؟</div>
+      <div id="reveal-flash"></div>
+    </div>
+    <!-- ══ Minimal controls card (shown after overlays close) ══ -->
+    <div class="spacer-lg"></div>
+    <div class="scroll-area">
+      <div class="card" id="results-card" style="text-align:center;opacity:0">
+        <div style="color:var(--muted);font-size:0.95rem;margin-bottom:1rem">
+          كانت الإجابة: <strong id="results-secret" style="color:var(--gold)">—</strong>
+        </div>
+        <div id="host-results-controls" style="display:none">
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="newRound()">▶ جولة جديدة</button>
+            <button class="btn btn-ghost" onclick="endSession()">🏆 إنهاء الجلسة</button>
+          </div>
+        </div>
+        <div id="player-results-msg" style="display:none;color:var(--muted);font-size:0.9rem">
+          في انتظار المضيف لبدء الجولة التالية...
+        </div>
+      </div>
+      <div class="spacer-lg"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ الترتيب النهائي ════════════════ -->
+  <div id="screen-final" class="screen">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem">
+      <span id="final-trophy-big">🏆</span>
+      <div id="final-title-big">انتهت اللعبة!</div>
+      <div id="final-subtitle">جارٍ عرض النتائج...</div>
+    </div>
+  </div>
+
+  <!-- ════════════════ شاشة الطرد (السجن) ════════════════ -->
+  <div id="screen-kicked" class="screen">
+    <!-- Environment layers (behind bars) -->
+    <div class="jail-wall"></div>
+    <div class="jail-spotlight"></div>
+    <div class="jail-ceiling-strip"></div>
+    <div class="jail-floor"></div>
+
+    <!-- Iron bars -->
+    <div class="prison-bars"></div>
+    <div class="prison-bars-rust"></div>
+    <div class="prison-bar-h-top"></div>
+    <div class="prison-bar-h-bottom"></div>
+    <!-- bolts injected by showPrisonScreen() -->
+
+    <!-- Mugshot content -->
+    <div class="jail-inner">
+      <div class="mugshot-card">
+
+        <!-- Header -->
+        <div class="mugshot-header">
+          <span class="mugshot-dept">PRISONER · سجين</span>
+          <span class="mugshot-id">#<span id="inmate-number">0000</span></span>
+        </div>
+
+        <!-- Photo + height ruler -->
+        <div class="mugshot-photo-row">
+          <div class="photo-wrap">
+            <div id="kicked-avatar">👤</div>
+            <!-- Seal handle animation -->
+            <div class="seal-anim" id="seal-anim">
+              <div class="seal-grip"></div>
+              <div class="seal-base"></div>
+              <div class="seal-face"></div>
+            </div>
+            <!-- Red ink burst on impact -->
+            <div class="seal-impact" id="seal-impact"></div>
+            <!-- Stamp SVG — inked directly onto the photo -->
+            <svg class="stamp-on-photo" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Two-pass ink: coarse warp + fine edge roughness + bleed blur -->
+                <filter id="ink" x="-28%" y="-28%" width="156%" height="156%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" seed="7" result="coarse"/>
+                  <feTurbulence type="turbulence"   baseFrequency="0.72" numOctaves="3" seed="2" result="fine"/>
+                  <feDisplacementMap in="SourceGraphic" in2="coarse" scale="8"   xChannelSelector="R" yChannelSelector="G" result="d1"/>
+                  <feDisplacementMap in="d1"           in2="fine"   scale="2.5" xChannelSelector="R" yChannelSelector="G" result="d2"/>
+                  <feGaussianBlur in="d2" stdDeviation="0.55"/>
+                </filter>
+                <path id="pTopArc" d="M 18,120 A 102,102 0 0,1 222,120"/>
+                <path id="pBotArc" d="M 36,158 A 102,102 0 0,0 204,158"/>
+              </defs>
+
+              <!-- Rings + stars — deep crimson ink -->
+              <g filter="url(#ink)">
+                <circle cx="120" cy="120" r="109" fill="none" stroke="#8b1a1a" stroke-width="12"/>
+                <circle cx="120" cy="120" r="91"  fill="none" stroke="#8b1a1a" stroke-width="3"/>
+                <text fill="#8b1a1a" font-size="13" font-family="serif">
+                  <textPath href="#pTopArc" startOffset="50%" text-anchor="middle">&#9733;  &#9733;  &#9733;</textPath>
+                </text>
+                <text fill="#8b1a1a" font-size="13" font-family="serif">
+                  <textPath href="#pBotArc" startOffset="50%" text-anchor="middle">&#9733;   &#9733;</textPath>
+                </text>
+              </g>
+
+              <!-- Cream banner — covers rings, paper feel -->
+              <rect x="-35" y="93" width="310" height="54" fill="#fffef8"/>
+
+              <!-- Banner lines + text — same ink texture -->
+              <g filter="url(#ink)">
+                <line x1="-35" y1="93"  x2="275" y2="93"  stroke="#8b1a1a" stroke-width="3"/>
+                <line x1="-35" y1="147" x2="275" y2="147" stroke="#8b1a1a" stroke-width="3"/>
+                <text x="120" y="132" text-anchor="middle" fill="#8b1a1a"
+                      font-size="37" font-weight="900"
+                      font-family="Tajawal, Arial, sans-serif">&#1578;&#1605; &#1575;&#1604;&#1602;&#1576;&#1590;</text>
+              </g>
+            </svg>
+          </div>
+          <div class="height-ruler">
+            <div class="ruler-tick"><span>190</span></div>
+            <div class="ruler-tick"><span>175</span></div>
+            <div class="ruler-tick"><span>160</span></div>
+            <div class="ruler-tick"><span>145</span></div>
+          </div>
+        </div>
+
+        <!-- Name + charge -->
+        <div class="mugshot-info">
+          <div class="name-plate">
+            <span id="kicked-name">—</span>
+          </div>
+          <div class="charge-row">
+            <span class="charge-label-txt">التهمة · CHARGE</span>
+            <span id="kicked-reason">مطرود من الجلسة</span>
+          </div>
+          <!-- GUILTY stamp (always rendered, shown via animation) -->
+          <div class="guilty-stamp">مُدان</div>
+        </div>
+
+        <!-- Footer: barcode + date -->
+        <div class="mugshot-footer">
+          <div class="fake-barcode"></div>
+          <div class="footer-meta">
+            <span id="arrest-date">—</span>
+            <span>GAME SECURITY DEPT.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tap-to-play sound button — visible until tapped -->
+    <button id="jail-sound-btn" onclick="playArrestSound();this.classList.add('played')" title="تشغيل الصوت">🔊</button>
+
+    <!-- Arrest stamp overlay — appears first, fades out after ~2.4s -->
+    <div class="arrest-stamp-overlay" id="arrest-stamp-overlay">
+      <div class="stamp-wrap">
+        <div class="stamp-outer-ring">
+          <div class="stamp-top-stars">★ ★ ★</div>
+          <div class="stamp-bottom-stars">★ ★</div>
+          <div class="stamp-banner-el">تم القبض</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ════ Player Reveal Overlay ════ -->
+<div id="player-reveal-overlay">
+  <div class="pr-title">🎭 نتائج الجولة</div>
+  <div id="pr-cards"></div>
+</div>
+
+<!-- ════ Leaderboard Reveal Overlay ════ -->
+<div id="lb-reveal-overlay">
+  <div class="lb-rov-title" id="lb-rov-title">📊 الترتيب</div>
+  <div id="lb-rov-cards"></div>
+  <div class="lb-rov-cd" id="lb-rov-cd"></div>
+  <div id="lb-rov-controls" style="width:100%;max-width:400px"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+const state = {
+  role: null,
+  sessionCode: null,
+  playerName: null,
+  roundNumber: 0,
+  roundStatus: 'waiting',
+  clues: [],
+  correctGuess: false,
+  score: 0,
+  hostState: null,
+  playerPhoto: null,
+  pendingCode: null,
+  guessesUsed: 0,
+  cluesSeen: 0
+};
+
+let ws = null;
+let reconnectTimer = null;
+let reconnectAttempts = 0;
+const forbiddenItems = [];
+
+// Shared AudioContext — created once on first user gesture so it's always unlocked
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) _audioCtx = new AC();
+  }
+  if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+// Preload arrest sound buffer via AudioContext (bypasses autoplay policy)
+let _arrestBuffer = null;
+let _arrestAudio = null;   // HTMLAudioElement fallback for iOS Safari
+async function preloadArrestSound() {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx || _arrestBuffer) return;
+    const resp = await fetch('/arrest.mp3');
+    const raw  = await resp.arrayBuffer();
+    _arrestBuffer = await ctx.decodeAudioData(raw);
+  } catch(e) { console.warn('preload arrest:', e); }
+}
+// On first gesture: unlock AudioContext + HTMLAudioElement + preload buffer
+document.addEventListener('pointerdown', () => {
+  getAudioCtx();
+  // iOS Safari: play-then-pause trick unlocks the element for future calls
+  if (!_arrestAudio) {
+    _arrestAudio = new Audio('/arrest.mp3');
+    _arrestAudio.muted = true;
+    const p = _arrestAudio.play();
+    if (p) p.then(() => { _arrestAudio.pause(); _arrestAudio.currentTime = 0; _arrestAudio.muted = false; }).catch(() => {});
+  }
+  preloadArrestSound();
+}, { once: true });
+
+// ─── WebSocket ────────────────────────────────────────────────────────────────
+function connect() {
+  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${protocol}//${location.host}`);
+
+  ws.onopen = () => {
+    reconnectAttempts = 0;
+    if (state.role === 'player' && state.sessionCode && state.playerName) {
+      send({ type: 'JOIN_SESSION', code: state.sessionCode, name: state.playerName });
+    } else if (state.role === 'host' && state.sessionCode) {
+      send({ type: 'RECONNECT_HOST', code: state.sessionCode });
+    }
+  };
+
+  ws.onmessage = ({ data }) => {
+    let msg;
+    try { msg = JSON.parse(data); } catch { return; }
+    handleMessage(msg);
+  };
+
+  ws.onclose = () => {
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000);
+    reconnectAttempts++;
+    reconnectTimer = setTimeout(connect, delay);
+  };
+}
+
+function send(obj) {
+  if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
+}
+
+// Resume AudioContext when tab becomes visible again (browser suspends it when hidden)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    getAudioCtx();
+  }
+});
+
+// ─── Message handler ──────────────────────────────────────────────────────────
+function handleMessage(msg) {
+  switch (msg.type) {
+
+    case 'SESSION_CREATED':
+      state.role = 'host';
+      state.sessionCode = msg.code;
+      showScreen('screen-host-lobby');
+      qs('#lobby-code').textContent = msg.code;
+      qs('#join-base-link').textContent = `${location.origin}/join`;
+      qs('#join-session-link').textContent = `${location.origin}/play/${msg.code}`;
+      if (!msg.rejoined) {
+        qs('#lobby-players').innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
+        qs('#clue-editor').style.display = 'none';
+        qs('#generate-btn').style.display = '';
+        qs('#generating-status').style.display = 'none';
+        qs('#secret-input').value = '';
+      }
+      break;
+
+    case 'SESSION_JOINED':
+      state.role = 'player';
+      state.sessionCode = msg.sessionCode;
+      state.playerName = msg.playerName;
+      state.score = msg.score || 0;
+      state.roundNumber = msg.roundNumber || 0;
+      state.correctGuess = msg.correctGuess || false;
+      state.guessesUsed = msg.guessesUsed || 0;
+      state.cluesSeen = msg.cluesSeen || 0;
+
+      qs('#wait-code').textContent = msg.sessionCode;
+      qs('#wait-name').textContent = msg.playerName;
+      qs('#wait-score').textContent = state.score;
+      qs('#player-score-display').textContent = state.score + ' نقطة';
+      refreshWaitProfile();
+
+      if (msg.roundStatus === 'active') {
+        {
+          showScreen('screen-player-round');
+          qs('#player-round-num').textContent = state.roundNumber;
+        }
+      } else {
+        showScreen('screen-player-wait');
+      }
+      break;
+
+    case 'HOST_UPDATE':
+      state.hostState = msg.state;
+      renderHostState(msg.state);
+      break;
+
+    case 'GENERATING_CLUES':
+      qs('#generating-status').style.display = '';
+      qs('#generate-btn').style.display = 'none';
+      qs('#clue-editor').style.display = 'none';
+      break;
+
+    case 'CLUES_READY':
+      qs('#generating-status').style.display = 'none';
+      qs('#generate-btn').style.display = '';
+      if (msg.answer) qs('#extracted-answer-text').textContent = msg.answer;
+      renderClueEditor(msg.clues);
+      toast(`✅ تم توليد ${msg.totalClues} تلميحات! راجعها وعدّل إن شئت.`, 'success');
+      break;
+
+    case 'ROUND_PREPARING':
+      showScreen('screen-player-wait');
+      qs('#wait-emoji').textContent = '🎯';
+      qs('#wait-title').textContent = 'استعد! جولة جديدة تبدأ...';
+      qs('#wait-subtitle').textContent = 'المضيف يجهّز التلميحات.';
+      break;
+
+    case 'ROUND_STARTED':
+      state.roundStatus = 'active';
+      state.roundNumber = msg.roundNumber || state.roundNumber;
+      state.clues = [];
+      state.correctGuess = msg.correctGuess || false;
+      state.guessesUsed = msg.guessesUsed || 0;
+      state.cluesSeen = 1;
+      qs('#clue-list').innerHTML = '';
+      qs('#player-round-num').textContent = state.roundNumber;
+      qs('#player-clues-count').textContent = 1;
+      qs('#request-clue-btn').disabled = false;
+      if (state.correctGuess) {
+        qs('#correct-banner').style.display = '';
+        qs('#player-actions').style.display = 'none';
+      } else {
+        qs('#correct-banner').style.display = 'none';
+        qs('#guess-input').value = '';
+        qs('#guess-input').disabled = false;
+        qs('#player-actions').style.display = '';
+        updateGuessLimit();
+      }
+      showScreen('screen-player-round');
+      addClue(msg.clue, msg.clueIndex, true);
+      break;
+
+    case 'CLUE_REVEALED':
+      addClue(msg.clue, msg.clueIndex, true);
+      qs('#player-clues-count').textContent = msg.clueNumber;
+      if (msg.clueNumber >= 10) qs('#request-clue-btn').disabled = true;
+      state.cluesSeen = msg.clueNumber;
+      updateGuessLimit();
+      break;
+
+    case 'GUESS_RESULT':
+      if (msg.correct) {
+        state.correctGuess = true;
+        if (!msg.isReplay) state.score += msg.roundScore || 0;
+        qs('#player-score-display').textContent = state.score + ' نقطة';
+        qs('#correct-banner').style.display = '';
+        qs('#correct-detail').textContent =
+          `استخدمت ${msg.cluesSeen} تلميح · حصلت على ${msg.roundScore} نقطة · ${formatTime(msg.guessTime)}`;
+        qs('#player-actions').style.display = 'none';
+      } else {
+        state.guessesUsed = msg.guessesUsed || state.guessesUsed + 1;
+        updateGuessLimit();
+        if (msg.remaining === 0) {
+          toast('🚫 استنفدت جميع محاولاتك في هذه الجولة!', 'error');
+        } else {
+          toast(`❌ إجابة خاطئة — تبقى لك ${msg.remaining} ${msg.remaining === 1 ? 'محاولة' : 'محاولات'}`, 'error');
+        }
+      }
+      break;
+
+    case 'ROUND_COMPLETE':
+      state.roundStatus = 'complete';
+      renderResults(msg);
+      break;
+
+    case 'WAITING_FOR_ROUND':
+      state.roundStatus = 'waiting';
+      state.clues = [];
+      state.correctGuess = false;
+      showScreen('screen-player-wait');
+      qs('#wait-emoji').textContent = '⏳';
+      qs('#wait-title').textContent = 'في انتظار المضيف...';
+      qs('#wait-subtitle').textContent = 'ستبدأ الجولة التالية قريباً.';
+      qs('#wait-score').textContent = state.score;
+      refreshWaitProfile();
+      break;
+
+    case 'PROFILE_UPDATED':
+      state.playerName = msg.name;
+      qs('#wait-name').textContent = msg.name;
+      qs('#wait-name-input').value = msg.name;
+      toast('✅ تم حفظ التغييرات', 'success');
+      break;
+
+    case 'SESSION_ENDED':
+      renderFinalLeaderboard(msg.leaderboard);
+      break;
+
+    case 'KICKED':
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      ws.onclose = null;
+      showPrisonScreen('kicked');
+      state.role = null;
+      state.sessionCode = null;
+      state.playerName = null;
+      state.roundStatus = 'waiting';
+      state.clues = [];
+      state.correctGuess = false;
+      state.score = 0;
+      break;
+
+    case 'INFO':
+      toast(msg.message);
+      break;
+
+    case 'ERROR':
+      toast('⚠ ' + msg.message, 'error');
+      // Show inline error on the join screen so it's more visible
+      if (!state.role) {
+        let inlineErr = qs('#join-inline-error');
+        if (!inlineErr) {
+          inlineErr = document.createElement('div');
+          inlineErr.id = 'join-inline-error';
+          inlineErr.style.cssText = 'margin-top:12px;padding:10px 14px;border-radius:10px;background:#1f0707;border:1.5px solid #ef444470;color:#fca5a5;font-size:0.9rem;font-weight:600;text-align:center';
+          const btn = qs('#player-join-name').closest('.card').querySelector('.btn-gold');
+          btn.parentNode.insertBefore(inlineErr, btn.nextSibling);
+        }
+        inlineErr.textContent = '⚠ ' + msg.message;
+        inlineErr.style.display = '';
+      }
+      if (state.role === 'host') {
+        qs('#generating-status').style.display = 'none';
+        qs('#generate-btn').style.display = '';
+      }
+      break;
+  }
+}
+
+// ─── Host actions ─────────────────────────────────────────────────────────────
+function createSession() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(createSession, 800); return; }
+  send({ type: 'CREATE_SESSION' });
+}
+
+function copyJoinLink() {
+  const link = qs('#join-base-link').textContent;
+  if (link === '—') return;
+  navigator.clipboard.writeText(link)
+    .then(() => toast('✅ تم نسخ الرابط العام!', 'success'))
+    .catch(() => toast('❌ تعذّر النسخ', 'error'));
+}
+
+function copySessionLink() {
+  const link = qs('#join-session-link').textContent;
+  if (link === '—') return;
+  navigator.clipboard.writeText(link)
+    .then(() => toast('✅ تم نسخ رابط الجلسة!', 'success'))
+    .catch(() => toast('❌ تعذّر النسخ', 'error'));
+}
+
+function playerJoinDirect() {
+  const name = qs('#player-join-name').value.trim();
+  const code = state.pendingCode;
+  if (!name) { toast('أدخل اسمك أولاً', 'error'); return; }
+  if (!code)  { toast('كود الجلسة غير موجود', 'error'); return; }
+  // Clear any previous inline error
+  const inlineErr = qs('#join-inline-error');
+  if (inlineErr) inlineErr.style.display = 'none';
+  if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(playerJoinDirect, 800); return; }
+  send({ type: 'JOIN_SESSION', code, name, photo: state.playerPhoto || null });
+}
+
+// ─── Photo handling ───────────────────────────────────────────────────────────
+async function playArrestSound() {
+  // Try AudioContext buffer first (most reliable)
+  try {
+    const ctx = getAudioCtx();
+    if (ctx) {
+      if (ctx.state !== 'running') await ctx.resume();
+      if (!_arrestBuffer) await preloadArrestSound();
+      if (_arrestBuffer) {
+        const src = ctx.createBufferSource();
+        src.buffer = _arrestBuffer;
+        src.connect(ctx.destination);
+        src.start(0);
+        return;
+      }
+    }
+  } catch(e) { console.warn('arrest ctx:', e); }
+  // Fallback: HTMLAudioElement (pre-unlocked on iOS via play-pause trick)
+  try {
+    if (_arrestAudio) {
+      _arrestAudio.currentTime = 0;
+      await _arrestAudio.play();
+    }
+  } catch(e) { console.warn('arrest audio:', e); }
+}
+
+function showPrisonScreen(reason) {
+  qs('#kicked-name').textContent = state.playerName || '؟';
+  qs('#kicked-avatar').innerHTML = state.playerPhoto
+    ? `<img src="${state.playerPhoto}" style="width:100%;height:100%;object-fit:cover;">`
+    : '👤';
+  qs('#kicked-reason').textContent = reason === 'cheating' ? 'الغش والتهرب من الأسئلة' : 'طُرد من الجلسة بأمر المضيف';
+  // Random inmate number
+  qs('#inmate-number').textContent = String(Math.floor(1000 + Math.random() * 9000));
+  // Arrest date/time
+  const now = new Date();
+  qs('#arrest-date').textContent =
+    now.toLocaleDateString('ar-SA') + '  ' +
+    now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  // Inject bolts where horizontal bars meet vertical bars
+  document.querySelectorAll('.bar-bolt').forEach(el => el.remove());
+  const barSpacing = 88, barCenter = 76, hTopPct = 0.13, hBotPct = 0.13;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const topY = Math.round(vh * hTopPct) - 7;
+  const botY = Math.round(vh * (1 - hBotPct)) - 7;
+  for (let x = barCenter; x < vw; x += barSpacing) {
+    [topY, botY].forEach(y => {
+      const bolt = document.createElement('div');
+      bolt.className = 'bar-bolt';
+      bolt.style.cssText = `left:${x - 7}px;top:${y}px`;
+      document.getElementById('screen-kicked').appendChild(bolt);
+    });
+  }
+  // Re-trigger all animations
+  const overlay   = qs('#arrest-stamp-overlay');
+  const stampWrap = overlay.querySelector('.stamp-wrap');
+  const photoStamp  = qs('.stamp-on-photo');
+  const sealAnim    = qs('#seal-anim');
+  const sealImpact  = qs('#seal-impact');
+  [overlay, stampWrap, photoStamp, sealAnim, sealImpact].forEach(el => { el.style.animation = 'none'; });
+  overlay.offsetHeight; // single reflow
+  [overlay, stampWrap, photoStamp, sealAnim, sealImpact].forEach(el => { el.style.animation = ''; });
+  const bars = qs('.prison-bars');
+  bars.style.animation = 'none'; bars.offsetHeight; bars.style.animation = '';
+  const soundBtn = qs('#jail-sound-btn');
+  soundBtn.classList.remove('played');
+  showScreen('screen-kicked');
+  playArrestSound().then(() => soundBtn.classList.add('played')).catch(() => {});
+}
+
+function refreshWaitProfile() {
+  qs('#wait-name-input').value = state.playerName || '';
+  const prev = qs('#wait-avatar-preview');
+  if (state.playerPhoto) {
+    prev.innerHTML = `<img src="${state.playerPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+    prev.style.border = '2px solid var(--green)';
+    prev.style.fontSize = '';
+  } else {
+    prev.innerHTML = '👤';
+    prev.style.border = '2px dashed rgba(124,58,237,0.5)';
+    prev.style.fontSize = '2.2rem';
+  }
+}
+
+function handleWaitPhotoSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 120;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const src = Math.min(img.width, img.height);
+      const sx = (img.width - src) / 2;
+      const sy = (img.height - src) / 2;
+      ctx.beginPath();
+      ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, sx, sy, src, src, 0, 0, size, size);
+      state.playerPhoto = canvas.toDataURL('image/jpeg', 0.75);
+      refreshWaitProfile();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function saveProfile() {
+  const name = qs('#wait-name-input').value.trim();
+  if (!name) { toast('أدخل اسمك', 'error'); return; }
+  send({ type: 'UPDATE_PROFILE', name, photo: state.playerPhoto || null });
+}
+
+function handlePhotoSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 120;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      // Center-crop to square
+      const src = Math.min(img.width, img.height);
+      const sx = (img.width - src) / 2;
+      const sy = (img.height - src) / 2;
+      ctx.beginPath();
+      ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, sx, sy, src, src, 0, 0, size, size);
+      state.playerPhoto = canvas.toDataURL('image/jpeg', 0.75);
+      // Update preview
+      const preview = qs('#avatar-preview');
+      preview.innerHTML = `<img src="${state.playerPhoto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+      preview.style.border = '2px solid var(--green)';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = ''; // reset so same file can be re-selected
+}
+
+function addForbiddenTag(e) {
+  if (e.key !== 'Enter' && e.key !== ',') return;
+  e.preventDefault();
+  const input = qs('#forbidden-input');
+  const val = input.value.trim().replace(/,+$/, '');
+  if (!val || forbiddenItems.includes(val)) { input.value = ''; return; }
+  forbiddenItems.push(val);
+  renderForbiddenTags();
+  input.value = '';
+}
+
+function addForbiddenTagBtn() {
+  addForbiddenTag({ key: 'Enter', preventDefault: () => {}, target: qs('#forbidden-input') });
+}
+
+function removeForbiddenTag(val) {
+  const idx = forbiddenItems.indexOf(val);
+  if (idx !== -1) forbiddenItems.splice(idx, 1);
+  renderForbiddenTags();
+}
+
+function renderForbiddenTags() {
+  qs('#forbidden-tags').innerHTML = forbiddenItems.map(v =>
+    `<span class="forbidden-tag">${escHtml(v)}<button onclick="removeForbiddenTag(${escHtml(JSON.stringify(v))})">×</button></span>`
+  ).join('');
+}
+
+// ─── Characters Database ─────────────────────────────────────────────────────
+const CHARS_DB = {
+  '🎤 مغنيين خليجيين': [
+    {n:'محمد عبده',d:'مطرب سعودي من الطائف لُقِّب بـ"فنان العرب"، رائد الطرب الخليجي، بدأ الستينيات، صوت أسطوري عميق، أيقونة الأغنية السعودية والخليجية',e:1},
+    {n:'عبدالمجيد عبدالله',d:'مطرب سعودي من بريدة القصيم، أيقونة الأغنية الخليجية المعاصرة، بدأ الثمانينيات، صوته دافئ وحنون، من أكثر المطربين الخليجيين مبيعاً',e:1},
+    {n:'طلال مداح',d:'مطرب سعودي راحل من أبها لُقِّب بـ"صوت الأرض"، رائد الموسيقى السعودية، بدأ الستينيات، أداء كلاسيكي عميق وكلمات شعرية رصينة',e:2},
+    {n:'راشد الماجد',d:'مطرب سعودي كويتي الأصل، بدأ الثمانينيات، صوته رومانسي ناعم، اشتهر بالأغاني العاطفية الخليجية، من أبرز وجوه الأغنية الخليجية',e:1},
+    {n:'ماجد المهندس',d:'مطرب كويتي، واحد من أبرز الأصوات الخليجية عربياً ودولياً، بدأ الثمانينيات، يمزج الطرب الخليجي بالبوب العربي',e:1},
+    {n:'عبدالله الرويشد',d:'مطرب كويتي أسطوري من رواد الغناء الخليجي، بدأ السبعينيات، اشتهر بأغانيه الوجدانية العميقة وطابعه الخليجي الأصيل',e:2},
+    {n:'كاظم الساهر',d:'مطرب عراقي من الموصل لُقِّب بـ"قيصر الأغنية العربية"، تخرج من أكاديمية الفنون الجميلة بغداد، يلحن ويغني الشعر الراقي',e:1},
+    {n:'عمرو دياب',d:'مطرب مصري من بورسعيد لُقِّب بـ"نجم البحر المتوسط"، فاز بجائزة الموسيقى العالمية أربع مرات، يمزج الموسيقى الشرقية بالغربية',e:1},
+    {n:'نانسي عجرم',d:'مغنية لبنانية انطلقت مطلع الألفية الثالثة، اشتهرت بأغاني البوب الراقصة، من أبرز سفيرات الأغنية العربية في العالم',e:1},
+    {n:'فيروز',d:'مغنية لبنانية أسطورية، تُعدّ من أعظم الأصوات في تاريخ الموسيقى العربية، بدأت الخمسينيات، أغانيها الصباحية أيقونة لبنانية',e:1},
+    {n:'هيفاء وهبي',d:'مغنية وممثلة لبنانية، برزت أوائل الألفية الثالثة، اشتهرت بأغانيها الراقصة وإطلالتها اللافتة وأدوارها الفنية المثيرة',e:2},
+    {n:'تامر حسني',d:'مطرب وممثل مصري، نجم جيل الألفية الثالثة في مصر، اشتهر بالأغاني الرومانسية والأفلام الكوميدية الخفيفة',e:2},
+    {n:'وليد الشامي',d:'مطرب سعودي من الرياض، برز منتصف الألفية الثالثة، صوته رومانسي ناعم، اشتهر بالأغاني العاطفية الخليجية الهادئة',e:2},
+    {n:'حسين الجسمي',d:'مطرب إماراتي، أحد أبرز الأصوات الإماراتية عربياً، اشتهر بأغانيه الوطنية والعاطفية، صوت قوي ومميز',e:2},
+    {n:'بلقيس',d:'مغنية سعودية يمنية الأصل، برزت السنوات الأخيرة كواحدة من أبرز الأصوات النسائية الخليجية الجديدة',e:2},
+    {n:'أصالة',d:'مغنية سورية من دمشق، واحدة من أبرز الأصوات النسائية العربية منذ التسعينيات، تمزج الطرب بالأغنية المعاصرة',e:2},
+    {n:'فضل شاكر',d:'مطرب لبناني، من أبرز أصوات التسعينيات والألفية في لبنان، اشتهر بأغانيه العاطفية الحماسية وصوته الجهوري',e:2},
+    {n:'محمد المقيط',d:'منشد سعودي شاب، برز عبر الإنترنت بأناشيد إسلامية رقيقة، اشتهر بصوته الجميل وكلماته الدينية التأملية الهادئة',e:2},
+    {n:'أبو بكر سالم',d:'مطرب سعودي راحل من الأحساء، من رواد الطرب الخليجي في السبعينيات والثمانينيات، بصمة فنية مميزة في تاريخ الأغنية الخليجية',e:3},
+    {n:'شادي الخليج',d:'مطرب سعودي من رواد الغناء الخليجي في الستينيات والسبعينيات، يُعدّ من المؤسسين الأوائل للأغنية الخليجية الحديثة',e:3},
+  ],
+  '🌍 مغنيين أجانب': [
+    {n:'مايكل جاكسون',d:'مطرب أمريكي لُقِّب بـ"ملك البوب"، من أكثر الفنانين مبيعاً في التاريخ، اشتهر بخطوة المشي القمري وألبوم Thriller',e:1},
+    {n:'تايلور سويفت',d:'مغنية أمريكية بدأت بالكانتري ثم تحولت للبوب، من أعلى الفنانين دخلاً في العالم، تكتب أغانيها عن علاقاتها العاطفية',e:1},
+    {n:'بيونسيه',d:'مغنية أمريكية بدأت مع فرقة Destiny\'s Child، أيقونة في حقوق المرأة والثقافة السوداء الأمريكية، زوجة Jay-Z',e:1},
+    {n:'ريهانا',d:'مغنية من جزيرة باربادوس، من أكثر الفنانات مبيعاً في العالم، معروفة أيضاً بعلامتها التجارية Fenty Beauty',e:1},
+    {n:'إد شيران',d:'مغني بريطاني ذو شعر أحمر، يعزف الغيتار منفرداً، من أكثر الفنانين استماعاً على Spotify، كتب أغاني لفنانين كثيرين',e:1},
+    {n:'أديل',d:'مغنية بريطانية ذات صوت قوي عميق، اشتهرت بأغاني الحزن والفراق، فازت بعدد كبير من جوائز Grammy',e:1},
+    {n:'شاكيرا',d:'مغنية كولومبية، اشتهرت بغناء اللاتينو والبوب الدولي، ظهرت في كأس العالم 2010 بأغنية Waka Waka الشهيرة',e:1},
+    {n:'إمينم',d:'مغني راب أمريكي أبيض من ديترويت، يُعدّ من أسرع المغنين إلقاءً في الراب، اشتهر بالنقد الاجتماعي الحاد وقصته الصعبة',e:2},
+    {n:'دريك',d:'مغني راب وبوب كندي من تورنتو، بدأ ممثلاً في مسلسل Degrassi، من أكثر الفنانين تحقيقاً للأرقام القياسية في التدفق الرقمي',e:2},
+    {n:'جاستن بيبر',d:'مطرب كندي اكتشفه سكوتر براون عبر يوتيوب وهو مراهق، نجم بوب عالمي، تزوج من هايلي بالدوين',e:1},
+    {n:'أريانا غراندي',d:'مغنية أمريكية بدأت ممثلة في نيكيلوديون، اشتهرت بصوتها العالي وذيل شعرها العالي، عاشت حادثة مانشستر أرينا المؤلمة',e:2},
+    {n:'برونو مارس',d:'مغني أمريكي من هاواي بأصول فلبينية وبورتوريكية، يمزج البوب بالفانك والسول والراب، يُعدّ من أفضل المؤدين على المسرح',e:2},
+    {n:'ليدي غاغا',d:'مغنية وممثلة أمريكية، اشتهرت بأزيائها الصادمة وأغانيها الإلكترونية، فازت بأوسكار عن فيلم A Star Is Born',e:2},
+    {n:'ذا ويكند',d:'مغني كندي من أصل إثيوبي، اشتهر بأسلوبه الغامق وأغاني الـ R&B الحزينة، من أكثر الفنانين استماعاً على المنصات الرقمية',e:2},
+    {n:'بيلي إيليش',d:'مغنية أمريكية شابة من لوس أنجلوس، فازت بخمس جوائز Grammy وعمرها 18 سنة، أيقونة الجيل Z بأسلوبها الغامق المختلف',e:2},
+    {n:'بوست مالون',d:'مغني راب وبوب أمريكي، يتميز بوشومه الكثيرة في وجهه، يمزج بين الراب والروك والبوب، اسمه الحقيقي أوستن بوست',e:3},
+    {n:'باد بني',d:'مغني راب وريغيتون بورتوريكي، أكثر فنان استماعاً على Spotify لسنوات متتالية، غنى بالإسبانية وحقق نجاحاً عالمياً',e:2},
+    {n:'كندريك لامار',d:'مغني راب أمريكي من كومبتون، فاز بجائزة بوليتزر عن موسيقاه، يُعدّ من أعمق فناني الراب فكرياً وأكثرهم تأثيراً',e:3},
+    {n:'مالوما',d:'مغني ريغيتون وبوب لاتيني كولومبي، من أبرز نجوم الموسيقى اللاتينية في العقد الثالث من الألفية، يتميز بإطلالته الأنيقة',e:3},
+    {n:'كريس براون',d:'مغني وراقص أمريكي، اشتهر بأغانيه الراقصة ومهاراته الاستثنائية في الرقص، من أبرز فناني الـ R&B في جيله',e:2},
+  ],
+  '⚽ لاعبين سعوديين': [
+    {n:'سامي الجابر',d:'مهاجم سعودي أسطوري لعب للهلال طوال مسيرته، شارك في ثلاثة كؤوس عالم، يُعدّ من أعظم اللاعبين السعوديين تاريخياً',e:2},
+    {n:'ياسر القحطاني',d:'مهاجم سعودي لُقِّب بـ"ملك السالف"، قضى مسيرته في الهلال، من أكثر هدافي الدوري السعودي في التاريخ، اعتزل وأصبح مؤثراً',e:2},
+    {n:'محمد الدعيع',d:'حارس مرمى سعودي أسطوري لُقِّب بـ"الحائط الصيني"، لعب في ثلاثة مونديالات، يُعدّ أفضل حارس في تاريخ كرة القدم السعودية',e:2},
+    {n:'سالم الدوسري',d:'جناح الهلال والمنتخب السعودي، سجل هدفاً خرافياً في كأس العالم 2022 ضد بولندا، من أبرز لاعبي الدوري السعودي الحالي',e:1},
+    {n:'نواف العابد',d:'جناح سعودي سابق، لعب للهلال والشباب والقادسية ومنتخب السعودية، اعتزل مؤخراً وكان من أبرز أجنحة جيله',e:2},
+    {n:'فراس البريكان',d:'مهاجم سعودي يلعب للاتحاد السعودي والمنتخب، من أبرز المهاجمين في الدوري السعودي الحالي وصاحب أهداف مهمة',e:2},
+    {n:'محمد كنو',d:'مهاجم سعودي يلعب للاتحاد السعودي والمنتخب، برز في السنوات الأخيرة كواحد من أبرز المهاجمين السعوديين الشباب',e:2},
+    {n:'ياسر الشهراني',d:'مدافع جانبي أيسر يلعب للهلال والمنتخب السعودي، من أفضل المدافعين الجانبيين في تاريخ كرة القدم السعودية',e:2},
+    {n:'علي البليهي',d:'مدافع يلعب للهلال والمنتخب السعودي، اشتهر بحواره الطريف مع رونالدو في كأس العالم 2022',e:2},
+    {n:'سعود عبدالحميد',d:'مدافع يلعب للهلال والمنتخب السعودي، أحد أبرز مدافعي الجيل الحالي في كرة القدم السعودية',e:2},
+    {n:'سعود كريري',d:'لاعب وسط يلعب للاتحاد السعودي والمنتخب، من لاعبي الوسط المميزين في الدوري السعودي الحالي',e:2},
+    {n:'يحيى الشهري',d:'مهاجم جناح يلعب للأهلي السعودي والمنتخب، أحد الوجوه الشابة الواعدة في كرة القدم السعودية',e:3},
+    {n:'صالح الشهري',d:'جناح أيمن يلعب في الدوري السعودي والمنتخب، سجل هدفاً في كأس العالم 2022 ضد الأرجنتين',e:3},
+    {n:'سلطان الغنام',d:'مدافع جانبي يلعب للهلال والمنتخب السعودي، أحد عناصر دفاع المنتخب في المرحلة الحالية',e:3},
+    {n:'عبدالإله العمري',d:'لاعب وسط سعودي من الجيل الأكبر، لعب للاتحاد والمنتخب، من الوجوه البارزة في الكرة السعودية',e:3},
+    {n:'هتان باهبري',d:'لاعب وسط يلعب للهلال والمنتخب السعودي، أحد الموهوبين في الدوري السعودي للمحترفين',e:3},
+    {n:'محمد البريك',d:'مدافع يلعب للنصر والمنتخب السعودي، من عناصر خط الدفاع في المنتخب الوطني',e:3},
+    {n:'عمر هوساوي',d:'حارس مرمى يلعب للاتحاد السعودي والمنتخب، أحد أبرز حراس المرمى في الدوري السعودي الحالي',e:3},
+    {n:'يوسف بيسمي',d:'لاعب وسط يلعب في الدوري السعودي للمحترفين، من الوجوه الشابة في الكرة السعودية',e:3},
+    {n:'طارق التايب',d:'مهاجم سعودي لعب لعدة أندية في الدوري السعودي، من اللاعبين الذين تنقلوا بين أندية الدوري السعودي',e:3},
+  ],
+  '⭐ أجانب في الدوري': [
+    {n:'كريستيانو رونالدو',d:'مهاجم برتغالي، 5 دوري أبطال أوروبا، 5 بالون دور، انضم للنصر السعودي يناير 2023 في صفقة تاريخية',e:1},
+    {n:'نيمار',d:'مهاجم برازيلي، انتقل من باريس سان جيرمان للهلال السعودي صيف 2023، ثالث أغلى انتقال في تاريخ كرة القدم',e:1},
+    {n:'كريم بنزيمة',d:'مهاجم فرنسي من أصل جزائري، فاز ببالون دور 2022 مع ريال مدريد، انضم للاتحاد السعودي صيف 2023',e:1},
+    {n:'ريياد محرز',d:'جناح جزائري، فاز بدوري إنجليزي مع مانشستر سيتي، انضم للأهلي السعودي، لاعب ماكر وسريع',e:2},
+    {n:'سيديو مانيه',d:'مهاجم سنغالي، فاز بدوري أبطال أوروبا مع ليفربول، انضم للنصر السعودي، من أسرع المهاجمين في العالم',e:2},
+    {n:'إن غولو كانتي',d:'لاعب وسط فرنسي، فاز بكأس العالم 2018 ودوري الأبطال مع تشيلسي، انضم للاتحاد السعودي',e:2},
+    {n:'روبرتو فيرمينو',d:'مهاجم برازيلي، شكّل الثلاثي الشهير مع صلاح وماني في ليفربول، انضم للاتحاد السعودي',e:2},
+    {n:'مالكوم',d:'جناح برازيلي، انتقل من زينيت الروسي للهلال السعودي، يتميز بسرعته الفائقة ومراوغته الاستثنائية',e:3},
+    {n:'أليكساندر ميتروفيتش',d:'مهاجم صربي، هداف الدوري الإنجليزي لموسم 2022-23 بـ36 هدفاً، انضم للهلال السعودي',e:3},
+    {n:'سيرجيي ميلينكوفيتش سافيتش',d:'لاعب وسط صربي طويل القامة، ألمع لاعب في لاتسيو الإيطالي لسنوات، انضم للهلال السعودي',e:3},
+    {n:'ماركيلو بروزوفيتش',d:'لاعب وسط كرواتي، من أبرز وجوه المنتخب الكرواتي، انضم للنصر السعودي بعد مسيرة طويلة مع إنتر ميلان',e:3},
+    {n:'روبن نيفيز',d:'لاعب وسط برتغالي، من أبرز لاعبي وولفرهامبتون الإنجليزي لسنوات، انضم للهلال السعودي',e:3},
+    {n:'كاليدو كوليبالي',d:'مدافع سنغالي ضخم، من أبرز المدافعين في نابولي وتشيلسي، انضم للهلال السعودي',e:3},
+    {n:'إيفان توني',d:'مهاجم إنجليزي من أبرز هدافي الدوري الإنجليزي مع برينتفورد، انضم للأهلي السعودي',e:3},
+    {n:'فابينيو',d:'لاعب وسط دفاعي برازيلي، ركيزة وسط ليفربول لسنوات مع يورغن كلوب، انضم للاتحاد السعودي',e:3},
+    {n:'جوردان هندرسون',d:'لاعب وسط إنجليزي، قاد ليفربول لحصد الألقاب كقائد، انضم للاتحاد السعودي ثم عاد لأوروبا',e:3},
+    {n:'سيكو فوفانا',d:'لاعب وسط فرنسي من أصل غيني، برز مع لانس الفرنسي، انضم للنصر السعودي',e:3},
+    {n:'أوتافيو',d:'جناح برتغالي، من أبرز لاعبي بورتو الكبير لسنوات طويلة، انضم للنصر السعودي',e:3},
+    {n:'خوتا',d:'جناح برتغالي من مواليد الكاب فيردي، اشتهر مع وولفرهامبتون الإنجليزي، انضم للاتحاد السعودي',e:3},
+    {n:'آلان سان ماكسيمان',d:'جناح فرنسي اشتهر بمراوغاته الاستعراضية في نيوكاسل، انضم للأهلي السعودي، أسلوبه فردي مميز جداً',e:3},
+  ],
+  '🎬 ممثلين سعوديين': [
+    {n:'ناصر القصبي',d:'ممثل كوميدي سعودي، نجم مسلسل "طاش ما طاش" الشهير الذي امتد لعقود، أبرز وجوه المسرح والتلفزيون السعودي',e:1},
+    {n:'عبدالله السدحان',d:'ممثل وكوميديان سعودي، شريك ناصر القصبي في طاش ما طاش، اشتهر بأدواره الكوميدية المتنوعة والمؤثرة',e:1},
+    {n:'محمد الغامدي',d:'ممثل سعودي بارز، من أبرز الوجوه في الدراما الخليجية والسعودية، يؤدي الأدوار الجادة والكوميدية',e:2},
+    {n:'راشد الشمراني',d:'ممثل سعودي مميز، يتنوع بين الأدوار الجادة والكوميدية في الدراما السعودية والخليجية',e:2},
+    {n:'عبدالله طلبة',d:'ممثل سعودي بارز في التلفزيون السعودي، وجه مألوف في الدراما الاجتماعية والكوميدية',e:2},
+    {n:'هند الفهاد',d:'ممثلة سعودية، من أبرز الوجوه النسائية في الدراما السعودية، تؤدي أدوار متنوعة بعمق وإتقان',e:2},
+    {n:'دلال مبارك',d:'فنانة سعودية متعددة المواهب بين التمثيل والغناء، من الوجوه المحبوبة في الوسط الفني السعودي',e:2},
+    {n:'سعد الحريفي',d:'ممثل سعودي اشتهر بأدواره الكوميدية، وجه مألوف في المسلسلات والبرامج الترفيهية السعودية',e:2},
+    {n:'أيمن زيدان',d:'ممثل سوري من أبرز النجوم في الدراما العربية، حضور قوي في الأعمال الخليجية والعربية المشتركة',e:2},
+    {n:'كيان السنيدي',d:'ممثلة سعودية شابة من أبرز الوجوه الجديدة في الدراما السعودية المعاصرة',e:2},
+    {n:'إلهام علي',d:'ممثلة سعودية بارزة في الدراما الاجتماعية، وجه معروف في المسلسلات السعودية والخليجية',e:2},
+    {n:'محمد أبو هوساوي',d:'ممثل سعودي كوميدي، يتميز بأداء خفيف الظل وشخصيات مضحكة في الدراما السعودية',e:3},
+    {n:'عبدالرحمن آل رشي',d:'ممثل سعودي من الوجوه المتكررة في الأعمال الدرامية السعودية والخليجية',e:3},
+    {n:'مروان الغامدي',d:'ممثل سعودي يظهر في أعمال درامية متعددة في التلفزيون السعودي',e:3},
+    {n:'صالح الزهراني',d:'ممثل سعودي مميز يؤدي أدواراً متنوعة في الدراما السعودية المحلية',e:3},
+    {n:'سامي الزهراني',d:'ممثل سعودي يشارك في أعمال درامية وكوميدية في التلفزيون السعودي',e:3},
+    {n:'يوسف الجراح',d:'ممثل سعودي من الوجوه المميزة التي تؤدي أدواراً درامية ذات عمق في التلفزيون السعودي',e:3},
+    {n:'حياة الفهد',d:'ممثلة كويتية كبيرة، أيقونة الدراما الخليجية منذ عقود، تُعدّ من أعظم الممثلات العرب',e:2},
+    {n:'سعد العجيبة',d:'ممثل سعودي كوميدي، يشارك في مسلسلات وأعمال درامية كوميدية في التلفزيون السعودي',e:3},
+    {n:'عبدالله العمري',d:'ممثل سعودي يشارك في أعمال درامية متنوعة في التلفزيون والمسرح السعودي',e:3},
+  ],
+  '🎙️ مقدمين سعوديين': [
+    {n:'أحمد الشقيري',d:'مقدم برنامج "خواطر" الرمضاني الشهير، مفكر وكاتب سعودي، برنامجه من أكثر البرامج متابعة في السعودية لسنوات',e:1},
+    {n:'وليد الفراج',d:'مقدم رياضي سعودي، صوت كرة القدم السعودية بامتياز، معلق ومحلل رياضي بارز على القنوات الرياضية',e:1},
+    {n:'داود الشريان',d:'مقدم ومذيع سعودي عريق، قدم برامج عدة أبرزها "ثرثرة"، وجه تلفزيوني مألوف منذ عقود',e:2},
+    {n:'تركي الدخيل',d:'إعلامي وكاتب سعودي، رئيس قناة العربية سابقاً، مقدم ومحلل سياسي وثقافي بارز',e:2},
+    {n:'منى أبو سليمان',d:'مقدمة ومحاورة سعودية، من أبرز وجوه البرامج الاجتماعية والتنموية، سفيرة أممية سابقة',e:2},
+    {n:'بدر صالح',d:'مقدم وكوميديان سعودي، يجمع بين تقديم البرامج الترفيهية والكوميديا، وجه شبابي محبوب',e:2},
+    {n:'لجين عمران',d:'مذيعة ومقدمة سعودية بارزة، من الوجوه النسائية المعروفة في الإعلام السعودي',e:2},
+    {n:'عبدالله المديفر',d:'مقدم ومذيع تلفزيوني سعودي، وجه مألوف في القنوات السعودية',e:2},
+    {n:'محمد الخميسي',d:'مقدم وإعلامي سعودي يظهر في برامج متنوعة في التلفزيون السعودي',e:3},
+    {n:'فيصل المطيري',d:'مقدم وإعلامي سعودي، وجه معروف في البرامج الرياضية والترفيهية',e:3},
+    {n:'ساهر الصامت',d:'مقدم سعودي اشتهر بتقديم البرامج الاجتماعية والحوارية في التلفزيون السعودي',e:3},
+    {n:'عمر عبدالعزيز',d:'إعلامي وناشط سعودي، يقدم محتوى على منصات التواصل الاجتماعي ويعلق على الشأن العام',e:2},
+    {n:'عصام الزامل',d:'كاتب ومحلل اقتصادي سعودي بارز، يظهر في برامج الحوار الاقتصادي والتحليل المالي',e:3},
+    {n:'رانيا العامري',d:'مقدمة سعودية تظهر في برامج ترفيهية واجتماعية في التلفزيون السعودي',e:3},
+    {n:'خالد الجمعة',d:'مقدم وإعلامي سعودي معروف في المشهد الإعلامي السعودي',e:3},
+    {n:'فهد الصقعبي',d:'إعلامي سعودي يشارك في برامج ترفيهية ورياضية في التلفزيون السعودي',e:3},
+    {n:'عبدالله بادحدح',d:'مقدم سعودي اشتهر بتقديم البرامج الدينية والثقافية',e:3},
+    {n:'جمال نمر',d:'مقدم سعودي معروف بتقديم البرامج الترفيهية والحوارية',e:3},
+    {n:'محمد الربيعة',d:'إعلامي سعودي يظهر في برامج الحوار والتحليل على القنوات السعودية',e:3},
+    {n:'إبراهيم السكران',d:'شيخ وكاتب ومفكر سعودي، يقدم محتوى دينياً وفكرياً عبر منصات التواصل الاجتماعي',e:3},
+  ],
+  '📱 مؤثرين سعوديين': [
+    {n:'فوز العتيبي',d:'يوتيوبر سعودية، من أوائل وأشهر المؤثرات في السعودية، تنشر محتوى الحياة اليومية والترفيه والسفر',e:2},
+    {n:'عبدالله يايا',d:'مؤثر وكوميديان سعودي شاب، اشتهر بمقاطعه الكوميدية الطريفة على سناب وانستقرام',e:2},
+    {n:'أسيل عمران',d:'مغنية ومؤثرة سعودية، واحدة من أولى المغنيات السعوديات في العصر الحديث، حضور قوي على المنصات',e:2},
+    {n:'سارة الودعاني',d:'مؤثرة سعودية في الموضة والأناقة ومحتوى البيوتي، من أبرز المؤثرات السعوديات',e:2},
+    {n:'هيا الخديدي',d:'مؤثرة سعودية تنشر محتوى متنوعاً على منصات التواصل الاجتماعي',e:2},
+    {n:'خالد النمر',d:'مؤثر سعودي ينشر محتوى متنوعاً على منصات التواصل الاجتماعي، حضور شبابي مميز',e:2},
+    {n:'أنس مروان',d:'يوتيوبر ومؤثر سعودي، ينشر فيديوهات ترفيهية وتحديات على يوتيوب وسناب',e:2},
+    {n:'رونق',d:'مؤثرة سعودية متخصصة في محتوى الطبخ وتنظيم المنزل والحياة الأسرية',e:2},
+    {n:'عبدالله الفضالة',d:'مؤثر سعودي ومحلل رياضي، يقدم آراءه في الشأن الرياضي السعودي عبر المنصات',e:2},
+    {n:'لمار الحسيني',d:'مؤثرة سعودية تنشر محتوى التجميل والأزياء والحياة اليومية',e:3},
+    {n:'ندى قطان',d:'مؤثرة سعودية، من الوجوه النشطة على منصات التواصل الاجتماعي السعودية',e:3},
+    {n:'مشاعل الشمري',d:'مؤثرة سعودية تنشر محتوى متنوعاً بين الترفيه والحياة اليومية',e:3},
+    {n:'أبو فلة',d:'مؤثر سعودي كوميدي، اشتهر بشخصية مضحكة ومقاطع فكاهية تداولها الجمهور السعودي',e:2},
+    {n:'بنده',d:'مؤثرة خليجية محبوبة جداً في السعودية، تنشر محتوى ترفيهياً خفيف الظل',e:2},
+    {n:'وجدان الفهد',d:'مؤثرة سعودية تنشر محتوى متنوعاً بين الطبخ والسفر والحياة اليومية',e:3},
+    {n:'صالح الراشد',d:'مؤثر سعودي نشط على منصات التواصل الاجتماعي بمحتوى متنوع',e:3},
+    {n:'حمد السعيد',d:'مؤثر سعودي شاب، يقدم محتوى ترفيهياً على منصات التواصل الاجتماعي',e:3},
+    {n:'خالد العقيل',d:'مؤثر سعودي يتناول موضوعات متنوعة عبر منصاته على التواصل الاجتماعي',e:3},
+    {n:'ريم البلوي',d:'مؤثرة سعودية تنشر محتوى التجميل والحياة اليومية والسفر',e:3},
+    {n:'سهيل الجميل',d:'مؤثر سعودي ينشر محتوى ترفيهياً وتحديات على منصات التواصل الاجتماعي',e:3},
+  ],
+  '🦸 شخصيات خيالية': [
+    {n:'سبايدرمان',d:'شخصية مارفل، مراهق اسمه بيتر باركر من نيويورك، لدغته عنكبوت مشع أعطاه قوة التسلق وإطلاق خيوط العنكبوت',e:1},
+    {n:'باتمان',d:'شخصية DC، رجل ثري اسمه بروس واين من غوثام سيتي، بدون قوى خارقة، يعتمد على الثروة والذكاء والتدريب',e:1},
+    {n:'آيرون مان',d:'شخصية مارفل، العبقري الثري توني ستارك، يرتدي بدلة مدرعة متطورة يبنيها بنفسه، مات في Avengers Endgame',e:1},
+    {n:'جوكر',d:'أشهر أعداء باتمان في DC، شرير مجنون يرتدي مكياج المهرج، فلسفته تقوم على الفوضى، تعددت تجسيداته السينمائية',e:1},
+    {n:'ناروتو',d:'بطل مسلسل أنمي ياباني، شاب لديه روح ثعلب تسعة الذيول بداخله، حلمه أن يصبح هوكاغي قريته نينجا',e:2},
+    {n:'غوكو',d:'بطل مسلسل Dragon Ball Z، سايان من الفضاء نشأ على الأرض، يتحول لـ Super Saiyan، يحب القتال ويحمي الأرض',e:2},
+    {n:'لوفي',d:'بطل مسلسل One Piece، قرصان شاب أكل ثمرة المطاط فأصبح جسمه مطاطاً، يبحث عن كنز الملك الذهبي',e:2},
+    {n:'ميكاسا أكرمان',d:'شخصية من مسلسل Attack on Titan، محاربة استثنائية، أفضل جندي في جيلها، صديقة إيرين يغر منذ الطفولة',e:2},
+    {n:'دارث فادر',d:'الشرير الأشهر في حرب النجوم، يرتدي بدلة سوداء كاملة ويتنفس بصوت مميز، كان جيداي قبل أن يتحول للجانب المظلم',e:2},
+    {n:'هرميون غرانجر',d:'من سلسلة هاري بوتر، الطالبة الأذكى في مدرسة هوغوورتس للسحر، أفضل أصدقاء هاري بوتر',e:2},
+    {n:'شيرلوك هولمز',d:'المحقق الخيالي الأشهر في الأدب الإنجليزي، يسكن في 221B Baker Street لندن، يحل الجرائم بالملاحظة الدقيقة',e:2},
+    {n:'سيمبا',d:'بطل فيلم ديزني The Lion King، أسد يتيم فقد أباه موفاسا بمؤامرة عمه سكار، يسترجع عرشه في نهاية المطاف',e:1},
+    {n:'إلسا',d:'ملكة في فيلم ديزني Frozen، تمتلك قوة التجميد، أغنيتها "Let It Go" من أشهر أغاني ديزني على الإطلاق',e:1},
+    {n:'ماريو',d:'شخصية ألعاب نينتندو الأشهر، سبّاك إيطالي يرتدي قبعة حمراء وشارب كثيف، ينقذ الأميرة من براوزر',e:1},
+    {n:'سونيك',d:'شخصية ألعاب سيغا، قنفذ أزرق فائق السرعة، عدوه الدكتور إيغمان، تحول لفيلم سينمائي ناجح',e:2},
+    {n:'كريتوس',d:'بطل لعبة God of War، محارب إسباطي تحول إلى إله الحرب الإغريقي ثم انتقل لأساطير الفايكنج',e:3},
+    {n:'ماستر تشيف',d:'بطل لعبة Halo، جندي سبارتاني مستقبلي يرتدي درعاً خضراء ويحارب كائنات الكوفينانت الفضائية',e:3},
+    {n:'زورو',d:'من مسلسل One Piece، صياد القراصنة وأول أعضاء طاقم لوفي، يقاتل بثلاثة سيوف، حلمه أن يصبح أفضل مقاتل',e:3},
+    {n:'باكوغو',d:'من مسلسل My Hero Academia، طالب متفوق وعدواني، يطلق انفجارات من كفيه، منافس إيزوكو ميدوريا',e:3},
+    {n:'دارث مول',d:'شرير Star Wars يظهر في الحلقة الأولى، وجهه مطلي بالأحمر والأسود مع قرون، يحمل سابر ضوئي مزدوجاً',e:3},
+  ],
+  '🏛️ شخصيات تاريخية': [
+    {n:'صلاح الدين الأيوبي',d:'قائد إسلامي كردي الأصل، حرر بيت المقدس من الصليبيين عام 1187م، مؤسس الدولة الأيوبية في مصر والشام',e:2},
+    {n:'الملك عبدالعزيز',d:'مؤسس المملكة العربية السعودية عام 1932م، وحّد الجزيرة العربية تحت راية واحدة، أبو الملوك السعوديين',e:2},
+    {n:'الإسكندر الأكبر',d:'ملك مقدوني، أعظم القادة العسكريين في التاريخ، بنى إمبراطورية من اليونان حتى الهند وعمره ثلاثون عاماً',e:2},
+    {n:'نابليون بونابرت',d:'إمبراطور فرنسي من أصل كورسيكي، قاد حملات عسكرية غيّرت وجه أوروبا، نُفي مرتين وتوفي في منفاه',e:2},
+    {n:'كليوباترا',d:'ملكة مصر الفرعونية الأشهر، آخر حاكم فرعوني، ارتبطت بيوليوس قيصر ومارك أنطونيو، تكلمت تسع لغات',e:2},
+    {n:'محمد الفاتح',d:'سلطان عثماني فتح القسطنطينية عام 1453م وأنهى الإمبراطورية البيزنطية وعمره 21 سنة فقط',e:3},
+    {n:'ابن بطوطة',d:'رحالة مغربي من طنجة، قطع أكثر من 120,000 كيلومتر في رحلاته عبر آسيا وأفريقيا في القرن الرابع عشر',e:3},
+    {n:'ابن سينا',d:'عالم وفيلسوف وطبيب من آسيا الوسطى، كتب القانون في الطب الذي كان مرجعاً لأوروبا قروناً طويلة',e:3},
+    {n:'الخوارزمي',d:'عالم رياضيات مسلم، مؤسس علم الجبر، اسمه أصل كلمة Algorithm في الإنجليزية، عاش في بغداد العباسية',e:3},
+    {n:'المتنبي',d:'شاعر عربي من الكوفة، يُعدّ من أعظم شعراء العربية على الإطلاق، كان يدّعي النبوة في شبابه',e:3},
+    {n:'عمر المختار',d:'مقاوم ليبي شيخ، قاد المقاومة ضد الاحتلال الإيطالي، لُقِّب بـ"أسد الصحراء"، أُعدم عام 1931',e:2},
+    {n:'جمال عبدالناصر',d:'رئيس مصر، قاد ثورة يوليو 1952، أمّم قناة السويس، أيقونة القومية العربية في القرن العشرين',e:2},
+    {n:'نيلسون مانديلا',d:'زعيم جنوب أفريقيا، قضى 27 سنة في السجن بسبب مقاومة الفصل العنصري، أصبح رئيساً وفاز بنوبل للسلام',e:2},
+    {n:'مارتن لوثر كينغ',d:'قائد حقوق المدنية الأمريكي، زعيم حركة الحقوق المدنية للسود، خطابه الشهير "I Have a Dream"',e:2},
+    {n:'المهاتما غاندي',d:'زعيم استقلال الهند عن بريطانيا، اعتمد المقاومة السلبية وعدم العنف كسلاح سياسي فريد',e:3},
+    {n:'الملكة إليزابيث الثانية',d:'ملكة بريطانيا الأطول حكماً في التاريخ، حكمت من 1952 حتى وفاتها 2022، رمز للاستقرار البريطاني',e:2},
+    {n:'يوليوس قيصر',d:'قائد روماني عظيم، وسّع الإمبراطورية الرومانية، ادّعى قرناؤه أنه يريد أن يصبح ملكاً فاغتالوه',e:3},
+    {n:'أبراهام لنكولن',d:'الرئيس الأمريكي السادس عشر، ألغى العبودية في الولايات المتحدة، اغتيل في مسرح فورد عام 1865',e:2},
+    {n:'الملك فيصل بن عبدالعزيز',d:'ملك المملكة العربية السعودية، قاد قرار حظر النفط 1973، اغتيل عام 1975، أحد أبرز ملوك السعودية',e:3},
+    {n:'تشي غيفارا',d:'ثوري أرجنتيني، شارك في ثورات كوبا وبوليفيا، صورته على القميص أيقونة سياسية عالمية حتى اليوم',e:3},
+  ],
+  '💼 رجال أعمال': [
+    {n:'إيلون ماسك',d:'مؤسس تيسلا وسبيس إكس وشركات أخرى، أغنى شخص في العالم في فترات عدة، اشترى تويتر وحوّله لـX',e:1},
+    {n:'ستيف جوبز',d:'مؤسس شركة آبل مع ستيف وزنياك، أطلق iPhone وiPad وMac، يُعدّ من أعظم رجال الأعمال، توفي 2011',e:1},
+    {n:'بيل غيتس',d:'مؤسس مايكروسوفت، كان أغنى شخص في العالم لسنوات، يتبرع الآن بمليارات لمشاريع صحية وتعليمية عالمية',e:1},
+    {n:'مارك زوكربيرغ',d:'مؤسس فيسبوك Meta، أسسه في هارفارد عام 2004، يمتلك فيسبوك وانستقرام وواتساب',e:1},
+    {n:'جيف بيزوس',d:'مؤسس أمازون، بدأها كمتجر كتب من مرآب بيته عام 1994، توسعت لأكبر متجر إلكتروني في العالم',e:1},
+    {n:'الأمير الوليد بن طلال',d:'مستثمر سعودي حفيد الملك عبدالعزيز، من أكبر المستثمرين في العالم، يمتلك حصصاً في كبرى شركات العالم',e:2},
+    {n:'جاك ما',d:'مؤسس علي بابا الصيني، بدأ مدرساً للغة الإنجليزية، حوّل رفضه من أمازون لشركة تنافسها في آسيا',e:2},
+    {n:'وارن بافيت',d:'مستثمر أمريكي لُقِّب بـ"حكيم أوماها"، من أغنى الناس في العالم بفضل استثمارات طويلة المدى في الشركات الكبرى',e:2},
+    {n:'سام ألتمان',d:'الرئيس التنفيذي لشركة OpenAI مطوّرة ChatGPT، أحد أبرز رواد الذكاء الاصطناعي في العالم',e:2},
+    {n:'لاري بيج',d:'مؤسس غوغل مع سيرجي برين، طالب دكتوراه في ستانفورد اخترع محرك البحث الأشهر في العالم',e:2},
+    {n:'ساتيا ناديلا',d:'الرئيس التنفيذي لمايكروسوفت، هندي الأصل، قاد تحول الشركة نحو الحوسبة السحابية وضخ في الذكاء الاصطناعي',e:3},
+    {n:'سنداي بيتشاي',d:'الرئيس التنفيذي لشركة غوغل وألفابت، هندي الأصل، أشرف على توسع غوغل في مجالات متعددة',e:3},
+    {n:'محمد العبار',d:'رجل أعمال إماراتي، مؤسس شركة إعمار العقارية التي بنت برج خليفة أطول مبنى في العالم',e:3},
+    {n:'تيم كوك',d:'الرئيس التنفيذي لآبل خلفاً لستيف جوبز، قاد الشركة لتصبح أول شركة تتجاوز قيمتها ثلاثة تريليونات دولار',e:2},
+    {n:'ريد هاستينغز',d:'مؤسس نتفليكس، بدأها عام 1997 كخدمة تأجير الأقراص بالبريد قبل أن تتحول لأكبر منصة بث في العالم',e:3},
+    {n:'روبرت كيوساكي',d:'كاتب ورجل أعمال أمريكي، مؤلف كتاب "أبي الغني أبي الفقير" الأكثر مبيعاً في الأعمال والاستثمار',e:2},
+    {n:'برنار أرنو',d:'رجل أعمال فرنسي، مالك مجموعة LVMH التي تضم لويس فيتون وغيرها، من أغنى الناس في العالم',e:3},
+    {n:'شريل ساندبرغ',d:'المديرة التنفيذية لميتا فيسبوك سابقاً، كاتبة كتاب Lean In عن توازن المرأة بين العمل والحياة',e:3},
+    {n:'لاري إليسون',d:'مؤسس شركة أوراكل لقواعد البيانات، من أغنى الناس في العالم، يمتلك شركة حوسبة سحابية كبيرة',e:3},
+    {n:'بوب آيغر',d:'الرئيس التنفيذي لشركة ديزني، قاد الاستحواذ على بيكسار ومارفل وستار وورز وفوكس في صفقات تاريخية',e:3},
+  ],
+  '🏆 رياضيين آخرين': [
+    {n:'محمد علي',d:'ملاكم أمريكي يُعدّ أعظم ملاكم في التاريخ، اشتهر بقوله "أنا الأعظم"، رفض الخدمة العسكرية الأمريكية',e:2},
+    {n:'مايك تايسون',d:'ملاكم أمريكي، أصغر بطل عالمي في الوزن الثقيل، اشتهر بشراسته وقوة ضرباته، عضّ أذن منافسه هوليفيلد',e:2},
+    {n:'مايكل جوردان',d:'لاعب كرة سلة أمريكي، يُعدّ الأعظم في التاريخ، فاز بـ6 ألقاب مع شيكاغو بولز، ألهم فيلم Space Jam',e:1},
+    {n:'كوبي براينت',d:'لاعب كرة سلة أمريكي لُقِّب بـ"الماما"، فاز بـ5 ألقاب مع ليكرز، توفي في حادثة تحطم مروحية عام 2020',e:2},
+    {n:'ليبرون جيمس',d:'لاعب كرة سلة أمريكي، من أعظم اللاعبين في التاريخ، فاز بألقاب مع ثلاثة أندية مختلفة، يلعب في NBA',e:2},
+    {n:'أوسين بولت',d:'عداء جامايكي، أسرع إنسان في التاريخ، كسر الرقم القياسي في 100 متر و200 متر في أولمبياد بكين',e:2},
+    {n:'روجر فيدرر',d:'لاعب تنس سويسري، فاز بـ20 لقب Grand Slam، يُعدّ من أعظم لاعبي التنس، اعتزل عام 2022',e:2},
+    {n:'رافاييل نادال',d:'لاعب تنس إسباني، لُقِّب بـ"ملك الملاعب الترابية"، فاز بـ22 لقب Grand Slam، بطل رولان غاروس 14 مرة',e:2},
+    {n:'سيرينا ويليامز',d:'لاعبة تنس أمريكية، من أعظم الرياضيين في التاريخ، فازت بـ23 لقب Grand Slam، أيقونة الرياضة النسائية',e:2},
+    {n:'تايغر وودز',d:'لاعب غولف أمريكي، غيّر وجه رياضة الغولف كلياً، فاز بـ15 لقباً في المايجرز، تعافى من حوادث عدة',e:2},
+    {n:'لويس هاميلتون',d:'سائق فورمولا 1 بريطاني، فاز بـ7 ألقاب عالمية مساوياً للرقم القياسي، أول سائق أسود يفوز بلقب F1',e:2},
+    {n:'ماكس فيرستابن',d:'سائق فورمولا 1 هولندي، أصغر فائز بلقب عالمي في F1، هيمن على البطولة بـ4 ألقاب متتالية',e:3},
+    {n:'كونور ماكغريغور',d:'مقاتل MMA إيرلندي، أول من يحمل لقبين في فئتين مختلفتين في UFC في نفس الوقت، شخصية استفزازية',e:3},
+    {n:'مايكل فيلبس',d:'سبّاح أمريكي، الأكثر حصداً للميداليات الأولمبية في التاريخ بـ23 ميدالية ذهبية في مسبح أولمبي',e:3},
+    {n:'فلويد مايويذر',d:'ملاكم أمريكي، تقاعد بسجل 50 انتصار بدون أي هزيمة، من أغنى الرياضيين، لُقِّب بـ"المال"',e:3},
+    {n:'أرنولد شوارزنيغر',d:'بطل كمال الأجسام النمساوي الأمريكي، فاز بـMr. Olympia 7 مرات ثم أصبح ممثلاً ثم حاكماً لكاليفورنيا',e:2},
+    {n:'سيمون بايلز',d:'لاعبة جمباز أمريكية، تُعدّ أعظم لاعبة جمباز في التاريخ، تمتلك حركات أكروباتية تحمل اسمها',e:3},
+    {n:'ستيفن كاري',d:'لاعب كرة سلة أمريكي، غيّر طريقة اللعب بتسديداته الثلاثية الخرافية، فاز بـ4 ألقاب مع غولدن ستيت',e:3},
+    {n:'نوفاك ديوكوفيتش',d:'لاعب تنس صربي، صاحب أكبر عدد من ألقاب الـGrand Slam في التاريخ، منافس فيدرر وناضال الكبير',e:3},
+    {n:'خطاب العتيبي',d:'ملاكم سعودي، من أبرز الرياضيين السعوديين في رياضة الملاكمة على المستوى الدولي',e:3},
+  ],
+};
+
+// ─── Accepted Aliases ────────────────────────────────────────────────────────
+const CHAR_ALIASES = {
+  'كريستيانو رونالدو':['رونالدو','CR7','كريستيانو'],
+  'نيمار':['نيمار جونيور'],
+  'كريم بنزيمة':['بنزيمة'],
+  'ريياد محرز':['محرز'],
+  'سيديو مانيه':['مانيه'],
+  'إن غولو كانتي':['كانتي'],
+  'روبرتو فيرمينو':['فيرمينو'],
+  'مالكوم':['Malcolm'],
+  'أليكساندر ميتروفيتش':['ميتروفيتش'],
+  'سامي الجابر':['الجابر'],
+  'ياسر القحطاني':['القحطاني','ملك السالف'],
+  'محمد الدعيع':['الدعيع','الحائط الصيني'],
+  'سالم الدوسري':['الدوسري'],
+  'نواف العابد':['العابد'],
+  'مايكل جاكسون':['MJ','جاكسون','ملك البوب'],
+  'تايلور سويفت':['تايلور','Taylor'],
+  'بيونسيه':['بيونسي','Beyonce'],
+  'ريهانا':['Rihanna'],
+  'إد شيران':['شيران','Ed Sheeran'],
+  'أديل':['Adele'],
+  'شاكيرا':['Shakira'],
+  'إمينم':['Eminem'],
+  'دريك':['Drake'],
+  'أريانا غراندي':['أريانا','Ariana'],
+  'برونو مارس':['Bruno Mars'],
+  'ليدي غاغا':['غاغا','Lady Gaga'],
+  'ذا ويكند':['The Weeknd','Weeknd'],
+  'بيلي إيليش':['Billie Eilish'],
+  'مايكل جوردان':['جوردان','Jordan','MJ'],
+  'كوبي براينت':['الماما','Kobe'],
+  'ليبرون جيمس':['ليبرون','LeBron'],
+  'أوسين بولت':['بولت','Bolt'],
+  'محمد علي':['Cassius Clay','علي'],
+  'مايك تايسون':['تايسون','Tyson'],
+  'فلويد مايويذر':['مايويذر','Money'],
+  'روجر فيدرر':['فيدرر','Federer'],
+  'رافاييل نادال':['نادال','Nadal'],
+  'سيرينا ويليامز':['ويليامز','Serena'],
+  'تايغر وودز':['وودز','Tiger'],
+  'لويس هاميلتون':['هاميلتون','Hamilton'],
+  'إيلون ماسك':['ماسك','Musk'],
+  'ستيف جوبز':['جوبز','Jobs'],
+  'بيل غيتس':['غيتس','Gates'],
+  'مارك زوكربيرغ':['زوكر','زوكربيرغ','Zuckerberg'],
+  'جيف بيزوس':['بيزوس','Bezos'],
+  'الأمير الوليد بن طلال':['الوليد بن طلال','الوليد'],
+  'جاك ما':['Jack Ma'],
+  'صلاح الدين الأيوبي':['صلاح الدين'],
+  'الملك عبدالعزيز':['ابن سعود','عبدالعزيز'],
+  'الإسكندر الأكبر':['الإسكندر','Alexander'],
+  'نابليون بونابرت':['نابليون','Napoleon'],
+  'محمد الفاتح':['الفاتح'],
+  'نيلسون مانديلا':['مانديلا','Mandela'],
+  'مارتن لوثر كينغ':['Martin Luther King','MLK'],
+  'محمد عبده':['فنان العرب'],
+  'كاظم الساهر':['قيصر الأغنية'],
+  'عمرو دياب':['الهضبة','هضبة'],
+  'ناصر القصبي':['القصبي'],
+  'عبدالله السدحان':['السدحان'],
+  'أحمد الشقيري':['الشقيري'],
+  'وليد الفراج':['الفراج'],
+  'سبايدرمان':['بيتر باركر','Spiderman','Spider-Man'],
+  'باتمان':['بروس واين','Bruce Wayne','Batman'],
+  'آيرون مان':['توني ستارك','Tony Stark','Iron Man'],
+  'جوكر':['Joker'],
+  'ناروتو':['Naruto','ناروتو أوزوماكي'],
+  'غوكو':['Goku','Son Goku'],
+  'لوفي':['Luffy','مونكي دي لوفي'],
+};
+
+const aliasItems = [];
+
+function addAliasTag(e) {
+  if (e.key !== 'Enter') return;
+  addAliasTagBtn();
+}
+function addAliasTagBtn() {
+  const val = qs('#aliases-input').value.trim();
+  if (!val || aliasItems.includes(val)) return;
+  aliasItems.push(val);
+  qs('#aliases-input').value = '';
+  renderAliasTags();
+}
+function removeAliasTag(i) {
+  aliasItems.splice(i, 1);
+  renderAliasTags();
+}
+function renderAliasTags() {
+  qs('#aliases-tags').innerHTML = aliasItems.map((v, i) =>
+    `<span class="forbidden-tag" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.35);color:#6ee7b7">
+      ${escHtml(v)}<button onclick="removeAliasTag(${i})">×</button>
+    </span>`
+  ).join('');
+}
+
+let _currentCat = null;
+
+function toggleCharBrowser() {
+  const browser = qs('#char-browser');
+  const btn = qs('#char-browser-btn');
+  const open = browser.style.display === 'none';
+  browser.style.display = open ? '' : 'none';
+  btn.textContent = open ? '✖ إغلاق القائمة' : '📚 اختر شخصية جاهزة';
+  if (open && !_currentCat) {
+    const cats = Object.keys(CHARS_DB);
+    _currentCat = cats[0];
+    renderCatTabs();
+    renderCharGrid(_currentCat);
+  }
+}
+
+let _currentChars = [];
+
+function renderCatTabs() {
+  qs('#cat-tabs').innerHTML = Object.keys(CHARS_DB).map(cat =>
+    `<button class="cat-tab${cat === _currentCat ? ' active' : ''}" data-cat="${escHtml(cat)}" onclick="switchCat(this.dataset.cat)">${escHtml(cat)}</button>`
+  ).join('');
+}
+
+function switchCat(cat) {
+  _currentCat = cat;
+  renderCatTabs();
+  renderCharGrid(cat);
+}
+
+function renderCharGrid(cat) {
+  _currentChars = CHARS_DB[cat] || [];
+  const diff = ['', '⭐', '⭐⭐', '⭐⭐⭐'];
+  qs('#char-grid').innerHTML = _currentChars.map((c, i) =>
+    `<div class="char-card" onclick="selectCharByIndex(${i})">
+      <div class="char-card-name">${escHtml(c.n)}</div>
+      <div class="char-card-diff">${diff[c.e] || ''}</div>
+    </div>`
+  ).join('');
+}
+
+function selectCharByIndex(i) {
+  const c = _currentChars[i];
+  if (!c) return;
+  qs('#secret-input').value = c.d;
+  qs('#answer-input').value = c.n;
+  // Pre-fill aliases
+  aliasItems.length = 0;
+  const presetAliases = CHAR_ALIASES[c.n] || [];
+  aliasItems.push(...presetAliases);
+  renderAliasTags();
+  qs('#char-browser').style.display = 'none';
+  qs('#char-browser-btn').textContent = '📚 اختر شخصية جاهزة';
+  toast(`✅ تم اختيار: ${c.n}`, 'success');
+}
+
+// ─── Generate Clues ───────────────────────────────────────────────────────────
+function generateClues() {
+  const description = qs('#secret-input').value.trim();
+  if (!description) { toast('أدخل وصف الشخصية أولاً', 'error'); return; }
+  const answer = qs('#answer-input').value.trim();
+  const msg = { type: 'GENERATE_CLUES', description, forbidden: [...forbiddenItems], aliases: [...aliasItems] };
+  if (answer) msg.answer = answer;
+  send(msg);
+}
+
+function regenerateClues() {
+  qs('#clue-editor').style.display = 'none';
+  generateClues();
+}
+
+function renderClueEditor(clues) {
+  const list = qs('#clue-editor-list');
+  list.innerHTML = clues.map((clue, i) => `
+    <div class="clue-editor-item">
+      <div class="clue-editor-num">${i + 1}</div>
+      <textarea rows="2">${escHtml(clue)}</textarea>
+    </div>`).join('');
+  qs('#clue-editor').style.display = '';
+}
+
+function startRound() {
+  const textareas = qs('#clue-editor-list')?.querySelectorAll('textarea');
+  const clues = textareas && textareas.length === 10
+    ? Array.from(textareas).map(ta => ta.value.trim())
+    : undefined;
+  send({ type: 'START_ROUND', clues });
+  showScreen('screen-host-round');
+}
+
+function revealClue() { send({ type: 'REVEAL_CLUE' }); }
+
+function endRound() {
+  if (!confirm('هل تريد إنهاء الجولة الآن؟')) return;
+  send({ type: 'END_ROUND' });
+}
+
+function skipRound() {
+  if (!confirm('تخطي الجولة الحالية وبدء جولة جديدة؟')) return;
+  send({ type: 'SKIP_ROUND' });
+  showScreen('screen-host-lobby');
+  qs('#clue-editor').style.display = 'none';
+  qs('#generate-btn').style.display = '';
+  qs('#generating-status').style.display = 'none';
+}
+
+function newRound() {
+  send({ type: 'NEW_ROUND' });
+  showScreen('screen-host-lobby');
+  qs('#clue-editor').style.display = 'none';
+  qs('#generate-btn').style.display = '';
+  qs('#generating-status').style.display = 'none';
+  qs('#secret-input').value = '';
+  forbiddenItems.length = 0;
+  renderForbiddenTags();
+  qs('#forbidden-input').value = '';
+}
+
+function endSession() {
+  if (!confirm('هل تريد إنهاء الجلسة وعرض النتائج النهائية؟')) return;
+  send({ type: 'END_SESSION' });
+}
+
+function kickPlayer(name) {
+  if (!confirm(`طرد "${name}" من الجلسة؟`)) return;
+  send({ type: 'KICK_PLAYER', name });
+}
+
+// ─── Player actions ───────────────────────────────────────────────────────────
+function manualJoin() {
+  const code = qs('#manual-join-code').value.trim().toUpperCase();
+  const name = qs('#manual-join-name').value.trim();
+  const errEl = qs('#manual-join-error');
+  errEl.style.display = 'none';
+  if (!code) { errEl.textContent = 'أدخل كود الجلسة'; errEl.style.display = ''; return; }
+  if (!name) { errEl.textContent = 'أدخل اسمك'; errEl.style.display = ''; return; }
+  state.pendingCode = code;
+  state.pendingName = name;
+  connectWs();
+  send({ type: 'JOIN', code, name, photo: state.playerPhoto || null });
+}
+
+function joinSession() {
+  const code = qs('#join-code').value.trim().toUpperCase();
+  const name = qs('#join-name').value.trim();
+  if (!code) { toast('أدخل كود الجلسة', 'error'); return; }
+  if (!name) { toast('أدخل اسمك', 'error'); return; }
+  if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(joinSession, 800); return; }
+  send({ type: 'JOIN_SESSION', code, name });
+}
+
+function setRoundLocked(locked) {
+  const actions = qs('#player-actions');
+  let lockedMsg = qs('#round-locked-msg');
+  if (locked) {
+    actions.style.display = 'none';
+    if (!lockedMsg) {
+      lockedMsg = document.createElement('div');
+      lockedMsg.id = 'round-locked-msg';
+      lockedMsg.style.cssText = 'width:100%;max-width:480px;margin:0 auto;text-align:center;padding:16px;border-radius:12px;background:#1f0707;border:2px solid #ef444470;color:#fca5a5;font-size:0.95rem;font-weight:600';
+      lockedMsg.textContent = '⛔ غادرت الجولة — لا يمكنك الإجابة في هذه الجولة';
+      actions.parentNode.insertBefore(lockedMsg, actions);
+    }
+    lockedMsg.style.display = '';
+  } else {
+    actions.style.display = '';
+    if (lockedMsg) lockedMsg.style.display = 'none';
+  }
+}
+
+function requestClue() {
+  if (state.correctGuess) return;
+  send({ type: 'REQUEST_CLUE' });
+}
+
+function updateGuessLimit() {
+  if (state.correctGuess) return;
+  const allowed = state.cluesSeen * 2;
+  const remaining = Math.max(0, allowed - state.guessesUsed);
+  const el = qs('#guesses-remaining');
+  if (el) {
+    el.textContent = remaining;
+    el.style.color = remaining === 0 ? 'var(--red)' : remaining <= 2 ? '#f97316' : 'var(--gold)';
+  }
+  const locked = remaining === 0;
+  const input = qs('#guess-input');
+  const btn = qs('#guess-btn');
+  if (input) {
+    input.disabled = locked;
+    input.placeholder = locked ? 'انتهت محاولاتك في هذه الجولة' : 'من أنا؟ أدخل تخمينك...';
+  }
+  if (btn) btn.disabled = locked;
+}
+
+function submitGuess() {
+  const guess = qs('#guess-input').value.trim();
+  if (!guess || state.correctGuess) return;
+  const remaining = Math.max(0, state.cluesSeen * 2 - state.guessesUsed);
+  if (remaining === 0) { toast('🚫 استنفدت جميع محاولاتك في هذه الجولة!', 'error'); return; }
+  qs('#guess-input').value = '';
+  send({ type: 'SUBMIT_GUESS', guess });
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function addClue(clueText, clueIndex, isNew) {
+  const list = qs('#clue-list');
+  list.querySelectorAll('.clue-card.clue-new').forEach(el => el.classList.remove('clue-new'));
+  if (list.querySelector(`[data-ci="${clueIndex}"]`)) return;
+
+  const card = document.createElement('div');
+  card.className = 'clue-card' + (isNew ? ' clue-new' : '');
+  card.dataset.ci = clueIndex;
+  card.innerHTML = `
+    <div class="clue-number">التلميح ${clueIndex + 1}</div>
+    <div class="clue-text">${escHtml(clueText)}</div>`;
+  list.insertBefore(card, list.firstChild);
+  state.clues[clueIndex] = clueText;
+  if (isNew) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderHostState(s) {
+  if (!s) return;
+  qs('#lobby-code').textContent = s.sessionCode;
+  qs('#join-base-link').textContent = `${location.origin}/join`;
+  qs('#join-session-link').textContent = `${location.origin}/play/${s.sessionCode}`;
+
+  const players = Object.values(s.players || {});
+
+  // قائمة اللاعبين في اللوبي
+  const lobbyEl = qs('#lobby-players');
+  if (players.length === 0) {
+    lobbyEl.innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
+  } else {
+    lobbyEl.innerHTML = players.map(p => `
+      <div style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0;border-bottom:1px solid var(--border)">
+        <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}" style="flex-shrink:0"></span>
+        ${avatarHtml(p.photo, p.name, 34)}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:1rem;word-break:break-word">${escHtml(p.name)}</div>
+          <div style="font-size:0.75rem;color:${p.connected ? 'var(--green)' : 'var(--muted)'};margin-top:0.1rem">${p.connected ? '● متصل' : '○ غائب'}${p.score > 0 ? ` · ⭐ ${p.score}` : ''}</div>
+        </div>
+        <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="flex-shrink:0;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.25rem 0.65rem;font-size:0.8rem;cursor:pointer;font-weight:700">طرد</button>
+      </div>`).join('');
+  }
+
+  if (s.round) {
+    qs('#host-round-num').textContent = s.roundNumber;
+    qs('#host-secret-name').textContent = s.round.secret;
+    const aliasBar = qs('#host-aliases-bar');
+    if (aliasBar) {
+      const al = s.round.aliases || [];
+      if (al.length > 0) {
+        aliasBar.textContent = '✔ يُقبل أيضاً: ' + al.join('، ');
+        aliasBar.style.display = '';
+      } else {
+        aliasBar.style.display = 'none';
+      }
+    }
+    const gi = s.round.globalClueIndex, total = s.round.totalClues;
+    qs('#host-clue-counter').textContent = `${gi} / ${total} تلميح مكشوف`;
+    qs('#host-clue-progress').style.width = `${Math.round((gi / total) * 100)}%`;
+    qs('#reveal-btn').disabled = !(s.round.status === 'active' && gi < total);
+
+    const cluesList = qs('#host-clues-list');
+    const allClues = s.round.clues || [];
+    if (allClues.length > 0) {
+      cluesList.style.display = 'flex';
+      cluesList.innerHTML = allClues.map((clue, i) => {
+        const revealed = i < gi;
+        return `<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.6rem 0.9rem;display:flex;gap:0.6rem;align-items:flex-start;opacity:${revealed ? '1' : '0.35'}">
+          <span style="font-size:0.75rem;font-weight:800;color:${revealed ? 'var(--gold)' : 'var(--muted)'};min-width:1.6rem;padding-top:0.1rem">${i + 1}</span>
+          <span style="font-size:0.9rem;line-height:1.5">${escHtml(clue)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      cluesList.style.display = 'none';
+      cluesList.innerHTML = '';
+    }
+
+    const playerListEl = qs('#host-player-list');
+    if (players.length === 0) {
+      playerListEl.innerHTML = `<div class="empty">لا يوجد لاعبون</div>`;
+    } else {
+      playerListEl.innerHTML = players.map(p => {
+        const statusIcon = p.correctGuess ? '✅' : (!p.connected ? '🔌' : '🤔');
+        const clueColor  = p.correctGuess ? 'var(--green)' : 'var(--gold)';
+        const timeStr    = p.guessTime
+          ? `<span style="font-size:0.72rem;color:var(--muted);white-space:nowrap">${formatTime(p.guessTime)}</span>`
+          : '';
+        return `<div class="player-compact-row${p.correctGuess ? ' correct-row' : ''}${!p.connected ? ' disconnected-row' : ''}">
+          <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>
+          ${avatarHtml(p.photo, p.name, 26)}
+          <span style="flex:1;font-weight:900;font-size:1.15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.name)}</span>
+          <span style="font-size:0.78rem;font-weight:800;color:var(--gold);white-space:nowrap">${p.score} ⭐</span>
+          <span style="font-weight:900;color:${clueColor};min-width:1.4rem;text-align:center;font-size:0.95rem">${p.cluesSeen}</span>
+          <span style="font-size:0.9rem">${statusIcon}</span>
+          ${timeStr}
+          <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.15rem 0.4rem;font-size:0.7rem;cursor:pointer;flex-shrink:0">طرد</button>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function renderResults(msg) {
+  const medal = ['🥇', '🥈', '🥉'];
+  const photoMap = buildPhotoMap();
+  const results   = msg.results   || [];
+  const leaderboard = msg.leaderboard || [];
+  const secret    = msg.secret || '—';
+
+  qs('#results-secret').textContent = secret;
+  qs('#results-card').style.cssText = 'opacity:0';
+  qs('#host-results-controls').style.display = state.role === 'host' ? '' : 'none';
+  qs('#player-results-msg').style.display   = state.role === 'host' ? 'none' : '';
+
+  // ── Reset secret-word reveal stage ──
+  const stage = qs('#reveal-stage');
+  const label = qs('#reveal-label');
+  const word  = qs('#reveal-word-big');
+  const flash = qs('#reveal-flash');
+  stage.style.transition = 'none';
+  stage.style.opacity = '1';
+  stage.style.pointerEvents = '';
+  label.classList.remove('show');
+  word.classList.remove('pop');
+  word.style.cssText = '';
+  word.textContent = '؟';
+  flash.classList.remove('flash');
+
+  showScreen('screen-results');
+
+  setTimeout(() => { label.classList.add('show'); }, 600);
+  setTimeout(() => {
+    word.textContent = secret;
+    void word.offsetWidth;
+    flash.classList.add('flash');
+    void flash.offsetWidth;
+    word.classList.add('pop');
+  }, 1800);
+
+  // ── Fade secret overlay, open player-reveal overlay ──
+  setTimeout(() => {
+    stage.style.transition = 'opacity 0.5s ease';
+    stage.style.opacity = '0';
+    stage.style.pointerEvents = 'none';
+    openPlayerRevealOverlay(results);
+  }, 3200);
+
+  // ── After player reveal ends, open leaderboard overlay ──
+  const prDelay = results.length * 1000 + 800;
+  setTimeout(() => {
+    openLbRevealOverlay(leaderboard, false, () => {
+      // After lb overlay closes, show controls card
+      const card = qs('#results-card');
+      card.style.transition = 'opacity 0.5s ease';
+      card.style.opacity = '1';
+    });
+  }, 3200 + prDelay);
+}
+
+function openPlayerRevealOverlay(results) {
+  const photoMap = buildPhotoMap();
+  const overlay   = qs('#player-reveal-overlay');
+  const container = qs('#pr-cards');
+  container.innerHTML = '';
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+
+  results.forEach((r, i) => {
+    const isMe = state.role === 'player' && r.name === state.playerName;
+    const card = document.createElement('div');
+    card.className = 'pr-card ' + (r.correct ? 'correct' : 'wrong') + (isMe ? ' is-me' : '');
+    card.innerHTML =
+      `<span class="pr-icon">${r.correct ? '✅' : '❌'}</span>` +
+      lbAvatarHtml(photoMap[r.name], r.name) +
+      `<span class="pr-name">${escHtml(r.name)}</span>` +
+      (r.correct ? `<span class="pr-sub">🔍${r.cluesSeen}${r.guessTime ? ' · ' + formatTime(r.guessTime) : ''}</span>` : '') +
+      `<span class="pr-pts${r.roundScore <= 0 ? ' zero' : ''}">+${r.roundScore}</span>`;
+    container.appendChild(card);
+    setTimeout(() => { card.classList.add('show'); }, i * 1000 + 300);
+  });
+
+  const closeAt = results.length * 1000 + 800;
+  setTimeout(() => overlay.classList.remove('open'), closeAt);
+}
+
+function openLbRevealOverlay(leaderboard, isFinal, onClose) {
+  const medal = ['🥇', '🥈', '🥉'];
+  const photoMap = buildPhotoMap();
+  const overlay   = qs('#lb-reveal-overlay');
+  const container = qs('#lb-rov-cards');
+  const cdEl      = qs('#lb-rov-cd');
+  const ctrlEl    = qs('#lb-rov-controls');
+
+  container.innerHTML = '';
+  cdEl.style.display  = 'none';
+  ctrlEl.innerHTML    = '';
+  overlay.scrollTop   = 0;
+  qs('#lb-rov-title').textContent = isFinal ? '🏆 الترتيب النهائي' : '📊 الترتيب الإجمالي';
+
+  leaderboard.forEach((l, i) => {
+    const rkClass = i === 0 ? 'rk1' : i === 1 ? 'rk2' : i === 2 ? 'rk3' : '';
+    const div = document.createElement('div');
+    div.className = `lb-rov-card ${rkClass}`;
+    div.innerHTML =
+      `<span style="font-size:${i<3?'18':'14'}px;font-weight:900;width:28px;text-align:center">${medal[i] || (i+1)}</span>` +
+      lbAvatarHtml(photoMap[l.name], l.name) +
+      `<span style="flex:1;font-size:${i===0?'16':'14'}px;font-weight:${i===0?'900':'700'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(l.name)}</span>` +
+      `<span style="font-size:${i===0?'18':'15'}px;font-weight:900;color:${i===0?'var(--gold)':'var(--text)'}">` +
+        `${l.score}<span style="font-size:11px;color:var(--muted);font-weight:400;margin-right:3px"> نقطة</span></span>`;
+    container.appendChild(div);
+  });
+
+  // Add final controls inside overlay
+  if (isFinal) {
+    const isPlayer = state.role === 'player';
+    if (!isPlayer) {
+      ctrlEl.innerHTML = `<button class="btn btn-primary" style="margin-top:8px" onclick="goHome()">🏠 الصفحة الرئيسية</button>`;
+    }
+  }
+
+  overlay.classList.add('open');
+
+  // Reveal cards: last place first → rank 1 last
+  const cards    = [...container.children];
+  const reversed = [...cards].reverse();
+  reversed.forEach((card, idx) => {
+    setTimeout(() => {
+      card.classList.add('show');
+      if (isFinal && idx === reversed.length - 1) spawnConfetti();
+    }, 300 + idx * 450);
+  });
+
+  if (!isFinal) {
+    // Auto-close after ~7 s then call onClose
+    let secsLeft = 7;
+    const totalDelay = 300 + reversed.length * 450;
+    setTimeout(() => {
+      cdEl.style.display = 'block';
+      cdEl.textContent = `يختفي خلال ${secsLeft} ثوانٍ`;
+      const iv = setInterval(() => {
+        secsLeft--;
+        cdEl.textContent = secsLeft > 0 ? `يختفي خلال ${secsLeft} ثوانٍ` : '';
+        if (secsLeft <= 0) {
+          clearInterval(iv);
+          overlay.classList.remove('open');
+          cdEl.style.display = 'none';
+          if (onClose) onClose();
+        }
+      }, 1000);
+    }, totalDelay + 200);
+  }
+}
+
+function spawnConfetti() {
+  const colors = ['#f59e0b','#7c3aed','#10b981','#ef4444','#3b82f6','#ec4899','#fbbf24'];
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `
+        left:${Math.random() * 100}vw;
+        background:${colors[Math.floor(Math.random() * colors.length)]};
+        width:${6 + Math.random() * 8}px;
+        height:${6 + Math.random() * 14}px;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+        animation-duration:${2 + Math.random() * 2.5}s;
+        animation-delay:0s;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 5000);
+    }, Math.random() * 1500);
+  }
+}
+
+function renderFinalLeaderboard(leaderboard) {
+  // Reset header animations
+  const trophy     = qs('#final-trophy-big');
+  const titleEl    = qs('#final-title-big');
+  const subtitleEl = qs('#final-subtitle');
+  trophy.classList.remove('pop');
+  titleEl.classList.remove('show');
+  subtitleEl.classList.remove('show');
+  trophy.style.cssText = '';
+  titleEl.style.cssText = '';
+  subtitleEl.style.cssText = '';
+
+  showScreen('screen-final');
+
+  setTimeout(() => { trophy.classList.add('pop'); }, 400);
+  setTimeout(() => { titleEl.classList.add('show'); }, 900);
+  setTimeout(() => { subtitleEl.classList.add('show'); }, 1150);
+
+  setTimeout(() => { openLbRevealOverlay(leaderboard, true, null); }, 1600);
+}
+
+function goHome() {
+  state.role = null; state.sessionCode = null; state.playerName = null;
+  state.roundStatus = 'waiting'; state.clues = []; state.correctGuess = false; state.score = 0;
+  showScreen('screen-home');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = qs('#' + id);
+  if (el) el.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ─── Avatar helpers ───────────────────────────────────────────────────────────
+function avatarHtml(photo, name, size = 34) {
+  const s = `width:${size}px;height:${size}px;border-radius:50%;flex-shrink:0;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:rgba(124,58,237,0.2);border:1.5px solid rgba(255,255,255,0.12);`;
+  if (photo) return `<span style="${s}"><img src="${photo}" style="width:100%;height:100%;object-fit:cover"></span>`;
+  const initials = escHtml((name || '?')[0].toUpperCase());
+  return `<span style="${s}font-size:${Math.round(size*0.45)}px;font-weight:800;color:var(--violet)">${initials}</span>`;
+}
+
+function lbAvatarHtml(photo, name) {
+  const s = 'width:40px;height:40px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,0.2);border:2px solid rgba(255,255,255,0.12);';
+  if (photo) return `<div style="${s}"><img src="${photo}" style="width:100%;height:100%;object-fit:cover"></div>`;
+  const initials = escHtml((name || '?')[0].toUpperCase());
+  return `<div style="${s}font-size:1.1rem;font-weight:800;color:var(--violet)">${initials}</div>`;
+}
+
+function buildPhotoMap() {
+  const map = {};
+  if (state.hostState?.players) {
+    for (const [name, p] of Object.entries(state.hostState.players)) {
+      if (p.photo) map[name] = p.photo;
+    }
+  }
+  // Also include own photo if player
+  if (state.playerName && state.playerPhoto) map[state.playerName] = state.playerPhoto;
+  return map;
+}
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+function qs(sel) { return document.querySelector(sel); }
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatTime(ms) {
+  if (!ms && ms !== 0) return '—';
+  if (ms < 1000) return ms + 'ms';
+  return (ms / 1000).toFixed(1) + 'ث';
+}
+
+let toastTimer;
+function toast(msg, type) {
+  const el = qs('#toast');
+  el.textContent = msg;
+  el.className = 'show' + (type ? ` ${type}` : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+// ─── Routing ──────────────────────────────────────────────────────────────────
+function initRoute() {
+  const playMatch = location.pathname.match(/^\/play\/([A-Za-z0-9]{4,8})$/);
+  const isHost    = location.pathname === '/host';
+  const isJoin    = location.pathname === '/join';
+
+  if (playMatch) {
+    state.pendingCode = playMatch[1].toUpperCase();
+    showScreen('screen-player-join');
+  } else if (isJoin) {
+    showScreen('screen-join-manual');
+  } else if (isHost) {
+    showScreen('screen-home');
+  } else {
+    showScreen('screen-home');
+  }
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+connect();
+initRoute();
+qs('#join-name').addEventListener('keydown', e => { if (e.key === 'Enter') joinSession(); });
+qs('#join-code').addEventListener('keydown', e => { if (e.key === 'Enter') qs('#join-name').focus(); });
+qs('#secret-input').addEventListener('keydown', e => { if (e.key === 'Enter') generateClues(); });
+</script>
+</body>
+</html>
