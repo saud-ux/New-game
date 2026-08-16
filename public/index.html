@@ -1112,58 +1112,6 @@
   }
   .forbidden-tag button:hover { opacity:1; }
 
-  /* ── Quick Pick ── */
-  .qp-wrap { margin-bottom:0.5rem; }
-  .qp-toggle {
-    display:flex;align-items:center;gap:0.5rem;cursor:pointer;
-    background:rgba(124,58,237,0.10);border:1px solid rgba(124,58,237,0.30);
-    border-radius:var(--radius);padding:0.65rem 1rem;
-    color:var(--violet);font-weight:700;font-size:0.88rem;
-    transition:background 0.15s,border-color 0.15s;width:100%;
-  }
-  .qp-toggle:hover { background:rgba(124,58,237,0.18);border-color:var(--violet); }
-  .qp-toggle .arrow { transition:transform 0.2s;font-size:0.7rem; }
-  .qp-toggle.open .arrow { transform:rotate(90deg); }
-  .qp-body { display:none;margin-top:0.6rem; }
-  .qp-body.open { display:block; }
-
-  .qp-cats { display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem; }
-  .qp-cat {
-    padding:0.35rem 0.75rem;border-radius:999px;font-size:0.8rem;font-weight:600;
-    cursor:pointer;border:1px solid var(--border);background:var(--surface);
-    color:var(--muted);transition:all 0.15s;white-space:nowrap;
-  }
-  .qp-cat:hover { border-color:var(--violet);color:var(--text); }
-  .qp-cat.active { background:var(--purple);border-color:var(--purple);color:#fff; }
-
-  .qp-diff { display:flex;gap:0.35rem;margin-bottom:0.6rem; }
-  .qp-diff-btn {
-    flex:1;padding:0.3rem 0;border-radius:8px;font-size:0.78rem;font-weight:700;
-    cursor:pointer;border:1px solid var(--border);background:var(--surface);
-    color:var(--muted);transition:all 0.15s;text-align:center;
-  }
-  .qp-diff-btn:hover { border-color:var(--text);color:var(--text); }
-  .qp-diff-btn.active-easy { background:rgba(16,185,129,0.18);border-color:var(--green);color:var(--green); }
-  .qp-diff-btn.active-medium { background:rgba(245,158,11,0.18);border-color:var(--gold);color:var(--gold); }
-  .qp-diff-btn.active-hard { background:rgba(239,68,68,0.18);border-color:var(--red);color:var(--red); }
-
-  .qp-names { display:flex;flex-wrap:wrap;gap:0.4rem;max-height:240px;overflow-y:auto;padding:2px; }
-  .qp-name {
-    padding:0.35rem 0.7rem;border-radius:10px;font-size:0.82rem;font-weight:600;
-    cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.04);
-    color:var(--text);transition:all 0.15s;
-  }
-  .qp-name:hover { border-color:var(--violet);background:rgba(124,58,237,0.12); }
-  .qp-name.used { opacity:0.35;text-decoration:line-through;pointer-events:none; }
-
-  .qp-empty { color:var(--muted);font-size:0.82rem;text-align:center;padding:1.5rem 0; }
-  .qp-shuffle {
-    background:none;border:1px solid var(--border);border-radius:8px;
-    color:var(--muted);font-size:0.78rem;padding:0.25rem 0.6rem;cursor:pointer;
-    transition:all 0.15s;
-  }
-  .qp-shuffle:hover { border-color:var(--violet);color:var(--violet); }
-
   /* ── Leaderboard Reveal Overlay ── */
   #lb-reveal-overlay {
     position:fixed;inset:0;z-index:600;background:#000000f2;
@@ -1187,6 +1135,26 @@
   @keyframes rank1Shine { 0%,100%{box-shadow:0 0 0 3px #f59e0b,0 0 22px #f59e0b70}50%{box-shadow:0 0 0 4px #f59e0b,0 0 45px #f59e0bc0,0 0 70px #f59e0b30} }
   .lb-rov-card.rk1.show { animation:rank1Enter .6s cubic-bezier(.34,1.56,.64,1) forwards,rank1Shine 1.6s ease .6s infinite }
   .lb-rov-cd { margin-top:16px;font-size:14px;font-weight:700;color:var(--muted);padding:8px 22px;border-radius:20px;background:#ffffff12;display:none;flex-shrink:0 }
+
+  /* ── Characters Browser ── */
+  .cat-tabs { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem; }
+  .cat-tab {
+    padding:0.3rem 0.75rem; border-radius:999px; font-size:0.8rem; font-weight:700;
+    background:var(--surface); border:1px solid var(--border); color:var(--muted);
+    cursor:pointer; transition:all 0.15s;
+  }
+  .cat-tab:hover { border-color:var(--purple); color:var(--text); }
+  .cat-tab.active { background:rgba(124,58,237,0.2); border-color:var(--purple); color:var(--violet); }
+  .char-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:0.5rem; max-height:260px; overflow-y:auto; }
+  .char-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:0.6rem 0.75rem; cursor:pointer; transition:all 0.15s;
+    display:flex; flex-direction:column; gap:0.25rem;
+  }
+  .char-card:hover { border-color:var(--purple); background:rgba(124,58,237,0.12); transform:translateY(-1px); }
+  .char-card:active { transform:scale(0.97); }
+  .char-card-name { font-weight:800; font-size:0.88rem; line-height:1.3; }
+  .char-card-diff { font-size:0.65rem; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -1204,12 +1172,14 @@
       <div class="card" style="display:flex;flex-direction:column;gap:1rem">
         <div>
           <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem">أنشئ جلسة</div>
+          <div style="color:var(--muted);font-size:0.85rem">كون جلسة يدخلها اللاعبون</div>
         </div>
         <button class="btn btn-primary" onclick="createSession()">إنشاء جلسة</button>
       </div>
 
       <!-- اللاعب -->
       <div class="card" style="display:flex;flex-direction:column;gap:1rem">
+        <div style="font-size:2.5rem;text-align:center">📱</div>
         <div>
           <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem">انضم للعبة</div>
           <div style="color:var(--muted);font-size:0.85rem">أدخل كود الجلسة للعب</div>
@@ -1230,6 +1200,7 @@
 
     <div class="spacer"></div>
     <div style="color:var(--muted);font-size:0.75rem;text-align:center;max-width:360px">
+      ٥–١٥ لاعب · مدعوم بـ Claude AI · نقاط لحظية
     </div>
     <div class="spacer-lg"></div>
   </div>
@@ -1339,34 +1310,40 @@
 
       <div class="divider"></div>
 
-      <!-- ── اختيار سريع ── -->
-      <div class="qp-wrap">
-        <button class="qp-toggle" onclick="toggleQuickPick()">
-          <span>🎯 اختيار سريع — شخصيات جاهزة</span>
-          <span class="arrow" style="margin-right:auto;margin-left:0">◂</span>
+      <!-- ── Characters Browser ── -->
+      <div style="margin-bottom:1rem">
+        <button onclick="toggleCharBrowser()" class="btn btn-ghost btn-sm" id="char-browser-btn" style="width:auto;margin-bottom:0.75rem">
+          📚 اختر شخصية جاهزة
         </button>
-        <div id="qp-body" class="qp-body">
-          <div id="qp-cats" class="qp-cats"></div>
-          <div class="qp-diff">
-            <button class="qp-diff-btn" data-diff="easy" onclick="setDiff('easy')">🟢 سهل</button>
-            <button class="qp-diff-btn" data-diff="medium" onclick="setDiff('medium')">🟡 متوسط</button>
-            <button class="qp-diff-btn" data-diff="hard" onclick="setDiff('hard')">🔴 صعب</button>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
-            <span style="color:var(--muted);font-size:0.78rem" id="qp-count"></span>
-            <span style="display:flex;gap:0.35rem">
-              <button class="qp-shuffle" onclick="resetQPUsed()">🗑️ مسح السجل</button>
-              <button class="qp-shuffle" onclick="shuffleNames()">🔀 خلط</button>
-            </span>
-          </div>
-          <div id="qp-names" class="qp-names"></div>
+        <div id="char-browser" style="display:none">
+          <div class="cat-tabs" id="cat-tabs"></div>
+          <div class="char-grid" id="char-grid"></div>
         </div>
       </div>
+
+      <div class="divider"></div>
 
       <div class="input-group">
         <label>📝 صف الشخصية (مخفي عن اللاعبين)</label>
         <input type="text" id="secret-input" placeholder="مثال: لاعب كرة القدم سالم الدوسري" autocomplete="off">
         <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">الذكاء الاصطناعي سيستخرج الإجابة ويولّد التلميحات تلقائياً</div>
+      </div>
+
+      <div class="input-group">
+        <label>✅ الإجابة الصحيحة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <input type="text" id="answer-input" placeholder="مثال: سالم الدوسري" autocomplete="off">
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">إذا تركته فارغاً سيستخرجها الذكاء الاصطناعي من الوصف</div>
+      </div>
+
+      <div class="input-group">
+        <label>✔️ الإجابات المقبولة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <div style="display:flex;gap:0.5rem">
+          <input type="text" id="aliases-input" placeholder="مثال: رونالدو، CR7..." autocomplete="off"
+            onkeydown="addAliasTag(event)" style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="addAliasTagBtn()" style="width:auto;flex-shrink:0">+ أضف</button>
+        </div>
+        <div id="aliases-tags" class="forbidden-tags"></div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">أسماء بديلة تُقبل فوراً بدون الرجوع للذكاء الاصطناعي</div>
       </div>
 
       <div class="input-group">
@@ -1424,6 +1401,7 @@
         <div class="secret-box" style="flex:1;min-width:150px;padding:0.5rem 0.9rem">
           <div class="secret-label">الشخص السري</div>
           <div class="secret-name" style="font-size:1.1rem" id="host-secret-name">—</div>
+          <div id="host-aliases-bar" style="display:none;font-size:0.72rem;color:var(--muted);margin-top:0.2rem"></div>
         </div>
         <div style="min-width:110px">
           <div id="host-clue-counter" style="font-size:0.8rem;color:var(--muted);margin-bottom:0.25rem;white-space:nowrap">—</div>
@@ -1433,6 +1411,7 @@
         </div>
         <div style="display:flex;gap:0.5rem;flex-shrink:0">
           <button class="btn btn-primary btn-sm" id="reveal-btn" onclick="revealClue()" style="white-space:nowrap;width:auto">⬇ تلميح للجميع</button>
+          <button class="btn btn-gold btn-sm" onclick="skipRound()" style="width:auto">⏭ جولة جديدة</button>
           <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto">إنهاء الجولة</button>
         </div>
       </div>
@@ -1556,10 +1535,13 @@
         </button>
         <div class="spacer-sm"></div>
         <div class="guess-area">
+          <div id="guess-limit-bar" style="text-align:center;font-size:0.82rem;color:var(--muted);margin-bottom:0.5rem">
+            المحاولات المتبقية: <strong id="guesses-remaining" style="color:var(--gold)">2</strong>
+          </div>
           <div class="guess-row">
             <input type="text" id="guess-input" placeholder="من أنا؟ أدخل تخمينك..." autocomplete="off"
               onkeydown="if(event.key==='Enter')submitGuess()">
-            <button class="btn btn-gold" onclick="submitGuess()" style="width:auto">خمّن!</button>
+            <button class="btn btn-gold" id="guess-btn" onclick="submitGuess()" style="width:auto">خمّن!</button>
           </div>
         </div>
       </div>
@@ -1763,460 +1745,15 @@ const state = {
   score: 0,
   hostState: null,
   playerPhoto: null,
-  pendingCode: null
+  pendingCode: null,
+  guessesUsed: 0,
+  cluesSeen: 0
 };
 
 let ws = null;
 let reconnectTimer = null;
 let reconnectAttempts = 0;
 const forbiddenItems = [];
-
-// ─── Quick Pick data ────────────────────────────────────────────────────────
-const QP_DATA = {
-  '⚽ كرة قدم': {
-    easy: [
-      'كريستيانو رونالدو — لاعب كرة قدم برتغالي',
-      'ليونيل ميسي — لاعب كرة قدم أرجنتيني',
-      'نيمار — لاعب كرة قدم برازيلي',
-      'محمد صلاح — لاعب كرة قدم مصري',
-      'كريم بنزيما — لاعب كرة قدم فرنسي في الاتحاد',
-      'سالم الدوسري — لاعب كرة قدم سعودي في الهلال',
-      'مبابي — لاعب كرة قدم فرنسي',
-      'زين الدين زيدان — لاعب كرة قدم فرنسي سابق',
-      'رونالدينيو — لاعب كرة قدم برازيلي سابق',
-      'ياسر القحطاني — لاعب كرة قدم سعودي سابق',
-      'ماركو رويس — لاعب كرة قدم ألماني',
-      'روبرت ليفاندوفسكي — لاعب كرة قدم بولندي',
-    ],
-    medium: [
-      'سعود عبدالحميد — لاعب كرة قدم سعودي في روما',
-      'لوكا مودريتش — لاعب كرة قدم كرواتي',
-      'فيرجل فان دايك — لاعب كرة قدم هولندي',
-      'ساديو ماني — لاعب كرة قدم سنغالي',
-      'يحيى الشهري — لاعب كرة قدم سعودي',
-      'سامي الجابر — لاعب كرة قدم سعودي سابق',
-      'خافي هيرنانديز — لاعب كرة قدم إسباني سابق',
-      'أندريس إنييستا — لاعب كرة قدم إسباني سابق',
-      'تيري هنري — لاعب كرة قدم فرنسي سابق',
-      'فيران توريس — لاعب كرة قدم إسباني',
-      'جمال موسيالا — لاعب كرة قدم ألماني',
-      'بيدري — لاعب كرة قدم إسباني',
-    ],
-    hard: [
-      'فهد المولد — لاعب كرة قدم سعودي',
-      'ماجد عبدالله — لاعب كرة قدم سعودي أسطوري',
-      'جورجينيو — لاعب كرة قدم إيطالي برازيلي الأصل',
-      'بيرنارد سيلفا — لاعب كرة قدم برتغالي',
-      'بوشكاش — لاعب كرة قدم مجري أسطوري',
-      'فرانك ريكارد — لاعب كرة قدم هولندي سابق',
-      'ياسر المسيليم — حارس مرمى سعودي',
-      'ديدييه دروغبا — لاعب كرة قدم ساحل العاجي سابق',
-      'جان بيير بابان — لاعب كرة قدم فرنسي سابق',
-      'روبيرتو كارلوس — لاعب كرة قدم برازيلي سابق',
-    ]
-  },
-  '🎬 تمثيل وسينما': {
-    easy: [
-      'ذا روك (دواين جونسون) — ممثل ومصارع أمريكي',
-      'ويل سميث — ممثل أمريكي',
-      'توم كروز — ممثل أمريكي',
-      'جاكي شان — ممثل فنون قتالية صيني',
-      'جوني ديب — ممثل أمريكي (قراصنة الكاريبي)',
-      'ناصر القصبي — ممثل كوميدي سعودي (طاش ما طاش)',
-      'عادل إمام — ممثل كوميدي مصري',
-      'أحمد حلمي — ممثل كوميدي مصري',
-      'روبرت داوني جونيور — ممثل أمريكي (آيرون مان)',
-      'كيانو ريفز — ممثل كندي (ماتريكس/جون ويك)',
-    ],
-    medium: [
-      'فهد القرني — ممثل سعودي',
-      'عبدالمحسن النمر — ممثل سعودي',
-      'ليوناردو دي كابريو — ممثل أمريكي',
-      'مورغان فريمان — ممثل أمريكي',
-      'أنتوني هوبكنز — ممثل بريطاني (صمت الحملان)',
-      'حسن الرداد — ممثل مصري',
-      'نور الشريف — ممثل مصري سابق',
-      'عمر الشريف — ممثل مصري عالمي',
-      'إيما واتسون — ممثلة بريطانية (هاري بوتر)',
-      'تشادويك بوزمان — ممثل أمريكي (بلاك بانثر)',
-    ],
-    hard: [
-      'محمد سعد — ممثل كوميدي مصري (اللمبي)',
-      'كريستوف فالتز — ممثل نمساوي',
-      'خالد صقر — ممثل ومقدم سعودي',
-      'ماتس ميكلسن — ممثل دنماركي',
-      'حبيب الحبيب — ممثل كويتي',
-      'خوان كارلوس أولوزاغاستي — ممثل أرجنتيني',
-      'بنديكت كامبرباتش — ممثل بريطاني (دكتور سترينج)',
-      'توني ليونغ — ممثل هونغ كونغي',
-      'أولغا كوريلنكو — ممثلة أوكرانية فرنسية',
-      'راجيش كوثرابالي (كونال نايار) — ممثل بريطاني هندي الأصل',
-    ]
-  },
-  '🎵 موسيقى وغناء': {
-    easy: [
-      'محمد عبده — فنان سعودي (فنان العرب)',
-      'عبدالمجيد عبدالله — فنان سعودي',
-      'راشد الماجد — فنان سعودي',
-      'أم كلثوم — مطربة مصرية أسطورية',
-      'فيروز — مطربة لبنانية أسطورية',
-      'مايكل جاكسون — مغني أمريكي (ملك البوب)',
-      'إيمينم — مغني راب أمريكي',
-      'دريك — مغني كندي',
-      'بي تي إس — فرقة كيبوب كورية',
-      'بيونسيه — مغنية أمريكية',
-    ],
-    medium: [
-      'طلال مداح — فنان سعودي أسطوري',
-      'حسين الجسمي — فنان إماراتي',
-      'كاظم الساهر — فنان عراقي',
-      'عمرو دياب — فنان مصري',
-      'وائل كفوري — فنان لبناني',
-      'إلتون جون — مغني بريطاني',
-      'فريدي ميركوري — مغني بريطاني (كوين)',
-      'ترافيس سكوت — مغني راب أمريكي',
-      'بوست مالون — مغني أمريكي',
-      'بيلي آيليش — مغنية أمريكية',
-      'ذا ويكند — مغني كندي',
-    ],
-    hard: [
-      'أبو بكر سالم — فنان يمني سعودي',
-      'عبدالرب إدريس — فنان سعودي سابق',
-      'فرانك سيناترا — مغني أمريكي كلاسيكي',
-      'خالد (الشاب خالد) — مغني جزائري (ديدي)',
-      'دوا ليبا — مغنية بريطانية ألبانية الأصل',
-      'ليل ناز إكس — مغني أمريكي',
-      'ستيفي واندر — مغني أمريكي كفيف',
-      'نانسي عجرم — مغنية لبنانية',
-      'محمد حماقي — مغني مصري',
-      'مارشميلو — دي جي أمريكي يلبس خوذة',
-    ]
-  },
-  '🏀 رياضات أخرى': {
-    easy: [
-      'ليبرون جيمس — لاعب كرة سلة أمريكي',
-      'محمد علي كلاي — ملاكم أمريكي أسطوري',
-      'مايك تايسون — ملاكم أمريكي',
-      'أوسين بولت — عداء جامايكي (أسرع رجل في العالم)',
-      'تايغر وودز — لاعب غولف أمريكي',
-      'كونور ماكغريغور — مقاتل أيرلندي (يو إف سي)',
-      'روجر فيدرر — لاعب تنس سويسري',
-      'ستيفن كاري — لاعب كرة سلة أمريكي',
-      'سيرينا ويليامز — لاعبة تنس أمريكية',
-    ],
-    medium: [
-      'حبيب نورماغوميدوف — مقاتل روسي (يو إف سي)',
-      'كوبي براينت — لاعب كرة سلة أمريكي راحل',
-      'رافائيل نادال — لاعب تنس إسباني',
-      'مانيي باكياو — ملاكم فلبيني',
-      'شاكيل أونيل — لاعب كرة سلة أمريكي سابق',
-      'نوفاك ديوكوفيتش — لاعب تنس صربي',
-      'مايكل جوردن — لاعب كرة سلة أمريكي أسطوري',
-      'فلويد مايويذر — ملاكم أمريكي',
-      'يانيس أنتيتوكونمبو — لاعب كرة سلة يوناني',
-    ],
-    hard: [
-      'ألكسندر فولكانوفسكي — مقاتل أسترالي (يو إف سي)',
-      'لاري بيرد — لاعب كرة سلة أمريكي سابق',
-      'بيورن بورغ — لاعب تنس سويدي سابق',
-      'ماني بيرنز — ملاكم بريطاني',
-      'إيمانويل باكيتا — لاعب كرة سلة أمريكي',
-      'كارل لويس — عداء أمريكي أسطوري',
-      'ماريا شارابوفا — لاعبة تنس روسية',
-      'هاكيم أولاجيوون — لاعب كرة سلة نيجيري أمريكي',
-    ]
-  },
-  '🎮 ألعاب وأنمي': {
-    easy: [
-      'ماريو — شخصية ألعاب نينتندو الشهيرة',
-      'سونيك — شخصية ألعاب سيغا (القنفذ الأزرق)',
-      'غوكو — بطل أنمي دراغون بول',
-      'ناروتو — بطل أنمي ناروتو',
-      'لوفي — بطل أنمي ون بيس',
-      'بيكاتشو — شخصية بوكيمون الشهيرة',
-      'سبونج بوب — شخصية كرتونية تعيش تحت البحر',
-      'ماين كرافت ستيف — شخصية لعبة ماين كرافت',
-      'كريتوس — بطل لعبة غود أوف وار',
-    ],
-    medium: [
-      'لينك — بطل لعبة زيلدا',
-      'كلاود سترايف — بطل لعبة فاينل فانتسي 7',
-      'إيتاشي أوتشيها — شخصية في أنمي ناروتو',
-      'زورو — شخصية في أنمي ون بيس',
-      'ليفاي أكرمان — شخصية في أنمي هجوم العمالقة',
-      'ماستر تشيف — بطل لعبة هيلو',
-      'سولد سنيك — بطل لعبة ميتل غير سوليد',
-      'كراتوس — بطل لعبة غود أوف وار',
-      'جيرالت — بطل لعبة ذا ويتشر',
-      'تريفور — شخصية في لعبة جي تي أي 5',
-    ],
-    hard: [
-      'سيفيروث — الشرير في فاينل فانتسي 7',
-      'كيلوا زولديك — شخصية في أنمي هنتر × هنتر',
-      'نيرو — شخصية في لعبة ديفل ماي كراي',
-      'ألدن رينغ (المجهول المختار) — بطل لعبة إلدن رينغ',
-      'كازوما كيريو — بطل لعبة ياكوزا',
-      'رايدن — شخصية في ميتل غير رايزنغ',
-      'شانكس — شخصية في أنمي ون بيس',
-      'مادارا أوتشيها — شخصية في أنمي ناروتو',
-      'آيزن سوسكي — شخصية في أنمي بليتش',
-    ]
-  },
-  '📱 يوتيوبرز ومشاهير': {
-    easy: [
-      'ميستر بيست — يوتيوبر أمريكي (أكبر قناة في العالم)',
-      'بيودي باي — يوتيوبر سويدي',
-      'أبو فلة — يوتيوبر عربي (ألعاب)',
-      'بندريتا — يوتيوبر سعودي (ألعاب)',
-      'أنس مروة — يوتيوبر سوري',
-      'خالد مقداد — شخصية قناة طيور الجنة',
-      'ماركيبلاير — يوتيوبر أمريكي (ألعاب)',
-      'إيلون ماسك — رجل أعمال أمريكي (تسلا وسبيس إكس)',
-    ],
-    medium: [
-      'مارك زوكربيرغ — مؤسس فيسبوك',
-      'بيل غيتس — مؤسس مايكروسوفت',
-      'ستيف جوبز — مؤسس أبل',
-      'سعود القحطاني — يوتيوبر ومقدم محتوى سعودي',
-      'صالح الراشد — يوتيوبر سعودي',
-      'نينجا (تايلر بليفنز) — ستريمر أمريكي (فورتنايت)',
-      'ترو جيمنج — ستريمر عربي (ألعاب)',
-      'فيصل الفيصل — يوتيوبر سعودي',
-    ],
-    hard: [
-      'دكتور ديسريسبكت — ستريمر أمريكي',
-      'كورباج — يوتيوبر عربي',
-      'إيدن ملوش — يوتيوبر جزائري',
-      'ساندر ساني — يوتيوبر هندي',
-      'ليازانوفا — يوتيوبر كندية',
-      'كاسي نايستات — يوتيوبر أمريكي (فلوقر)',
-      'أحمد أبو زهرة — يوتيوبر مصري',
-      'مايتي ميركل — يوتيوبر ألماني',
-    ]
-  },
-  '📜 تاريخ وقادة': {
-    easy: [
-      'صلاح الدين الأيوبي — قائد إسلامي فتح القدس',
-      'الملك عبدالعزيز آل سعود — مؤسس المملكة العربية السعودية',
-      'نابليون بونابرت — إمبراطور فرنسي',
-      'ألبرت أينشتاين — عالم فيزياء ألماني',
-      'نيلسون مانديلا — رئيس جنوب أفريقيا السابق ومناضل',
-      'المهاتما غاندي — زعيم استقلال الهند',
-      'ستيفن هوكينغ — عالم فيزياء بريطاني',
-      'كليوباترا — ملكة مصر القديمة',
-    ],
-    medium: [
-      'عمر المختار — مقاوم ليبي ضد الاستعمار الإيطالي',
-      'خالد بن الوليد — قائد عسكري إسلامي (سيف الله المسلول)',
-      'وينستون تشرشل — رئيس وزراء بريطانيا في الحرب العالمية الثانية',
-      'جنكيز خان — مؤسس الإمبراطورية المغولية',
-      'ابن بطوطة — رحالة مغربي',
-      'نيكولا تسلا — مخترع صربي أمريكي (الكهرباء)',
-      'ماري كوري — عالمة فيزياء بولندية فرنسية',
-      'الإسكندر الأكبر — قائد يوناني غزا العالم',
-      'هارون الرشيد — خليفة عباسي',
-    ],
-    hard: [
-      'ابن خلدون — مؤسس علم الاجتماع',
-      'طارق بن زياد — قائد إسلامي فتح الأندلس',
-      'الخوارزمي — عالم رياضيات إسلامي (مؤسس الجبر)',
-      'ابن سينا — طبيب وفيلسوف إسلامي',
-      'الملكة فيكتوريا — ملكة بريطانيا في القرن التاسع عشر',
-      'سايروس الكبير — مؤسس الإمبراطورية الفارسية',
-      'ابن الهيثم — عالم بصريات إسلامي',
-      'سلطان العلماء العز بن عبدالسلام — عالم إسلامي',
-      'السلطان محمد الفاتح — فاتح القسطنطينية',
-    ]
-  },
-  '🔬 علوم وتقنية': {
-    easy: [
-      'ألبرت أينشتاين — عالم فيزياء (النسبية)',
-      'إيلون ماسك — مؤسس تسلا وسبيس إكس',
-      'ستيف جوبز — مؤسس شركة أبل',
-      'بيل غيتس — مؤسس مايكروسوفت',
-      'مارك زوكربيرغ — مؤسس فيسبوك',
-      'نيل أرمسترونغ — أول إنسان يمشي على القمر',
-    ],
-    medium: [
-      'نيكولا تسلا — مخترع الكهرباء المتناوبة',
-      'آلان تورنغ — مؤسس علوم الحاسب وكاسر شفرة إنيغما',
-      'ماري كوري — عالمة إشعاع (نوبل مرتين)',
-      'ستيفن هوكينغ — عالم فيزياء نظرية بريطاني',
-      'جيف بيزوس — مؤسس أمازون',
-      'تيم بيرنرز لي — مخترع شبكة الويب',
-      'لينوس تورفالدز — مخترع نظام لينكس',
-    ],
-    hard: [
-      'الخوارزمي — عالم رياضيات إسلامي أسس الجبر',
-      'جابر بن حيان — أبو الكيمياء العربية',
-      'ريتشارد فاينمان — عالم فيزياء أمريكي',
-      'أدا لوفليس — أول مبرمجة في التاريخ',
-      'دنيس ريتشي — مخترع لغة سي ونظام يونكس',
-      'أحمد زويل — عالم كيمياء مصري (نوبل)',
-      'غريس هوبر — عالمة حاسوب أمريكية (مترجم الأوامر)',
-      'ابن الهيثم — أبو البصريات',
-    ]
-  },
-  '🎭 شخصيات كرتونية': {
-    easy: [
-      'سبونج بوب — إسفنجة صفراء تعيش تحت البحر',
-      'توم (توم وجيري) — قط يطارد فأراً',
-      'ميكي ماوس — شخصية ديزني الشهيرة',
-      'باتمان — بطل خارق من دي سي كوميكس',
-      'سبايدرمان — بطل خارق من مارفل',
-      'سوبرمان — بطل خارق من كريبتون',
-      'غرينتش — شخصية كرتونية خضراء تكره الأعياد',
-      'شريك — غول أخضر في فيلم شريك',
-    ],
-    medium: [
-      'دكستر — عالم صغير في مختبر دكستر',
-      'سكوبي دو — كلب جبان يحل الألغاز',
-      'جوني برافو — شخصية كرتونية عضلات شعرها أشقر',
-      'بن تن — ولد يملك ساعة تحوله لكائنات فضائية',
-      'آيرون مان — توني ستارك من مارفل',
-      'ثانوس — شرير مارفل (القفاز)',
-      'البطة دونالد — شخصية ديزني',
-      'وودي — شخصية من فيلم توي ستوري',
-    ],
-    hard: [
-      'ديدبول — بطل مارفل غير تقليدي ساخر',
-      'كابتن ماجد (تسوباسا) — شخصية أنمي كرة قدم',
-      'سندباد — شخصية مغامرات عربية كلاسيكية',
-      'بينكي وبرين — فأران يحاولان السيطرة على العالم',
-      'سامورّاي جاك — محارب ساموراي في المستقبل',
-      'ريك سانشيز — عالم مجنون من ريك أند مورتي',
-      'آنغ — آخر متحكم بالهواء (أفاتار)',
-      'مويوكي شيروغاني — بطل أنمي كاغويا ساما',
-    ]
-  },
-  '🇸🇦 شخصيات سعودية': {
-    easy: [
-      'محمد عبده — فنان العرب',
-      'ناصر القصبي — ممثل كوميدي (طاش ما طاش)',
-      'عبدالله السدحان — ممثل كوميدي سعودي',
-      'بندريتا — يوتيوبر سعودي ألعاب',
-      'سالم الدوسري — لاعب كرة قدم في الهلال',
-      'كريم بنزيما — لاعب في الاتحاد السعودي',
-      'عبدالمجيد عبدالله — فنان سعودي كبير',
-    ],
-    medium: [
-      'سعود عبدالحميد — لاعب سعودي في روما',
-      'طلال مداح — فنان سعودي أسطوري (صوت الأرض)',
-      'سامي الجابر — لاعب كرة قدم سعودي أسطوري',
-      'ياسر القحطاني — لاعب كرة قدم سعودي سابق',
-      'فايز المالكي — ممثل كوميدي سعودي',
-      'خالد عبدالرحمن — فنان سعودي',
-      'رابح صقر — فنان سعودي',
-      'ماجد المهندس — فنان عراقي سعودي',
-    ],
-    hard: [
-      'ماجد عبدالله — لاعب كرة قدم سعودي أسطوري (النصر)',
-      'أبو بكر سالم — فنان يمني سعودي',
-      'ياسر المسيليم — حارس مرمى سعودي',
-      'فهد المولد — لاعب كرة قدم سعودي',
-      'عبدالرب إدريس — فنان سعودي',
-      'يوسف الثنيان — لاعب كرة قدم سعودي سابق',
-      'حسين عبدالغني — لاعب كرة قدم سعودي سابق',
-      'خالد الفيصل — أمير وشاعر سعودي',
-    ]
-  }
-};
-
-let qpOpen = false;
-let qpCat = null;
-let qpDiff = 'easy';
-const qpUsed = JSON.parse(localStorage.getItem('qp_used_v1') || '[]');
-
-function toggleQuickPick() {
-  qpOpen = !qpOpen;
-  const btn = document.querySelector('.qp-toggle');
-  const body = qs('#qp-body');
-  btn.classList.toggle('open', qpOpen);
-  body.classList.toggle('open', qpOpen);
-  if (qpOpen && !qpCat) {
-    renderQPCats();
-    const firstCat = Object.keys(QP_DATA)[0];
-    if (firstCat) selectCat(firstCat);
-  }
-}
-
-function renderQPCats() {
-  const container = qs('#qp-cats');
-  container.innerHTML = Object.keys(QP_DATA).map(cat =>
-    `<button class="qp-cat${qpCat === cat ? ' active' : ''}" onclick="selectCat(${JSON.stringify(cat)})">${cat}</button>`
-  ).join('');
-}
-
-function selectCat(cat) {
-  qpCat = cat;
-  renderQPCats();
-  setDiff(qpDiff);
-}
-
-function setDiff(diff) {
-  qpDiff = diff;
-  document.querySelectorAll('.qp-diff-btn').forEach(b => {
-    b.classList.remove('active-easy','active-medium','active-hard');
-    if (b.dataset.diff === diff) b.classList.add('active-' + diff);
-  });
-  renderQPNames();
-}
-
-function renderQPNames() {
-  const container = qs('#qp-names');
-  const countEl = qs('#qp-count');
-  if (!qpCat || !QP_DATA[qpCat]) {
-    container.innerHTML = '<div class="qp-empty">اختر فئة</div>';
-    countEl.textContent = '';
-    return;
-  }
-  const names = QP_DATA[qpCat][qpDiff] || [];
-  const available = names.filter(n => !qpUsed.includes(n));
-  countEl.textContent = `${available.length} / ${names.length} متاح`;
-  if (names.length === 0) {
-    container.innerHTML = '<div class="qp-empty">لا توجد أسماء في هذه الفئة</div>';
-    return;
-  }
-  container.innerHTML = names.map(n => {
-    const used = qpUsed.includes(n);
-    const displayName = n.split(' — ')[0];
-    return `<button class="qp-name${used ? ' used' : ''}" onclick="pickName(${JSON.stringify(n)})" title="${escHtml(n)}">${escHtml(displayName)}</button>`;
-  }).join('');
-}
-
-function pickName(full) {
-  qs('#secret-input').value = full;
-  // Mark as used
-  if (!qpUsed.includes(full)) {
-    qpUsed.push(full);
-    localStorage.setItem('qp_used_v1', JSON.stringify(qpUsed));
-  }
-  renderQPNames();
-  // Close picker
-  qpOpen = false;
-  document.querySelector('.qp-toggle').classList.remove('open');
-  qs('#qp-body').classList.remove('open');
-  toast('✅ تم اختيار الشخصية — اضغط توليد التلميحات');
-}
-
-function shuffleNames() {
-  if (!qpCat || !QP_DATA[qpCat]) return;
-  const arr = QP_DATA[qpCat][qpDiff];
-  if (!arr) return;
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  renderQPNames();
-}
-
-// Reset used on new session (optional — host can clear manually)
-function resetQPUsed() {
-  qpUsed.length = 0;
-  localStorage.removeItem('qp_used_v1');
-  renderQPNames();
-  toast('تم مسح سجل الأسماء المستخدمة');
-}
 
 // Shared AudioContext — created once on first user gesture so it's always unlocked
 let _audioCtx = null;
@@ -2246,9 +1783,9 @@ document.addEventListener('pointerdown', () => {
   // iOS Safari: play-then-pause trick unlocks the element for future calls
   if (!_arrestAudio) {
     _arrestAudio = new Audio('/arrest.mp3');
-    _arrestAudio.volume = 0;
+    _arrestAudio.muted = true;
     const p = _arrestAudio.play();
-    if (p) p.then(() => { _arrestAudio.pause(); _arrestAudio.currentTime = 0; _arrestAudio.volume = 1; }).catch(() => {});
+    if (p) p.then(() => { _arrestAudio.pause(); _arrestAudio.currentTime = 0; _arrestAudio.muted = false; }).catch(() => {});
   }
   preloadArrestSound();
 }, { once: true });
@@ -2284,27 +1821,10 @@ function send(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
-// Tell server immediately when page unloads so it doesn't wait for ws close event
-window.addEventListener('pagehide', () => {
-  if (state.role === 'player' && state.roundStatus === 'active' && !state.correctGuess) {
-    send({ type: 'PLAYER_LEAVING' });
-  }
-});
-
-// Lock player when they switch tabs or minimize — WS stays alive so pagehide never fires
+// Resume AudioContext when tab becomes visible again (browser suspends it when hidden)
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    if (state.role === 'player' && state.roundStatus === 'active' && !state.correctGuess && !state.leftDuringRound) {
-      state.leftDuringRound = true;
-      send({ type: 'PLAYER_LEAVING' });
-    }
-  } else {
-    // Resume AudioContext first — browser suspends it when tab is hidden
+  if (document.visibilityState === 'visible') {
     getAudioCtx();
-    // Then show prison if jailed
-    if (state.role === 'player' && state.leftDuringRound) {
-      showPrisonScreen('cheating');
-    }
   }
 });
 
@@ -2335,7 +1855,8 @@ function handleMessage(msg) {
       state.score = msg.score || 0;
       state.roundNumber = msg.roundNumber || 0;
       state.correctGuess = msg.correctGuess || false;
-      state.leftDuringRound = msg.leftDuringRound || false;
+      state.guessesUsed = msg.guessesUsed || 0;
+      state.cluesSeen = msg.cluesSeen || 0;
 
       qs('#wait-code').textContent = msg.sessionCode;
       qs('#wait-name').textContent = msg.playerName;
@@ -2344,9 +1865,7 @@ function handleMessage(msg) {
       refreshWaitProfile();
 
       if (msg.roundStatus === 'active') {
-        if (state.leftDuringRound) {
-          showPrisonScreen('cheating');
-        } else {
+        {
           showScreen('screen-player-round');
           qs('#player-round-num').textContent = state.roundNumber;
         }
@@ -2386,16 +1905,12 @@ function handleMessage(msg) {
       state.roundNumber = msg.roundNumber || state.roundNumber;
       state.clues = [];
       state.correctGuess = msg.correctGuess || false;
-      state.leftDuringRound = msg.leftDuringRound || false;
+      state.guessesUsed = msg.guessesUsed || 0;
+      state.cluesSeen = 1;
       qs('#clue-list').innerHTML = '';
       qs('#player-round-num').textContent = state.roundNumber;
       qs('#player-clues-count').textContent = 1;
       qs('#request-clue-btn').disabled = false;
-      if (state.leftDuringRound) {
-        showPrisonScreen('cheating');
-        addClue(msg.clue, msg.clueIndex, false);
-        break;
-      }
       if (state.correctGuess) {
         qs('#correct-banner').style.display = '';
         qs('#player-actions').style.display = 'none';
@@ -2404,6 +1919,7 @@ function handleMessage(msg) {
         qs('#guess-input').value = '';
         qs('#guess-input').disabled = false;
         qs('#player-actions').style.display = '';
+        updateGuessLimit();
       }
       showScreen('screen-player-round');
       addClue(msg.clue, msg.clueIndex, true);
@@ -2413,11 +1929,8 @@ function handleMessage(msg) {
       addClue(msg.clue, msg.clueIndex, true);
       qs('#player-clues-count').textContent = msg.clueNumber;
       if (msg.clueNumber >= 10) qs('#request-clue-btn').disabled = true;
-      break;
-
-    case 'LEFT_ROUND_LOCKED':
-      state.leftDuringRound = true;
-      showPrisonScreen('cheating');
+      state.cluesSeen = msg.clueNumber;
+      updateGuessLimit();
       break;
 
     case 'GUESS_RESULT':
@@ -2430,7 +1943,13 @@ function handleMessage(msg) {
           `استخدمت ${msg.cluesSeen} تلميح · حصلت على ${msg.roundScore} نقطة · ${formatTime(msg.guessTime)}`;
         qs('#player-actions').style.display = 'none';
       } else {
-        toast('❌ إجابة خاطئة — حاول مجدداً!', 'error');
+        state.guessesUsed = msg.guessesUsed || state.guessesUsed + 1;
+        updateGuessLimit();
+        if (msg.remaining === 0) {
+          toast('🚫 استنفدت جميع محاولاتك في هذه الجولة!', 'error');
+        } else {
+          toast(`❌ إجابة خاطئة — تبقى لك ${msg.remaining} ${msg.remaining === 1 ? 'محاولة' : 'محاولات'}`, 'error');
+        }
       }
       break;
 
@@ -2441,7 +1960,6 @@ function handleMessage(msg) {
 
     case 'WAITING_FOR_ROUND':
       state.roundStatus = 'waiting';
-      state.leftDuringRound = false;
       state.clues = [];
       state.correctGuess = false;
       showScreen('screen-player-wait');
@@ -2604,8 +2122,7 @@ function showPrisonScreen(reason) {
   const soundBtn = qs('#jail-sound-btn');
   soundBtn.classList.remove('played');
   showScreen('screen-kicked');
-  // Simulate a real click so the browser treats it as a user gesture
-  setTimeout(() => soundBtn.click(), 80);
+  playArrestSound().then(() => soundBtn.classList.add('played')).catch(() => {});
 }
 
 function refreshWaitProfile() {
@@ -2713,10 +2230,609 @@ function renderForbiddenTags() {
   ).join('');
 }
 
+// ─── Characters Database ─────────────────────────────────────────────────────
+const CHARS_DB = {
+  '🎤 مغنيين خليجيين': [
+    {n:'محمد عبده',d:'مطرب سعودي من الطائف لُقِّب بـ"فنان العرب"، رائد الطرب الخليجي، بدأ الستينيات، صوت أسطوري عميق، أيقونة الأغنية السعودية والخليجية',e:1},
+    {n:'عبدالمجيد عبدالله',d:'مطرب سعودي من بريدة القصيم، أيقونة الأغنية الخليجية المعاصرة، بدأ الثمانينيات، صوته دافئ وحنون، من أكثر المطربين الخليجيين مبيعاً',e:1},
+    {n:'طلال مداح',d:'مطرب سعودي راحل من أبها لُقِّب بـ"صوت الأرض"، رائد الموسيقى السعودية، بدأ الستينيات، أداء كلاسيكي عميق وكلمات شعرية رصينة',e:2},
+    {n:'راشد الماجد',d:'مطرب سعودي كويتي الأصل، بدأ الثمانينيات، صوته رومانسي ناعم، اشتهر بالأغاني العاطفية الخليجية، من أبرز وجوه الأغنية الخليجية',e:1},
+    {n:'ماجد المهندس',d:'مطرب كويتي، واحد من أبرز الأصوات الخليجية عربياً ودولياً، بدأ الثمانينيات، يمزج الطرب الخليجي بالبوب العربي',e:1},
+    {n:'عبدالله الرويشد',d:'مطرب كويتي أسطوري من رواد الغناء الخليجي، بدأ السبعينيات، اشتهر بأغانيه الوجدانية العميقة وطابعه الخليجي الأصيل',e:2},
+    {n:'كاظم الساهر',d:'مطرب عراقي من الموصل لُقِّب بـ"قيصر الأغنية العربية"، تخرج من أكاديمية الفنون الجميلة بغداد، يلحن ويغني الشعر الراقي',e:1},
+    {n:'عمرو دياب',d:'مطرب مصري من بورسعيد لُقِّب بـ"نجم البحر المتوسط"، فاز بجائزة الموسيقى العالمية أربع مرات، يمزج الموسيقى الشرقية بالغربية',e:1},
+    {n:'نانسي عجرم',d:'مغنية لبنانية انطلقت مطلع الألفية الثالثة، اشتهرت بأغاني البوب الراقصة، من أبرز سفيرات الأغنية العربية في العالم',e:1},
+    {n:'فيروز',d:'مغنية لبنانية أسطورية، تُعدّ من أعظم الأصوات في تاريخ الموسيقى العربية، بدأت الخمسينيات، أغانيها الصباحية أيقونة لبنانية',e:1},
+    {n:'هيفاء وهبي',d:'مغنية وممثلة لبنانية، برزت أوائل الألفية الثالثة، اشتهرت بأغانيها الراقصة وإطلالتها اللافتة وأدوارها الفنية المثيرة',e:2},
+    {n:'تامر حسني',d:'مطرب وممثل مصري، نجم جيل الألفية الثالثة في مصر، اشتهر بالأغاني الرومانسية والأفلام الكوميدية الخفيفة',e:2},
+    {n:'وليد الشامي',d:'مطرب سعودي من الرياض، برز منتصف الألفية الثالثة، صوته رومانسي ناعم، اشتهر بالأغاني العاطفية الخليجية الهادئة',e:2},
+    {n:'حسين الجسمي',d:'مطرب إماراتي، أحد أبرز الأصوات الإماراتية عربياً، اشتهر بأغانيه الوطنية والعاطفية، صوت قوي ومميز',e:2},
+    {n:'بلقيس',d:'مغنية سعودية يمنية الأصل، برزت السنوات الأخيرة كواحدة من أبرز الأصوات النسائية الخليجية الجديدة',e:2},
+    {n:'أصالة',d:'مغنية سورية من دمشق، واحدة من أبرز الأصوات النسائية العربية منذ التسعينيات، تمزج الطرب بالأغنية المعاصرة',e:2},
+    {n:'فضل شاكر',d:'مطرب لبناني، من أبرز أصوات التسعينيات والألفية في لبنان، اشتهر بأغانيه العاطفية الحماسية وصوته الجهوري',e:2},
+    {n:'محمد المقيط',d:'منشد سعودي شاب، برز عبر الإنترنت بأناشيد إسلامية رقيقة، اشتهر بصوته الجميل وكلماته الدينية التأملية الهادئة',e:2},
+    {n:'أبو بكر سالم',d:'مطرب سعودي راحل من الأحساء، من رواد الطرب الخليجي في السبعينيات والثمانينيات، بصمة فنية مميزة في تاريخ الأغنية الخليجية',e:3},
+    {n:'شادي الخليج',d:'مطرب سعودي من رواد الغناء الخليجي في الستينيات والسبعينيات، يُعدّ من المؤسسين الأوائل للأغنية الخليجية الحديثة',e:3},
+  ],
+  '🌍 مغنيين أجانب': [
+    {n:'مايكل جاكسون',d:'مطرب أمريكي لُقِّب بـ"ملك البوب"، من أكثر الفنانين مبيعاً في التاريخ، اشتهر بخطوة المشي القمري وألبوم Thriller',e:1},
+    {n:'تايلور سويفت',d:'مغنية أمريكية بدأت بالكانتري ثم تحولت للبوب، من أعلى الفنانين دخلاً في العالم، تكتب أغانيها عن علاقاتها العاطفية',e:1},
+    {n:'بيونسيه',d:'مغنية أمريكية بدأت مع فرقة Destiny\'s Child، أيقونة في حقوق المرأة والثقافة السوداء الأمريكية، زوجة Jay-Z',e:1},
+    {n:'ريهانا',d:'مغنية من جزيرة باربادوس، من أكثر الفنانات مبيعاً في العالم، معروفة أيضاً بعلامتها التجارية Fenty Beauty',e:1},
+    {n:'إد شيران',d:'مغني بريطاني ذو شعر أحمر، يعزف الغيتار منفرداً، من أكثر الفنانين استماعاً على Spotify، كتب أغاني لفنانين كثيرين',e:1},
+    {n:'أديل',d:'مغنية بريطانية ذات صوت قوي عميق، اشتهرت بأغاني الحزن والفراق، فازت بعدد كبير من جوائز Grammy',e:1},
+    {n:'شاكيرا',d:'مغنية كولومبية، اشتهرت بغناء اللاتينو والبوب الدولي، ظهرت في كأس العالم 2010 بأغنية Waka Waka الشهيرة',e:1},
+    {n:'إمينم',d:'مغني راب أمريكي أبيض من ديترويت، يُعدّ من أسرع المغنين إلقاءً في الراب، اشتهر بالنقد الاجتماعي الحاد وقصته الصعبة',e:2},
+    {n:'دريك',d:'مغني راب وبوب كندي من تورنتو، بدأ ممثلاً في مسلسل Degrassi، من أكثر الفنانين تحقيقاً للأرقام القياسية في التدفق الرقمي',e:2},
+    {n:'جاستن بيبر',d:'مطرب كندي اكتشفه سكوتر براون عبر يوتيوب وهو مراهق، نجم بوب عالمي، تزوج من هايلي بالدوين',e:1},
+    {n:'أريانا غراندي',d:'مغنية أمريكية بدأت ممثلة في نيكيلوديون، اشتهرت بصوتها العالي وذيل شعرها العالي، عاشت حادثة مانشستر أرينا المؤلمة',e:2},
+    {n:'برونو مارس',d:'مغني أمريكي من هاواي بأصول فلبينية وبورتوريكية، يمزج البوب بالفانك والسول والراب، يُعدّ من أفضل المؤدين على المسرح',e:2},
+    {n:'ليدي غاغا',d:'مغنية وممثلة أمريكية، اشتهرت بأزيائها الصادمة وأغانيها الإلكترونية، فازت بأوسكار عن فيلم A Star Is Born',e:2},
+    {n:'ذا ويكند',d:'مغني كندي من أصل إثيوبي، اشتهر بأسلوبه الغامق وأغاني الـ R&B الحزينة، من أكثر الفنانين استماعاً على المنصات الرقمية',e:2},
+    {n:'بيلي إيليش',d:'مغنية أمريكية شابة من لوس أنجلوس، فازت بخمس جوائز Grammy وعمرها 18 سنة، أيقونة الجيل Z بأسلوبها الغامق المختلف',e:2},
+    {n:'بوست مالون',d:'مغني راب وبوب أمريكي، يتميز بوشومه الكثيرة في وجهه، يمزج بين الراب والروك والبوب، اسمه الحقيقي أوستن بوست',e:3},
+    {n:'باد بني',d:'مغني راب وريغيتون بورتوريكي، أكثر فنان استماعاً على Spotify لسنوات متتالية، غنى بالإسبانية وحقق نجاحاً عالمياً',e:2},
+    {n:'كندريك لامار',d:'مغني راب أمريكي من كومبتون، فاز بجائزة بوليتزر عن موسيقاه، يُعدّ من أعمق فناني الراب فكرياً وأكثرهم تأثيراً',e:3},
+    {n:'مالوما',d:'مغني ريغيتون وبوب لاتيني كولومبي، من أبرز نجوم الموسيقى اللاتينية في العقد الثالث من الألفية، يتميز بإطلالته الأنيقة',e:3},
+    {n:'كريس براون',d:'مغني وراقص أمريكي، اشتهر بأغانيه الراقصة ومهاراته الاستثنائية في الرقص، من أبرز فناني الـ R&B في جيله',e:2},
+  ],
+  '⚽ لاعبين سعوديين': [
+    {n:'سامي الجابر',d:'مهاجم سعودي أسطوري لعب للهلال طوال مسيرته، شارك في ثلاثة كؤوس عالم، يُعدّ من أعظم اللاعبين السعوديين تاريخياً',e:2},
+    {n:'ياسر القحطاني',d:'مهاجم سعودي لُقِّب بـ"ملك السالف"، قضى مسيرته في الهلال، من أكثر هدافي الدوري السعودي في التاريخ، اعتزل وأصبح مؤثراً',e:2},
+    {n:'محمد الدعيع',d:'حارس مرمى سعودي أسطوري لُقِّب بـ"الحائط الصيني"، لعب في ثلاثة مونديالات، يُعدّ أفضل حارس في تاريخ كرة القدم السعودية',e:2},
+    {n:'سالم الدوسري',d:'جناح الهلال والمنتخب السعودي، سجل هدفاً خرافياً في كأس العالم 2022 ضد بولندا، من أبرز لاعبي الدوري السعودي الحالي',e:1},
+    {n:'نواف العابد',d:'جناح سعودي سابق، لعب للهلال والشباب والقادسية ومنتخب السعودية، اعتزل مؤخراً وكان من أبرز أجنحة جيله',e:2},
+    {n:'فراس البريكان',d:'مهاجم سعودي يلعب للاتحاد السعودي والمنتخب، من أبرز المهاجمين في الدوري السعودي الحالي وصاحب أهداف مهمة',e:2},
+    {n:'محمد كنو',d:'مهاجم سعودي يلعب للاتحاد السعودي والمنتخب، برز في السنوات الأخيرة كواحد من أبرز المهاجمين السعوديين الشباب',e:2},
+    {n:'ياسر الشهراني',d:'مدافع جانبي أيسر يلعب للهلال والمنتخب السعودي، من أفضل المدافعين الجانبيين في تاريخ كرة القدم السعودية',e:2},
+    {n:'علي البليهي',d:'مدافع يلعب للهلال والمنتخب السعودي، اشتهر بحواره الطريف مع رونالدو في كأس العالم 2022',e:2},
+    {n:'سعود عبدالحميد',d:'مدافع يلعب للهلال والمنتخب السعودي، أحد أبرز مدافعي الجيل الحالي في كرة القدم السعودية',e:2},
+    {n:'سعود كريري',d:'لاعب وسط يلعب للاتحاد السعودي والمنتخب، من لاعبي الوسط المميزين في الدوري السعودي الحالي',e:2},
+    {n:'يحيى الشهري',d:'مهاجم جناح يلعب للأهلي السعودي والمنتخب، أحد الوجوه الشابة الواعدة في كرة القدم السعودية',e:3},
+    {n:'صالح الشهري',d:'جناح أيمن يلعب في الدوري السعودي والمنتخب، سجل هدفاً في كأس العالم 2022 ضد الأرجنتين',e:3},
+    {n:'سلطان الغنام',d:'مدافع جانبي يلعب للهلال والمنتخب السعودي، أحد عناصر دفاع المنتخب في المرحلة الحالية',e:3},
+    {n:'عبدالإله العمري',d:'لاعب وسط سعودي من الجيل الأكبر، لعب للاتحاد والمنتخب، من الوجوه البارزة في الكرة السعودية',e:3},
+    {n:'هتان باهبري',d:'لاعب وسط يلعب للهلال والمنتخب السعودي، أحد الموهوبين في الدوري السعودي للمحترفين',e:3},
+    {n:'محمد البريك',d:'مدافع يلعب للنصر والمنتخب السعودي، من عناصر خط الدفاع في المنتخب الوطني',e:3},
+    {n:'عمر هوساوي',d:'حارس مرمى يلعب للاتحاد السعودي والمنتخب، أحد أبرز حراس المرمى في الدوري السعودي الحالي',e:3},
+    {n:'يوسف بيسمي',d:'لاعب وسط يلعب في الدوري السعودي للمحترفين، من الوجوه الشابة في الكرة السعودية',e:3},
+    {n:'طارق التايب',d:'مهاجم سعودي لعب لعدة أندية في الدوري السعودي، من اللاعبين الذين تنقلوا بين أندية الدوري السعودي',e:3},
+  ],
+  '⭐ أجانب في الدوري': [
+    {n:'كريستيانو رونالدو',d:'مهاجم برتغالي، 5 دوري أبطال أوروبا، 5 بالون دور، انضم للنصر السعودي يناير 2023 في صفقة تاريخية',e:1},
+    {n:'نيمار',d:'مهاجم برازيلي، انتقل من باريس سان جيرمان للهلال السعودي صيف 2023، ثالث أغلى انتقال في تاريخ كرة القدم',e:1},
+    {n:'كريم بنزيمة',d:'مهاجم فرنسي من أصل جزائري، فاز ببالون دور 2022 مع ريال مدريد، انضم للاتحاد السعودي صيف 2023',e:1},
+    {n:'ريياد محرز',d:'جناح جزائري، فاز بدوري إنجليزي مع مانشستر سيتي، انضم للأهلي السعودي، لاعب ماكر وسريع',e:2},
+    {n:'سيديو مانيه',d:'مهاجم سنغالي، فاز بدوري أبطال أوروبا مع ليفربول، انضم للنصر السعودي، من أسرع المهاجمين في العالم',e:2},
+    {n:'إن غولو كانتي',d:'لاعب وسط فرنسي، فاز بكأس العالم 2018 ودوري الأبطال مع تشيلسي، انضم للاتحاد السعودي',e:2},
+    {n:'روبرتو فيرمينو',d:'مهاجم برازيلي، شكّل الثلاثي الشهير مع صلاح وماني في ليفربول، انضم للاتحاد السعودي',e:2},
+    {n:'مالكوم',d:'جناح برازيلي، انتقل من زينيت الروسي للهلال السعودي، يتميز بسرعته الفائقة ومراوغته الاستثنائية',e:3},
+    {n:'أليكساندر ميتروفيتش',d:'مهاجم صربي، هداف الدوري الإنجليزي لموسم 2022-23 بـ36 هدفاً، انضم للهلال السعودي',e:3},
+    {n:'سيرجيي ميلينكوفيتش سافيتش',d:'لاعب وسط صربي طويل القامة، ألمع لاعب في لاتسيو الإيطالي لسنوات، انضم للهلال السعودي',e:3},
+    {n:'ماركيلو بروزوفيتش',d:'لاعب وسط كرواتي، من أبرز وجوه المنتخب الكرواتي، انضم للنصر السعودي بعد مسيرة طويلة مع إنتر ميلان',e:3},
+    {n:'روبن نيفيز',d:'لاعب وسط برتغالي، من أبرز لاعبي وولفرهامبتون الإنجليزي لسنوات، انضم للهلال السعودي',e:3},
+    {n:'كاليدو كوليبالي',d:'مدافع سنغالي ضخم، من أبرز المدافعين في نابولي وتشيلسي، انضم للهلال السعودي',e:3},
+    {n:'إيفان توني',d:'مهاجم إنجليزي من أبرز هدافي الدوري الإنجليزي مع برينتفورد، انضم للأهلي السعودي',e:3},
+    {n:'فابينيو',d:'لاعب وسط دفاعي برازيلي، ركيزة وسط ليفربول لسنوات مع يورغن كلوب، انضم للاتحاد السعودي',e:3},
+    {n:'جوردان هندرسون',d:'لاعب وسط إنجليزي، قاد ليفربول لحصد الألقاب كقائد، انضم للاتحاد السعودي ثم عاد لأوروبا',e:3},
+    {n:'سيكو فوفانا',d:'لاعب وسط فرنسي من أصل غيني، برز مع لانس الفرنسي، انضم للنصر السعودي',e:3},
+    {n:'أوتافيو',d:'جناح برتغالي، من أبرز لاعبي بورتو الكبير لسنوات طويلة، انضم للنصر السعودي',e:3},
+    {n:'خوتا',d:'جناح برتغالي من مواليد الكاب فيردي، اشتهر مع وولفرهامبتون الإنجليزي، انضم للاتحاد السعودي',e:3},
+    {n:'آلان سان ماكسيمان',d:'جناح فرنسي اشتهر بمراوغاته الاستعراضية في نيوكاسل، انضم للأهلي السعودي، أسلوبه فردي مميز جداً',e:3},
+  ],
+  '🎬 ممثلين سعوديين': [
+    {n:'ناصر القصبي',d:'ممثل كوميدي سعودي، نجم مسلسل "طاش ما طاش" الشهير الذي امتد لعقود، أبرز وجوه المسرح والتلفزيون السعودي',e:1},
+    {n:'عبدالله السدحان',d:'ممثل وكوميديان سعودي، شريك ناصر القصبي في طاش ما طاش، اشتهر بأدواره الكوميدية المتنوعة والمؤثرة',e:1},
+    {n:'محمد الغامدي',d:'ممثل سعودي بارز، من أبرز الوجوه في الدراما الخليجية والسعودية، يؤدي الأدوار الجادة والكوميدية',e:2},
+    {n:'راشد الشمراني',d:'ممثل سعودي مميز، يتنوع بين الأدوار الجادة والكوميدية في الدراما السعودية والخليجية',e:2},
+    {n:'عبدالله طلبة',d:'ممثل سعودي بارز في التلفزيون السعودي، وجه مألوف في الدراما الاجتماعية والكوميدية',e:2},
+    {n:'هند الفهاد',d:'ممثلة سعودية، من أبرز الوجوه النسائية في الدراما السعودية، تؤدي أدوار متنوعة بعمق وإتقان',e:2},
+    {n:'دلال مبارك',d:'فنانة سعودية متعددة المواهب بين التمثيل والغناء، من الوجوه المحبوبة في الوسط الفني السعودي',e:2},
+    {n:'سعد الحريفي',d:'ممثل سعودي اشتهر بأدواره الكوميدية، وجه مألوف في المسلسلات والبرامج الترفيهية السعودية',e:2},
+    {n:'أيمن زيدان',d:'ممثل سوري من أبرز النجوم في الدراما العربية، حضور قوي في الأعمال الخليجية والعربية المشتركة',e:2},
+    {n:'كيان السنيدي',d:'ممثلة سعودية شابة من أبرز الوجوه الجديدة في الدراما السعودية المعاصرة',e:2},
+    {n:'إلهام علي',d:'ممثلة سعودية بارزة في الدراما الاجتماعية، وجه معروف في المسلسلات السعودية والخليجية',e:2},
+    {n:'محمد أبو هوساوي',d:'ممثل سعودي كوميدي، يتميز بأداء خفيف الظل وشخصيات مضحكة في الدراما السعودية',e:3},
+    {n:'عبدالرحمن آل رشي',d:'ممثل سعودي من الوجوه المتكررة في الأعمال الدرامية السعودية والخليجية',e:3},
+    {n:'مروان الغامدي',d:'ممثل سعودي يظهر في أعمال درامية متعددة في التلفزيون السعودي',e:3},
+    {n:'صالح الزهراني',d:'ممثل سعودي مميز يؤدي أدواراً متنوعة في الدراما السعودية المحلية',e:3},
+    {n:'سامي الزهراني',d:'ممثل سعودي يشارك في أعمال درامية وكوميدية في التلفزيون السعودي',e:3},
+    {n:'يوسف الجراح',d:'ممثل سعودي من الوجوه المميزة التي تؤدي أدواراً درامية ذات عمق في التلفزيون السعودي',e:3},
+    {n:'حياة الفهد',d:'ممثلة كويتية كبيرة، أيقونة الدراما الخليجية منذ عقود، تُعدّ من أعظم الممثلات العرب',e:2},
+    {n:'سعد العجيبة',d:'ممثل سعودي كوميدي، يشارك في مسلسلات وأعمال درامية كوميدية في التلفزيون السعودي',e:3},
+    {n:'عبدالله العمري',d:'ممثل سعودي يشارك في أعمال درامية متنوعة في التلفزيون والمسرح السعودي',e:3},
+  ],
+  '🎙️ مقدمين سعوديين': [
+    {n:'أحمد الشقيري',d:'مقدم برنامج "خواطر" الرمضاني الشهير، مفكر وكاتب سعودي، برنامجه من أكثر البرامج متابعة في السعودية لسنوات',e:1},
+    {n:'وليد الفراج',d:'مقدم رياضي سعودي، صوت كرة القدم السعودية بامتياز، معلق ومحلل رياضي بارز على القنوات الرياضية',e:1},
+    {n:'داود الشريان',d:'مقدم ومذيع سعودي عريق، قدم برامج عدة أبرزها "ثرثرة"، وجه تلفزيوني مألوف منذ عقود',e:2},
+    {n:'تركي الدخيل',d:'إعلامي وكاتب سعودي، رئيس قناة العربية سابقاً، مقدم ومحلل سياسي وثقافي بارز',e:2},
+    {n:'منى أبو سليمان',d:'مقدمة ومحاورة سعودية، من أبرز وجوه البرامج الاجتماعية والتنموية، سفيرة أممية سابقة',e:2},
+    {n:'بدر صالح',d:'مقدم وكوميديان سعودي، يجمع بين تقديم البرامج الترفيهية والكوميديا، وجه شبابي محبوب',e:2},
+    {n:'لجين عمران',d:'مذيعة ومقدمة سعودية بارزة، من الوجوه النسائية المعروفة في الإعلام السعودي',e:2},
+    {n:'عبدالله المديفر',d:'مقدم ومذيع تلفزيوني سعودي، وجه مألوف في القنوات السعودية',e:2},
+    {n:'محمد الخميسي',d:'مقدم وإعلامي سعودي يظهر في برامج متنوعة في التلفزيون السعودي',e:3},
+    {n:'فيصل المطيري',d:'مقدم وإعلامي سعودي، وجه معروف في البرامج الرياضية والترفيهية',e:3},
+    {n:'ساهر الصامت',d:'مقدم سعودي اشتهر بتقديم البرامج الاجتماعية والحوارية في التلفزيون السعودي',e:3},
+    {n:'عمر عبدالعزيز',d:'إعلامي وناشط سعودي، يقدم محتوى على منصات التواصل الاجتماعي ويعلق على الشأن العام',e:2},
+    {n:'عصام الزامل',d:'كاتب ومحلل اقتصادي سعودي بارز، يظهر في برامج الحوار الاقتصادي والتحليل المالي',e:3},
+    {n:'رانيا العامري',d:'مقدمة سعودية تظهر في برامج ترفيهية واجتماعية في التلفزيون السعودي',e:3},
+    {n:'خالد الجمعة',d:'مقدم وإعلامي سعودي معروف في المشهد الإعلامي السعودي',e:3},
+    {n:'فهد الصقعبي',d:'إعلامي سعودي يشارك في برامج ترفيهية ورياضية في التلفزيون السعودي',e:3},
+    {n:'عبدالله بادحدح',d:'مقدم سعودي اشتهر بتقديم البرامج الدينية والثقافية',e:3},
+    {n:'جمال نمر',d:'مقدم سعودي معروف بتقديم البرامج الترفيهية والحوارية',e:3},
+    {n:'محمد الربيعة',d:'إعلامي سعودي يظهر في برامج الحوار والتحليل على القنوات السعودية',e:3},
+    {n:'إبراهيم السكران',d:'شيخ وكاتب ومفكر سعودي، يقدم محتوى دينياً وفكرياً عبر منصات التواصل الاجتماعي',e:3},
+  ],
+  '📱 مؤثرين سعوديين': [
+    {n:'فوز العتيبي',d:'يوتيوبر سعودية، من أوائل وأشهر المؤثرات في السعودية، تنشر محتوى الحياة اليومية والترفيه والسفر',e:2},
+    {n:'عبدالله يايا',d:'مؤثر وكوميديان سعودي شاب، اشتهر بمقاطعه الكوميدية الطريفة على سناب وانستقرام',e:2},
+    {n:'أسيل عمران',d:'مغنية ومؤثرة سعودية، واحدة من أولى المغنيات السعوديات في العصر الحديث، حضور قوي على المنصات',e:2},
+    {n:'سارة الودعاني',d:'مؤثرة سعودية في الموضة والأناقة ومحتوى البيوتي، من أبرز المؤثرات السعوديات',e:2},
+    {n:'هيا الخديدي',d:'مؤثرة سعودية تنشر محتوى متنوعاً على منصات التواصل الاجتماعي',e:2},
+    {n:'خالد النمر',d:'مؤثر سعودي ينشر محتوى متنوعاً على منصات التواصل الاجتماعي، حضور شبابي مميز',e:2},
+    {n:'أنس مروان',d:'يوتيوبر ومؤثر سعودي، ينشر فيديوهات ترفيهية وتحديات على يوتيوب وسناب',e:2},
+    {n:'رونق',d:'مؤثرة سعودية متخصصة في محتوى الطبخ وتنظيم المنزل والحياة الأسرية',e:2},
+    {n:'عبدالله الفضالة',d:'مؤثر سعودي ومحلل رياضي، يقدم آراءه في الشأن الرياضي السعودي عبر المنصات',e:2},
+    {n:'لمار الحسيني',d:'مؤثرة سعودية تنشر محتوى التجميل والأزياء والحياة اليومية',e:3},
+    {n:'ندى قطان',d:'مؤثرة سعودية، من الوجوه النشطة على منصات التواصل الاجتماعي السعودية',e:3},
+    {n:'مشاعل الشمري',d:'مؤثرة سعودية تنشر محتوى متنوعاً بين الترفيه والحياة اليومية',e:3},
+    {n:'أبو فلة',d:'مؤثر سعودي كوميدي، اشتهر بشخصية مضحكة ومقاطع فكاهية تداولها الجمهور السعودي',e:2},
+    {n:'بنده',d:'مؤثرة خليجية محبوبة جداً في السعودية، تنشر محتوى ترفيهياً خفيف الظل',e:2},
+    {n:'وجدان الفهد',d:'مؤثرة سعودية تنشر محتوى متنوعاً بين الطبخ والسفر والحياة اليومية',e:3},
+    {n:'صالح الراشد',d:'مؤثر سعودي نشط على منصات التواصل الاجتماعي بمحتوى متنوع',e:3},
+    {n:'حمد السعيد',d:'مؤثر سعودي شاب، يقدم محتوى ترفيهياً على منصات التواصل الاجتماعي',e:3},
+    {n:'خالد العقيل',d:'مؤثر سعودي يتناول موضوعات متنوعة عبر منصاته على التواصل الاجتماعي',e:3},
+    {n:'ريم البلوي',d:'مؤثرة سعودية تنشر محتوى التجميل والحياة اليومية والسفر',e:3},
+    {n:'سهيل الجميل',d:'مؤثر سعودي ينشر محتوى ترفيهياً وتحديات على منصات التواصل الاجتماعي',e:3},
+  ],
+  '🦸 شخصيات خيالية': [
+    {n:'سبايدرمان',d:'شخصية مارفل، مراهق اسمه بيتر باركر من نيويورك، لدغته عنكبوت مشع أعطاه قوة التسلق وإطلاق خيوط العنكبوت',e:1},
+    {n:'باتمان',d:'شخصية DC، رجل ثري اسمه بروس واين من غوثام سيتي، بدون قوى خارقة، يعتمد على الثروة والذكاء والتدريب',e:1},
+    {n:'آيرون مان',d:'شخصية مارفل، العبقري الثري توني ستارك، يرتدي بدلة مدرعة متطورة يبنيها بنفسه، مات في Avengers Endgame',e:1},
+    {n:'جوكر',d:'أشهر أعداء باتمان في DC، شرير مجنون يرتدي مكياج المهرج، فلسفته تقوم على الفوضى، تعددت تجسيداته السينمائية',e:1},
+    {n:'ناروتو',d:'بطل مسلسل أنمي ياباني، شاب لديه روح ثعلب تسعة الذيول بداخله، حلمه أن يصبح هوكاغي قريته نينجا',e:2},
+    {n:'غوكو',d:'بطل مسلسل Dragon Ball Z، سايان من الفضاء نشأ على الأرض، يتحول لـ Super Saiyan، يحب القتال ويحمي الأرض',e:2},
+    {n:'لوفي',d:'بطل مسلسل One Piece، قرصان شاب أكل ثمرة المطاط فأصبح جسمه مطاطاً، يبحث عن كنز الملك الذهبي',e:2},
+    {n:'ميكاسا أكرمان',d:'شخصية من مسلسل Attack on Titan، محاربة استثنائية، أفضل جندي في جيلها، صديقة إيرين يغر منذ الطفولة',e:2},
+    {n:'دارث فادر',d:'الشرير الأشهر في حرب النجوم، يرتدي بدلة سوداء كاملة ويتنفس بصوت مميز، كان جيداي قبل أن يتحول للجانب المظلم',e:2},
+    {n:'هرميون غرانجر',d:'من سلسلة هاري بوتر، الطالبة الأذكى في مدرسة هوغوورتس للسحر، أفضل أصدقاء هاري بوتر',e:2},
+    {n:'شيرلوك هولمز',d:'المحقق الخيالي الأشهر في الأدب الإنجليزي، يسكن في 221B Baker Street لندن، يحل الجرائم بالملاحظة الدقيقة',e:2},
+    {n:'سيمبا',d:'بطل فيلم ديزني The Lion King، أسد يتيم فقد أباه موفاسا بمؤامرة عمه سكار، يسترجع عرشه في نهاية المطاف',e:1},
+    {n:'إلسا',d:'ملكة في فيلم ديزني Frozen، تمتلك قوة التجميد، أغنيتها "Let It Go" من أشهر أغاني ديزني على الإطلاق',e:1},
+    {n:'ماريو',d:'شخصية ألعاب نينتندو الأشهر، سبّاك إيطالي يرتدي قبعة حمراء وشارب كثيف، ينقذ الأميرة من براوزر',e:1},
+    {n:'سونيك',d:'شخصية ألعاب سيغا، قنفذ أزرق فائق السرعة، عدوه الدكتور إيغمان، تحول لفيلم سينمائي ناجح',e:2},
+    {n:'كريتوس',d:'بطل لعبة God of War، محارب إسباطي تحول إلى إله الحرب الإغريقي ثم انتقل لأساطير الفايكنج',e:3},
+    {n:'ماستر تشيف',d:'بطل لعبة Halo، جندي سبارتاني مستقبلي يرتدي درعاً خضراء ويحارب كائنات الكوفينانت الفضائية',e:3},
+    {n:'زورو',d:'من مسلسل One Piece، صياد القراصنة وأول أعضاء طاقم لوفي، يقاتل بثلاثة سيوف، حلمه أن يصبح أفضل مقاتل',e:3},
+    {n:'باكوغو',d:'من مسلسل My Hero Academia، طالب متفوق وعدواني، يطلق انفجارات من كفيه، منافس إيزوكو ميدوريا',e:3},
+    {n:'دارث مول',d:'شرير Star Wars يظهر في الحلقة الأولى، وجهه مطلي بالأحمر والأسود مع قرون، يحمل سابر ضوئي مزدوجاً',e:3},
+  ],
+  '🏛️ شخصيات تاريخية': [
+    {n:'صلاح الدين الأيوبي',d:'قائد إسلامي كردي الأصل، حرر بيت المقدس من الصليبيين عام 1187م، مؤسس الدولة الأيوبية في مصر والشام',e:2},
+    {n:'الملك عبدالعزيز',d:'مؤسس المملكة العربية السعودية عام 1932م، وحّد الجزيرة العربية تحت راية واحدة، أبو الملوك السعوديين',e:2},
+    {n:'الإسكندر الأكبر',d:'ملك مقدوني، أعظم القادة العسكريين في التاريخ، بنى إمبراطورية من اليونان حتى الهند وعمره ثلاثون عاماً',e:2},
+    {n:'نابليون بونابرت',d:'إمبراطور فرنسي من أصل كورسيكي، قاد حملات عسكرية غيّرت وجه أوروبا، نُفي مرتين وتوفي في منفاه',e:2},
+    {n:'كليوباترا',d:'ملكة مصر الفرعونية الأشهر، آخر حاكم فرعوني، ارتبطت بيوليوس قيصر ومارك أنطونيو، تكلمت تسع لغات',e:2},
+    {n:'محمد الفاتح',d:'سلطان عثماني فتح القسطنطينية عام 1453م وأنهى الإمبراطورية البيزنطية وعمره 21 سنة فقط',e:3},
+    {n:'ابن بطوطة',d:'رحالة مغربي من طنجة، قطع أكثر من 120,000 كيلومتر في رحلاته عبر آسيا وأفريقيا في القرن الرابع عشر',e:3},
+    {n:'ابن سينا',d:'عالم وفيلسوف وطبيب من آسيا الوسطى، كتب القانون في الطب الذي كان مرجعاً لأوروبا قروناً طويلة',e:3},
+    {n:'الخوارزمي',d:'عالم رياضيات مسلم، مؤسس علم الجبر، اسمه أصل كلمة Algorithm في الإنجليزية، عاش في بغداد العباسية',e:3},
+    {n:'المتنبي',d:'شاعر عربي من الكوفة، يُعدّ من أعظم شعراء العربية على الإطلاق، كان يدّعي النبوة في شبابه',e:3},
+    {n:'عمر المختار',d:'مقاوم ليبي شيخ، قاد المقاومة ضد الاحتلال الإيطالي، لُقِّب بـ"أسد الصحراء"، أُعدم عام 1931',e:2},
+    {n:'جمال عبدالناصر',d:'رئيس مصر، قاد ثورة يوليو 1952، أمّم قناة السويس، أيقونة القومية العربية في القرن العشرين',e:2},
+    {n:'نيلسون مانديلا',d:'زعيم جنوب أفريقيا، قضى 27 سنة في السجن بسبب مقاومة الفصل العنصري، أصبح رئيساً وفاز بنوبل للسلام',e:2},
+    {n:'مارتن لوثر كينغ',d:'قائد حقوق المدنية الأمريكي، زعيم حركة الحقوق المدنية للسود، خطابه الشهير "I Have a Dream"',e:2},
+    {n:'المهاتما غاندي',d:'زعيم استقلال الهند عن بريطانيا، اعتمد المقاومة السلبية وعدم العنف كسلاح سياسي فريد',e:3},
+    {n:'الملكة إليزابيث الثانية',d:'ملكة بريطانيا الأطول حكماً في التاريخ، حكمت من 1952 حتى وفاتها 2022، رمز للاستقرار البريطاني',e:2},
+    {n:'يوليوس قيصر',d:'قائد روماني عظيم، وسّع الإمبراطورية الرومانية، ادّعى قرناؤه أنه يريد أن يصبح ملكاً فاغتالوه',e:3},
+    {n:'أبراهام لنكولن',d:'الرئيس الأمريكي السادس عشر، ألغى العبودية في الولايات المتحدة، اغتيل في مسرح فورد عام 1865',e:2},
+    {n:'الملك فيصل بن عبدالعزيز',d:'ملك المملكة العربية السعودية، قاد قرار حظر النفط 1973، اغتيل عام 1975، أحد أبرز ملوك السعودية',e:3},
+    {n:'تشي غيفارا',d:'ثوري أرجنتيني، شارك في ثورات كوبا وبوليفيا، صورته على القميص أيقونة سياسية عالمية حتى اليوم',e:3},
+  ],
+  '💼 رجال أعمال': [
+    {n:'إيلون ماسك',d:'مؤسس تيسلا وسبيس إكس وشركات أخرى، أغنى شخص في العالم في فترات عدة، اشترى تويتر وحوّله لـX',e:1},
+    {n:'ستيف جوبز',d:'مؤسس شركة آبل مع ستيف وزنياك، أطلق iPhone وiPad وMac، يُعدّ من أعظم رجال الأعمال، توفي 2011',e:1},
+    {n:'بيل غيتس',d:'مؤسس مايكروسوفت، كان أغنى شخص في العالم لسنوات، يتبرع الآن بمليارات لمشاريع صحية وتعليمية عالمية',e:1},
+    {n:'مارك زوكربيرغ',d:'مؤسس فيسبوك Meta، أسسه في هارفارد عام 2004، يمتلك فيسبوك وانستقرام وواتساب',e:1},
+    {n:'جيف بيزوس',d:'مؤسس أمازون، بدأها كمتجر كتب من مرآب بيته عام 1994، توسعت لأكبر متجر إلكتروني في العالم',e:1},
+    {n:'الأمير الوليد بن طلال',d:'مستثمر سعودي حفيد الملك عبدالعزيز، من أكبر المستثمرين في العالم، يمتلك حصصاً في كبرى شركات العالم',e:2},
+    {n:'جاك ما',d:'مؤسس علي بابا الصيني، بدأ مدرساً للغة الإنجليزية، حوّل رفضه من أمازون لشركة تنافسها في آسيا',e:2},
+    {n:'وارن بافيت',d:'مستثمر أمريكي لُقِّب بـ"حكيم أوماها"، من أغنى الناس في العالم بفضل استثمارات طويلة المدى في الشركات الكبرى',e:2},
+    {n:'سام ألتمان',d:'الرئيس التنفيذي لشركة OpenAI مطوّرة ChatGPT، أحد أبرز رواد الذكاء الاصطناعي في العالم',e:2},
+    {n:'لاري بيج',d:'مؤسس غوغل مع سيرجي برين، طالب دكتوراه في ستانفورد اخترع محرك البحث الأشهر في العالم',e:2},
+    {n:'ساتيا ناديلا',d:'الرئيس التنفيذي لمايكروسوفت، هندي الأصل، قاد تحول الشركة نحو الحوسبة السحابية وضخ في الذكاء الاصطناعي',e:3},
+    {n:'سنداي بيتشاي',d:'الرئيس التنفيذي لشركة غوغل وألفابت، هندي الأصل، أشرف على توسع غوغل في مجالات متعددة',e:3},
+    {n:'محمد العبار',d:'رجل أعمال إماراتي، مؤسس شركة إعمار العقارية التي بنت برج خليفة أطول مبنى في العالم',e:3},
+    {n:'تيم كوك',d:'الرئيس التنفيذي لآبل خلفاً لستيف جوبز، قاد الشركة لتصبح أول شركة تتجاوز قيمتها ثلاثة تريليونات دولار',e:2},
+    {n:'ريد هاستينغز',d:'مؤسس نتفليكس، بدأها عام 1997 كخدمة تأجير الأقراص بالبريد قبل أن تتحول لأكبر منصة بث في العالم',e:3},
+    {n:'روبرت كيوساكي',d:'كاتب ورجل أعمال أمريكي، مؤلف كتاب "أبي الغني أبي الفقير" الأكثر مبيعاً في الأعمال والاستثمار',e:2},
+    {n:'برنار أرنو',d:'رجل أعمال فرنسي، مالك مجموعة LVMH التي تضم لويس فيتون وغيرها، من أغنى الناس في العالم',e:3},
+    {n:'شريل ساندبرغ',d:'المديرة التنفيذية لميتا فيسبوك سابقاً، كاتبة كتاب Lean In عن توازن المرأة بين العمل والحياة',e:3},
+    {n:'لاري إليسون',d:'مؤسس شركة أوراكل لقواعد البيانات، من أغنى الناس في العالم، يمتلك شركة حوسبة سحابية كبيرة',e:3},
+    {n:'بوب آيغر',d:'الرئيس التنفيذي لشركة ديزني، قاد الاستحواذ على بيكسار ومارفل وستار وورز وفوكس في صفقات تاريخية',e:3},
+  ],
+  '🏆 رياضيين آخرين': [
+    {n:'محمد علي',d:'ملاكم أمريكي يُعدّ أعظم ملاكم في التاريخ، اشتهر بقوله "أنا الأعظم"، رفض الخدمة العسكرية الأمريكية',e:2},
+    {n:'مايك تايسون',d:'ملاكم أمريكي، أصغر بطل عالمي في الوزن الثقيل، اشتهر بشراسته وقوة ضرباته، عضّ أذن منافسه هوليفيلد',e:2},
+    {n:'مايكل جوردان',d:'لاعب كرة سلة أمريكي، يُعدّ الأعظم في التاريخ، فاز بـ6 ألقاب مع شيكاغو بولز، ألهم فيلم Space Jam',e:1},
+    {n:'كوبي براينت',d:'لاعب كرة سلة أمريكي لُقِّب بـ"الماما"، فاز بـ5 ألقاب مع ليكرز، توفي في حادثة تحطم مروحية عام 2020',e:2},
+    {n:'ليبرون جيمس',d:'لاعب كرة سلة أمريكي، من أعظم اللاعبين في التاريخ، فاز بألقاب مع ثلاثة أندية مختلفة، يلعب في NBA',e:2},
+    {n:'أوسين بولت',d:'عداء جامايكي، أسرع إنسان في التاريخ، كسر الرقم القياسي في 100 متر و200 متر في أولمبياد بكين',e:2},
+    {n:'روجر فيدرر',d:'لاعب تنس سويسري، فاز بـ20 لقب Grand Slam، يُعدّ من أعظم لاعبي التنس، اعتزل عام 2022',e:2},
+    {n:'رافاييل نادال',d:'لاعب تنس إسباني، لُقِّب بـ"ملك الملاعب الترابية"، فاز بـ22 لقب Grand Slam، بطل رولان غاروس 14 مرة',e:2},
+    {n:'سيرينا ويليامز',d:'لاعبة تنس أمريكية، من أعظم الرياضيين في التاريخ، فازت بـ23 لقب Grand Slam، أيقونة الرياضة النسائية',e:2},
+    {n:'تايغر وودز',d:'لاعب غولف أمريكي، غيّر وجه رياضة الغولف كلياً، فاز بـ15 لقباً في المايجرز، تعافى من حوادث عدة',e:2},
+    {n:'لويس هاميلتون',d:'سائق فورمولا 1 بريطاني، فاز بـ7 ألقاب عالمية مساوياً للرقم القياسي، أول سائق أسود يفوز بلقب F1',e:2},
+    {n:'ماكس فيرستابن',d:'سائق فورمولا 1 هولندي، أصغر فائز بلقب عالمي في F1، هيمن على البطولة بـ4 ألقاب متتالية',e:3},
+    {n:'كونور ماكغريغور',d:'مقاتل MMA إيرلندي، أول من يحمل لقبين في فئتين مختلفتين في UFC في نفس الوقت، شخصية استفزازية',e:3},
+    {n:'مايكل فيلبس',d:'سبّاح أمريكي، الأكثر حصداً للميداليات الأولمبية في التاريخ بـ23 ميدالية ذهبية في مسبح أولمبي',e:3},
+    {n:'فلويد مايويذر',d:'ملاكم أمريكي، تقاعد بسجل 50 انتصار بدون أي هزيمة، من أغنى الرياضيين، لُقِّب بـ"المال"',e:3},
+    {n:'أرنولد شوارزنيغر',d:'بطل كمال الأجسام النمساوي الأمريكي، فاز بـMr. Olympia 7 مرات ثم أصبح ممثلاً ثم حاكماً لكاليفورنيا',e:2},
+    {n:'سيمون بايلز',d:'لاعبة جمباز أمريكية، تُعدّ أعظم لاعبة جمباز في التاريخ، تمتلك حركات أكروباتية تحمل اسمها',e:3},
+    {n:'ستيفن كاري',d:'لاعب كرة سلة أمريكي، غيّر طريقة اللعب بتسديداته الثلاثية الخرافية، فاز بـ4 ألقاب مع غولدن ستيت',e:3},
+    {n:'نوفاك ديوكوفيتش',d:'لاعب تنس صربي، صاحب أكبر عدد من ألقاب الـGrand Slam في التاريخ، منافس فيدرر وناضال الكبير',e:3},
+    {n:'خطاب العتيبي',d:'ملاكم سعودي، من أبرز الرياضيين السعوديين في رياضة الملاكمة على المستوى الدولي',e:3},
+  ],
+  '🎮 قيمرز وستريمرز': [
+    {n:'بندريتا',d:'يوتيوبر وستريمر سعودي، من أشهر صانعي محتوى الألعاب في العالم العربي، قناته من الأكبر عربياً',e:1},
+    {n:'ميستر بيست',d:'يوتيوبر أمريكي يملك أكبر قناة في يوتيوب، اشتهر بالتحديات الضخمة والتبرعات المليونية',e:1},
+    {n:'بيودي باي',d:'يوتيوبر سويدي اسمه فيلكس، كان يملك أكبر قناة في يوتيوب لسنوات، اشتهر بمحتوى الألعاب والكوميديا',e:1},
+    {n:'نينجا',d:'ستريمر أمريكي اسمه تايلر بليفنز، من أشهر لاعبي فورتنايت في العالم، شعره الأزرق المميز أيقونته',e:2},
+    {n:'شرود',d:'ستريمر كندي محترف سابق في Counter-Strike، يُعدّ من أفضل المصوبين في تاريخ الألعاب التنافسية',e:3},
+    {n:'ماركيبلاير',d:'يوتيوبر أمريكي كوري الأصل، من أكبر صانعي محتوى الألعاب، اشتهر بلعب ألعاب الرعب وردود فعله المبالغة',e:2},
+    {n:'تيفيو',d:'ستريمر ويوتيوبر عربي من الجزائر، اشتهر بمحتوى الألعاب والكوميديا والتعليقات الساخرة',e:2},
+    {n:'جاكسبتك آي',d:'يوتيوبر أيرلندي اسمه شون، من أكبر قنوات الألعاب، معروف بطاقته العالية وصراخه المشهور',e:2},
+    {n:'ترو جيمنج',d:'ستريمر ويوتيوبر عربي، من أبرز صانعي محتوى الألعاب في المنطقة العربية',e:2},
+    {n:'بوكر',d:'يوتيوبر وستريمر سعودي، من أشهر صانعي محتوى الألعاب السعوديين وخصوصاً في ألعاب فيفا وكرة القدم',e:2},
+    {n:'فالكون',d:'يوتيوبر وستريمر سعودي، من الوجوه المعروفة في عالم محتوى الألعاب العربي',e:2},
+    {n:'دكتور ديسريسبكت',d:'ستريمر أمريكي اسمه هيرشل، شخصيته المميزة بالشارب والنظارة، من أيقونات البث المباشر',e:3},
+    {n:'بوكيمان',d:'ستريمر أمريكي من أصل عربي، من أكبر الستريمرز على تويتش، اشتهر بألعاب فورتنايت',e:3},
+    {n:'إكس كيو سي',d:'ستريمر كندي فرنسي، من أكثر الستريمرز مشاهدة على تويتش، معروف بردود فعله المضحكة وسرعة كلامه',e:3},
+    {n:'دريم',d:'يوتيوبر أمريكي مجهول الهوية لفترة طويلة، اشتهر بمحتوى ماينكرافت وتحدياته الخرافية فيها',e:2},
+    {n:'كاسي نايستات',d:'يوتيوبر وفلوقر أمريكي، من رواد الفلوقات اليومية على يوتيوب، أسلوبه السينمائي أثّر على جيل كامل',e:3},
+    {n:'أبو خليل',d:'ستريمر ويوتيوبر عربي، اشتهر بمحتوى الألعاب وخصوصاً ببجي وألعاب الباتل رويال',e:2},
+    {n:'بطل',d:'يوتيوبر عربي اشتهر بمحتوى الألعاب والتحديات، من الوجوه المعروفة في مجتمع الألعاب العربي',e:3},
+    {n:'فينس',d:'ستريمر ويوتيوبر سعودي، من صانعي محتوى الألعاب البارزين في المجتمع السعودي',e:3},
+    {n:'إم تو كي',d:'يوتيوبر بريطاني مشهور بلعب فيفا وكرة القدم، من أكبر قنوات كرة القدم الترفيهية',e:3},
+  ],
+  '🎥 ممثلين أجانب': [
+    {n:'دواين جونسون',d:'ممثل ومصارع أمريكي لُقِّب بـ"ذا روك"، من أعلى الممثلين أجراً في هوليوود، بدأ في المصارعة الحرة',e:1},
+    {n:'توم كروز',d:'ممثل أمريكي، نجم سلسلة Mission Impossible، يؤدي مشاهده الخطرة بنفسه، من أكبر نجوم هوليوود لعقود',e:1},
+    {n:'ليوناردو دي كابريو',d:'ممثل أمريكي، نجم Titanic وThe Revenant الذي فاز عنه بالأوسكار أخيراً بعد انتظار طويل',e:1},
+    {n:'جوني ديب',d:'ممثل أمريكي اشتهر بدور جاك سبارو في قراصنة الكاريبي، أسلوبه غريب ومميز في اختيار أدواره',e:1},
+    {n:'ويل سميث',d:'ممثل ومغني أمريكي، نجم Men in Black وThe Fresh Prince، أثار ضجة بصفعة كريس روك في الأوسكار',e:1},
+    {n:'مورغان فريمان',d:'ممثل أمريكي ذو صوت مميز أيقوني، اشتهر بأدوار الحكمة والسلطة، فاز بأوسكار عن Million Dollar Baby',e:2},
+    {n:'روبرت داوني جونيور',d:'ممثل أمريكي، جسّد شخصية آيرون مان في عالم مارفل السينمائي، عاد من الإدمان ليصبح أعلى الممثلين أجراً',e:1},
+    {n:'كيانو ريفز',d:'ممثل كندي، نجم ماتريكس وجون ويك، يشتهر بتواضعه الشديد ولطفه مع المعجبين رغم شهرته الكبيرة',e:1},
+    {n:'جاكي شان',d:'ممثل ومخرج صيني من هونغ كونغ، أسطورة أفلام الأكشن الكوميدي، يؤدي حركاته القتالية بنفسه',e:1},
+    {n:'آل باتشينو',d:'ممثل أمريكي إيطالي الأصل، نجم The Godfather وScarface، من أعظم ممثلي هوليوود في التاريخ',e:2},
+    {n:'روبرت دي نيرو',d:'ممثل أمريكي إيطالي الأصل، من أعظم الممثلين، اشتهر بأدوار المافيا في Goodfellas وThe Irishman',e:2},
+    {n:'براد بيت',d:'ممثل ومنتج أمريكي، فاز بأوسكار التمثيل عن Once Upon a Time in Hollywood، وجه هوليوود الوسيم',e:1},
+    {n:'تيموثي شالاميه',d:'ممثل أمريكي شاب فرنسي الأصل، نجم Dune وWonka، يُعدّ من أبرز ممثلي الجيل الجديد في هوليوود',e:2},
+    {n:'كريستيان بيل',d:'ممثل بريطاني، جسّد باتمان في ثلاثية نولان، يشتهر بتغيير جسمه بشكل جذري لكل دور يؤديه',e:2},
+    {n:'هيث ليدجر',d:'ممثل أسترالي راحل، جسّد الجوكر في The Dark Knight بأداء أسطوري، فاز بأوسكار بعد وفاته',e:2},
+    {n:'بنديكت كامبرباتش',d:'ممثل بريطاني، جسّد شيرلوك هولمز في المسلسل ودكتور سترينج في مارفل، صوته مميز جداً',e:3},
+    {n:'كيليان مورفي',d:'ممثل أيرلندي، نجم مسلسل Peaky Blinders وفيلم Oppenheimer الذي فاز عنه بالأوسكار',e:3},
+    {n:'أنتوني هوبكنز',d:'ممثل بريطاني ويلزي، جسّد هانيبال ليكتر في صمت الحملان، فاز بأوسكار وعمره 83 عن The Father',e:2},
+    {n:'إدريس إلبا',d:'ممثل بريطاني من أصل أفريقي، نجم Luther والعديد من أفلام هوليوود، يُذكر دائماً كمرشح لدور جيمس بوند',e:3},
+    {n:'بيدرو باسكال',d:'ممثل تشيلي أمريكي، نجم The Mandalorian وThe Last of Us، من أكثر الممثلين شعبية حالياً',e:2},
+  ],
+  '⚽ أساطير كرة قدم': [
+    {n:'بيليه',d:'لاعب كرة قدم برازيلي، الوحيد الذي فاز بكأس العالم ثلاث مرات كلاعب، سجل أكثر من ألف هدف في مسيرته، توفي 2022',e:1},
+    {n:'مارادونا',d:'لاعب كرة قدم أرجنتيني، قاد الأرجنتين لكأس العالم 1986 بمفرده تقريباً، سجل هدف القرن وهدف "يد الله"',e:1},
+    {n:'زين الدين زيدان',d:'لاعب فرنسي جزائري الأصل، فاز بكأس العالم 1998، نطح ماتيرازي في نهائي 2006، مدرب ريال مدريد العظيم',e:1},
+    {n:'رونالدينيو',d:'لاعب كرة قدم برازيلي، ابتسامته وشعره المميز، ساحر الكرة الذي أمتع العالم بمهاراته الخرافية مع برشلونة والبرازيل',e:1},
+    {n:'ديفيد بيكهام',d:'لاعب إنجليزي، اشتهر بركلاته الحرة المعلقة وأناقته، أيقونة أزياء ورياضة، تزوج فيكتوريا سبايس غيرل',e:1},
+    {n:'روبرتو كارلوس',d:'مدافع جناحي برازيلي أسطوري، اشتهر بركلاته الحرة الصاروخية المنحنية، رمز دفاع ريال مدريد',e:2},
+    {n:'تيري هنري',d:'مهاجم فرنسي، أعظم هداف في تاريخ أرسنال، سرعته ولمساته الأولى من الأجمل في تاريخ كرة القدم',e:2},
+    {n:'ياسين',d:'لاعب خط وسط فرنسي من أصل جزائري، لعب لريال مدريد ويوفنتوس، فاز بكأس العالم 1998 مع فرنسا',e:3},
+    {n:'رونالدو البرازيلي',d:'المهاجم البرازيلي الظاهرة، فاز بكأس العالم مرتين، ثلاثة بالون دور، أعظم مهاجم في التاريخ بنظر كثيرين',e:1},
+    {n:'خافي هيرنانديز',d:'لاعب وسط إسباني، عقل برشلونة وإسبانيا، فاز بكأس العالم ودوري الأبطال، رمز أسلوب التيكي تاكا',e:2},
+    {n:'أندريس إنييستا',d:'لاعب وسط إسباني، سجل هدف فوز إسبانيا بكأس العالم 2010، من أذكى اللاعبين في تاريخ الكرة',e:2},
+    {n:'بيكنباور',d:'لاعب ومدرب ألماني، فاز بكأس العالم كلاعب وكمدرب، اخترع مركز الليبيرو، لُقِّب بالقيصر',e:3},
+    {n:'كرويف',d:'لاعب ومدرب هولندي، أب الكرة الشاملة، غيّر فلسفة كرة القدم مع برشلونة، حركة كرويف الشهيرة باسمه',e:3},
+    {n:'ريفالدو',d:'لاعب كرة قدم برازيلي، فاز بالكرة الذهبية 1999، اشتهر بمقصية خرافية ضد فالنسيا في آخر دقيقة',e:3},
+    {n:'كاكا',d:'لاعب كرة قدم برازيلي، فاز ببالون دور 2007 مع ميلان، آخر لاعب يفوز بالكرة الذهبية قبل عصر ميسي ورونالدو',e:2},
+    {n:'بوفون',d:'حارس مرمى إيطالي أسطوري، لعب ليوفنتوس لأكثر من عقدين، يُعدّ من أعظم الحراس في تاريخ كرة القدم',e:2},
+    {n:'كانافارو',d:'مدافع إيطالي، الوحيد الذي فاز ببالون دور كمدافع، قاد إيطاليا لكأس العالم 2006',e:3},
+    {n:'مالديني',d:'مدافع إيطالي أسطوري، لعب لميلان فقط طوال مسيرته التي تجاوزت 25 سنة، أنيق ونظيف في الدفاع',e:3},
+    {n:'فيغو',d:'جناح برتغالي، انتقاله من برشلونة لريال مدريد أثار ضجة تاريخية، فاز بالكرة الذهبية 2000',e:2},
+    {n:'كارلوس بويول',d:'مدافع إسباني، قائد برشلونة، اشتهر بشعره المجعد وشراسته الدفاعية، رمز الولاء لنادٍ واحد',e:3},
+  ],
+  '🧠 علماء ومخترعين': [
+    {n:'ألبرت أينشتاين',d:'عالم فيزياء ألماني أمريكي، صاحب نظرية النسبية، شعره المنفوش أيقونة العبقرية، فاز بنوبل في الفيزياء',e:1},
+    {n:'نيكولا تسلا',d:'مخترع صربي أمريكي، اخترع نظام التيار المتناوب والعديد من التقنيات، تُسمي شركة إيلون ماسك باسمه',e:2},
+    {n:'ستيفن هوكينغ',d:'عالم فيزياء بريطاني، رغم إصابته بمرض العصبون الحركي أصبح أشهر عالم في عصره، كرسيه المتحرك أيقوني',e:1},
+    {n:'توماس إديسون',d:'مخترع أمريكي، اخترع المصباح الكهربائي والفونوغراف وكاميرا السينما، يملك أكثر من ألف براءة اختراع',e:1},
+    {n:'آلان تورنغ',d:'عالم رياضيات بريطاني، أبو علوم الحاسب، كسر شفرة إنيغما الألمانية في الحرب العالمية الثانية',e:3},
+    {n:'ماري كوري',d:'عالمة فيزياء وكيمياء بولندية فرنسية، أول امرأة تفوز بنوبل، فازت بها مرتين في مجالين مختلفين',e:2},
+    {n:'تشارلز داروين',d:'عالم أحياء بريطاني، صاحب نظرية التطور عبر الانتقاء الطبيعي، كتابه أصل الأنواع غيّر فهم البشرية',e:2},
+    {n:'إسحاق نيوتن',d:'عالم فيزياء ورياضيات بريطاني، اكتشف الجاذبية وقوانين الحركة، التفاحة التي سقطت على رأسه قصة شهيرة',e:1},
+    {n:'نيل أرمسترونغ',d:'رائد فضاء أمريكي، أول إنسان يمشي على سطح القمر عام 1969، جملته الشهيرة عن الخطوة الصغيرة للبشرية',e:1},
+    {n:'جاليليو',d:'عالم فلك إيطالي، أبو الفيزياء الحديثة، أكد أن الأرض تدور حول الشمس رغم معارضة الكنيسة',e:2},
+    {n:'ابن الهيثم',d:'عالم بصريات مسلم من البصرة، أسس المنهج العلمي التجريبي، كتابه في المناظر أثّر في أوروبا قروناً',e:3},
+    {n:'الخوارزمي',d:'عالم رياضيات مسلم، أسس علم الجبر، اسمه أصل كلمة Algorithm في كل لغات العالم',e:2},
+    {n:'جابر بن حيان',d:'عالم كيمياء مسلم، لُقِّب بأبي الكيمياء، اخترع عمليات التقطير والتبلور والتبخير',e:3},
+    {n:'أحمد زويل',d:'عالم كيمياء مصري أمريكي، فاز بنوبل في الكيمياء 1999، اخترع كاميرا الفيمتو ثانية لتصوير التفاعلات',e:2},
+    {n:'ألكسندر غراهام بيل',d:'مخترع اسكتلندي كندي، اخترع الهاتف، أول اتصال هاتفي كان مع مساعده واتسون عام 1876',e:2},
+    {n:'الرازي',d:'طبيب وكيميائي مسلم من إيران، كتب الحاوي في الطب الذي ظل مرجعاً أوروبياً لقرون، اكتشف حمض الكبريتيك',e:3},
+    {n:'تيم بيرنرز لي',d:'عالم حاسوب بريطاني، اخترع شبكة الويب العالمية عام 1989 في مختبر سيرن، غيّر العالم للأبد',e:3},
+    {n:'أدا لوفليس',d:'عالمة رياضيات بريطانية من القرن التاسع عشر، تُعدّ أول مبرمجة في التاريخ، كتبت أول خوارزمية لآلة',e:3},
+    {n:'ليوناردو دافنشي',d:'عبقري إيطالي من عصر النهضة، رسام الموناليزا، ومخترع ومهندس وعالم تشريح، أعظم عقل متعدد المواهب',e:1},
+    {n:'ابن سينا',d:'طبيب وفيلسوف مسلم، كتابه القانون في الطب أهم مرجع طبي في العالم لقرون، لُقِّب بأمير الأطباء',e:2},
+  ],
+  '📺 أبطال مسلسلات': [
+    {n:'والتر وايت',d:'بطل مسلسل Breaking Bad، مدرس كيمياء مريض بالسرطان يتحول لأكبر صانع ميث في أمريكا، لُقِّب بهايزنبرغ',e:1},
+    {n:'جون سنو',d:'شخصية رئيسية في Game of Thrones، قائد حرس الليل، اشتهر بعبارة "أنا لا أعرف شيئاً"',e:1},
+    {n:'شيلبي (توماس شيلبي)',d:'بطل مسلسل Peaky Blinders، زعيم عصابة في برمنغهام بعد الحرب العالمية الأولى، قبعته وسيجارته أيقونة',e:1},
+    {n:'الأستاذ (سيرجيو ماركينا)',d:'العقل المدبر في مسلسل La Casa de Papel، خطط لسرقة دار سك العملة الإسبانية، نظاراته المميزة',e:1},
+    {n:'ديكستر مورغان',d:'بطل مسلسل Dexter، محلل دم جنائي في ميامي يعيش حياة مزدوجة كقاتل متسلسل يقتل المجرمين فقط',e:2},
+    {n:'شيرلوك (بنديكت)',d:'نسخة حديثة من شيرلوك هولمز في مسلسل BBC، يعيش في لندن المعاصرة مع جون واتسون',e:2},
+    {n:'جويل ميلر',d:'بطل لعبة ومسلسل The Last of Us، مهرب قاسٍ يحمي فتاة مراهقة في عالم ما بعد الكارثة الفطرية',e:2},
+    {n:'هايزنبرغ',d:'الاسم المستعار لوالتر وايت في Breaking Bad، يرتدي قبعة سوداء ونظارات شمسية عند تحوله للجانب المظلم',e:2},
+    {n:'أوزارك (مارتي بيرد)',d:'بطل مسلسل Ozark، محاسب يغسل أموال كارتل مكسيكي في منطقة بحيرات ميزوري الأمريكية',e:3},
+    {n:'سكويد غيم (سونغ قي هون)',d:'بطل مسلسل Squid Game الكوري، لاعب رقم 456، رجل مديون يدخل ألعاب الموت للفوز بالمال',e:1},
+    {n:'بيلي بوتشر',d:'بطل مسلسل The Boys، رجل بريطاني يكره الأبطال الخارقين ويسعى لتدميرهم، شخصية وحشية وساخرة',e:3},
+    {n:'تايريون لانستر',d:'شخصية في Game of Thrones، القزم الذكي ابن عائلة لانستر، يشرب ويعرف أشياء كثيرة كما يقول',e:2},
+    {n:'ريك غرايمز',d:'بطل مسلسل The Walking Dead، شرطي يقود مجموعة ناجين في عالم الزومبي، قائد بالفطرة',e:2},
+    {n:'عمر (من مسلسل عمر)',d:'شخصية عمر بن الخطاب في المسلسل التاريخي العربي الشهير، إنتاج MBC، أحد أكبر الأعمال العربية',e:2},
+    {n:'لوسيفر مورنينغستار',d:'بطل مسلسل Lucifer، إبليس يتقاعد من الجحيم ويفتح نادياً ليلياً في لوس أنجلوس ويساعد الشرطة',e:2},
+    {n:'ويتشر (جيرالت)',d:'بطل مسلسل The Witcher، صياد وحوش متجول بشعر أبيض طويل، يعتمد على السيف والسحر',e:3},
+    {n:'هانيبال ليكتر',d:'شرير مسلسل وأفلام صمت الحملان، طبيب نفسي عبقري وأكل لحوم البشر، ذكي ومهذب بشكل مرعب',e:2},
+    {n:'ناركوس (بابلو إسكوبار)',d:'الشخصية المحورية في مسلسل Narcos، أكبر تاجر مخدرات في التاريخ، قصته الحقيقية من كولومبيا',e:2},
+    {n:'أومني مان',d:'شخصية من مسلسل Invincible، بطل خارق يبدو طيباً لكنه في الحقيقة جاسوس فضائي قاسٍ لا يرحم',e:3},
+    {n:'ساول غودمان',d:'محامي والتر وايت في Breaking Bad وبطل مسلسل Better Call Saul، محامي ماكر ذو أساليب ملتوية',e:2},
+  ],
+  '🎤 رابرز': [
+    {n:'إمينم',d:'رابر أمريكي أبيض من ديترويت، يُعدّ من أسرع الرابرز إلقاءً في التاريخ، اسمه الحقيقي مارشال ماثرز',e:1},
+    {n:'توباك شاكور',d:'رابر أمريكي أسطوري، من أعظم مغنيي الراب في التاريخ، اغتيل عام 1996 في لاس فيغاس ولم تُحل قضيته',e:1},
+    {n:'نوتوريوس بي آي جي',d:'رابر أمريكي من بروكلين، منافس توباك الشهير، اغتيل عام 1997، ألبومه Ready to Die من كلاسيكيات الراب',e:2},
+    {n:'كندريك لامار',d:'رابر أمريكي من كومبتون، فاز بجائزة بوليتزر عن موسيقاه، يُعدّ من أعمق الرابرز فكرياً في التاريخ',e:2},
+    {n:'دريك',d:'رابر ومغني كندي من تورنتو، بدأ ممثلاً في مسلسل Degrassi، أكثر فنان تحقيقاً للأرقام القياسية في البث الرقمي',e:1},
+    {n:'جاي زي',d:'رابر ورجل أعمال أمريكي من بروكلين، زوج بيونسيه، من أنجح الرابرز تجارياً، يملك علامات تجارية عديدة',e:2},
+    {n:'كانيي ويست',d:'رابر ومنتج ومصمم أمريكي، غيّر اسمه لـ"يي"، من أكثر الشخصيات إثارة للجدل في عالم الموسيقى والأزياء',e:1},
+    {n:'ليل واين',d:'رابر أمريكي من نيو أورلينز، بدأ الراب وعمره 9 سنوات، يُعدّ من أكثر الرابرز تأثيراً على الجيل الجديد',e:2},
+    {n:'ترافيس سكوت',d:'رابر ومنتج أمريكي من هيوستون، اشتهر بحفلاته الصاخبة وتعاوناته مع نايكي وماكدونالدز',e:2},
+    {n:'فيفتي سنت',d:'رابر ورجل أعمال أمريكي، نجا من تسع رصاصات، ألبومه Get Rich or Die Tryin من أنجح ألبومات الراب',e:2},
+    {n:'ليل ناز إكس',d:'رابر ومغني أمريكي، أغنيته Old Town Road كسرت رقم أطول أغنية في المرتبة الأولى في تاريخ بيلبورد',e:2},
+    {n:'نيكي ميناج',d:'رابرة أمريكية من ترينيداد، من أنجح الرابرز الإناث في التاريخ، أسلوبها الجريء وشخصياتها المتعددة',e:2},
+    {n:'آيس كيوب',d:'رابر وممثل أمريكي، عضو مؤسس في فرقة NWA، أصبح ممثلاً ناجحاً في أفلام الكوميديا',e:2},
+    {n:'سنوب دوغ',d:'رابر أمريكي من لونغ بيتش، أسلوبه الهادئ المميز وصوته الكسول، أيقونة ثقافة الهيب هوب والراب الغربي',e:1},
+    {n:'ميغان ذي ستاليون',d:'رابرة أمريكية من هيوستون، اسمها يعني الفرس، فازت بعدة جوائز Grammy، رمز القوة النسائية في الراب',e:3},
+    {n:'جي كول',d:'رابر أمريكي من ألمانيا نشأ في كارولاينا، أول فنان يوقع مع ليبل جاي زي، ألبوماته تصل للبلاتين بدون ضيوف',e:3},
+    {n:'كاردي بي',d:'رابرة أمريكية من ذا برونكس، أول رابرة تتصدر بيلبورد منفردة منذ لوريل هيل، شخصيتها صريحة ومباشرة',e:2},
+    {n:'ليل أوزي فيرت',d:'رابر أمريكي من فيلادلفيا، أسلوبه غريب الأطوار في الملابس والموسيقى، ألبومه Eternal Atake حقق نجاحاً ضخماً',e:3},
+    {n:'ميسي إيليوت',d:'رابرة ومنتجة أمريكية، من رواد الراب النسائي، فيديوهاتها الموسيقية المبتكرة غيّرت صناعة الكليبات',e:3},
+    {n:'أسيل عمران',d:'مغنية ورابرة سعودية، من أوائل الفنانات السعوديات في الراب العربي، حضور قوي على المنصات الرقمية',e:3},
+  ],
+  '🍿 مخرجين سينمائيين': [
+    {n:'كريستوفر نولان',d:'مخرج بريطاني أمريكي، أخرج Inception وInterstellar وThe Dark Knight، يفضل التصوير على الفيلم لا الرقمي',e:1},
+    {n:'ستيفن سبيلبرغ',d:'مخرج أمريكي، أخرج E.T. وJurassic Park وSchindler\'s List، من أعظم المخرجين وأكثرهم نجاحاً تجارياً',e:1},
+    {n:'كوينتن تارانتينو',d:'مخرج أمريكي، أخرج Pulp Fiction وKill Bill، معروف بالعنف الأسلوبي والحوارات الطويلة المميزة',e:2},
+    {n:'مارتن سكورسيزي',d:'مخرج أمريكي إيطالي الأصل، أخرج Goodfellas وThe Wolf of Wall Street، من أعظم مخرجي السينما',e:2},
+    {n:'جيمس كاميرون',d:'مخرج كندي، أخرج Titanic وAvatar أعلى فيلمين إيراداً في التاريخ، مهووس بالتقنية والمحيطات',e:1},
+    {n:'دينيس فيلنوف',d:'مخرج كندي فرنسي، أخرج Dune وArrival وBlade Runner 2049، من أبرز مخرجي الخيال العلمي المعاصرين',e:3},
+    {n:'ألفريد هيتشكوك',d:'مخرج بريطاني أمريكي، أبو أفلام الإثارة والرعب، أخرج Psycho وThe Birds، لُقِّب بسيد التشويق',e:2},
+    {n:'أكيرا كوروساوا',d:'مخرج ياباني، أخرج Seven Samurai وRashomon، أثّر على مخرجي هوليوود بما فيهم لوكاس وسبيلبرغ',e:3},
+    {n:'ريدلي سكوت',d:'مخرج بريطاني، أخرج Alien وBlade Runner وGladiator، يتميز بالعوالم البصرية الساحرة',e:2},
+    {n:'وس أندرسون',d:'مخرج أمريكي، معروف بأسلوبه البصري المميز والألوان الباستيل والتكوينات المتماثلة، أخرج The Grand Budapest Hotel',e:3},
+    {n:'جوردان بيل',d:'مخرج أمريكي، بدأ كوميدياً ثم أخرج أفلام رعب ذكية مثل Get Out وUs، فاز بأوسكار السيناريو',e:3},
+    {n:'ديزني (والت ديزني)',d:'مؤسس شركة والت ديزني، ابتكر ميكي ماوس وأسس أكبر إمبراطورية ترفيهية في العالم، رائد الرسوم المتحركة',e:1},
+    {n:'هاياو ميازاكي',d:'مخرج أنمي ياباني، مؤسس استوديو جيبلي، أخرج Spirited Away الحائز على أوسكار، من أعظم مخرجي الرسوم المتحركة',e:2},
+    {n:'غي ريتشي',d:'مخرج بريطاني، اشتهر بأفلام الجريمة البريطانية مثل Snatch وLock Stock، أسلوبه سريع وساخر ومميز',e:3},
+    {n:'بونغ جون هو',d:'مخرج كوري، أخرج Parasite أول فيلم غير إنجليزي يفوز بأوسكار أفضل فيلم، يمزج النقد الاجتماعي بالإثارة',e:3},
+  ],
+};
+
+// ─── Accepted Aliases ────────────────────────────────────────────────────────
+const CHAR_ALIASES = {
+  'كريستيانو رونالدو':['رونالدو','CR7','كريستيانو'],
+  'نيمار':['نيمار جونيور'],
+  'كريم بنزيمة':['بنزيمة'],
+  'ريياد محرز':['محرز'],
+  'سيديو مانيه':['مانيه'],
+  'إن غولو كانتي':['كانتي'],
+  'روبرتو فيرمينو':['فيرمينو'],
+  'مالكوم':['Malcolm'],
+  'أليكساندر ميتروفيتش':['ميتروفيتش'],
+  'سامي الجابر':['الجابر'],
+  'ياسر القحطاني':['القحطاني','ملك السالف'],
+  'محمد الدعيع':['الدعيع','الحائط الصيني'],
+  'سالم الدوسري':['الدوسري'],
+  'نواف العابد':['العابد'],
+  'مايكل جاكسون':['MJ','جاكسون','ملك البوب'],
+  'تايلور سويفت':['تايلور','Taylor'],
+  'بيونسيه':['بيونسي','Beyonce'],
+  'ريهانا':['Rihanna'],
+  'إد شيران':['شيران','Ed Sheeran'],
+  'أديل':['Adele'],
+  'شاكيرا':['Shakira'],
+  'إمينم':['Eminem'],
+  'دريك':['Drake'],
+  'أريانا غراندي':['أريانا','Ariana'],
+  'برونو مارس':['Bruno Mars'],
+  'ليدي غاغا':['غاغا','Lady Gaga'],
+  'ذا ويكند':['The Weeknd','Weeknd'],
+  'بيلي إيليش':['Billie Eilish'],
+  'مايكل جوردان':['جوردان','Jordan','MJ'],
+  'كوبي براينت':['الماما','Kobe'],
+  'ليبرون جيمس':['ليبرون','LeBron'],
+  'أوسين بولت':['بولت','Bolt'],
+  'محمد علي':['Cassius Clay','علي'],
+  'مايك تايسون':['تايسون','Tyson'],
+  'فلويد مايويذر':['مايويذر','Money'],
+  'روجر فيدرر':['فيدرر','Federer'],
+  'رافاييل نادال':['نادال','Nadal'],
+  'سيرينا ويليامز':['ويليامز','Serena'],
+  'تايغر وودز':['وودز','Tiger'],
+  'لويس هاميلتون':['هاميلتون','Hamilton'],
+  'إيلون ماسك':['ماسك','Musk'],
+  'ستيف جوبز':['جوبز','Jobs'],
+  'بيل غيتس':['غيتس','Gates'],
+  'مارك زوكربيرغ':['زوكر','زوكربيرغ','Zuckerberg'],
+  'جيف بيزوس':['بيزوس','Bezos'],
+  'الأمير الوليد بن طلال':['الوليد بن طلال','الوليد'],
+  'جاك ما':['Jack Ma'],
+  'صلاح الدين الأيوبي':['صلاح الدين'],
+  'الملك عبدالعزيز':['ابن سعود','عبدالعزيز'],
+  'الإسكندر الأكبر':['الإسكندر','Alexander'],
+  'نابليون بونابرت':['نابليون','Napoleon'],
+  'محمد الفاتح':['الفاتح'],
+  'نيلسون مانديلا':['مانديلا','Mandela'],
+  'مارتن لوثر كينغ':['Martin Luther King','MLK'],
+  'محمد عبده':['فنان العرب'],
+  'كاظم الساهر':['قيصر الأغنية'],
+  'عمرو دياب':['الهضبة','هضبة'],
+  'ناصر القصبي':['القصبي'],
+  'عبدالله السدحان':['السدحان'],
+  'أحمد الشقيري':['الشقيري'],
+  'وليد الفراج':['الفراج'],
+  'سبايدرمان':['بيتر باركر','Spiderman','Spider-Man'],
+  'باتمان':['بروس واين','Bruce Wayne','Batman'],
+  'آيرون مان':['توني ستارك','Tony Stark','Iron Man'],
+  'جوكر':['Joker'],
+  'ناروتو':['Naruto','ناروتو أوزوماكي'],
+  'غوكو':['Goku','Son Goku'],
+  'لوفي':['Luffy','مونكي دي لوفي'],
+  // ─── New categories aliases ───
+  'دواين جونسون':['ذا روك','The Rock','Rock'],
+  'توم كروز':['Tom Cruise'],
+  'ليوناردو دي كابريو':['دي كابريو','Leo','DiCaprio'],
+  'جوني ديب':['ديب','Jack Sparrow','جاك سبارو'],
+  'ويل سميث':['Will Smith'],
+  'روبرت داوني جونيور':['داوني','Iron Man','RDJ'],
+  'كيانو ريفز':['ريفز','Keanu','Neo','نيو'],
+  'جاكي شان':['Jackie Chan'],
+  'بيدرو باسكال':['Pedro Pascal','Mandalorian'],
+  'تيموثي شالاميه':['شالاميه','Timothee'],
+  'كيليان مورفي':['مورفي','Cillian'],
+  'بيليه':['Pele'],
+  'مارادونا':['Maradona','دييغو مارادونا'],
+  'زين الدين زيدان':['زيدان','Zidane'],
+  'رونالدينيو':['Ronaldinho'],
+  'ديفيد بيكهام':['بيكهام','Beckham'],
+  'رونالدو البرازيلي':['الظاهرة','R9'],
+  'خافي هيرنانديز':['خافي','Xavi'],
+  'أندريس إنييستا':['إنييستا','Iniesta'],
+  'كاكا':['Kaka'],
+  'بوفون':['Buffon'],
+  'ألبرت أينشتاين':['أينشتاين','Einstein'],
+  'نيكولا تسلا':['تسلا','Tesla'],
+  'ستيفن هوكينغ':['هوكينغ','Hawking'],
+  'إسحاق نيوتن':['نيوتن','Newton'],
+  'ليوناردو دافنشي':['دافنشي','Da Vinci'],
+  'نيل أرمسترونغ':['أرمسترونغ','Armstrong'],
+  'والتر وايت':['هايزنبرغ','Heisenberg','Walter White'],
+  'جون سنو':['Jon Snow'],
+  'شيلبي (توماس شيلبي)':['توماس شيلبي','Tommy Shelby','شيلبي'],
+  'الأستاذ (سيرجيو ماركينا)':['البروفيسور','The Professor','الأستاذ'],
+  'سكويد غيم (سونغ قي هون)':['سونغ قي هون','اللاعب 456'],
+  'توباك شاكور':['توباك','Tupac','2Pac'],
+  'نوتوريوس بي آي جي':['بيغي','Biggie','Notorious'],
+  'كندريك لامار':['كندريك','Kendrick'],
+  'كانيي ويست':['يي','Kanye','Ye'],
+  'سنوب دوغ':['سنوب','Snoop Dogg'],
+  'ترافيس سكوت':['Travis Scott'],
+  'جاي زي':['Jay-Z','Jay Z'],
+  'كريستوفر نولان':['نولان','Nolan'],
+  'ستيفن سبيلبرغ':['سبيلبرغ','Spielberg'],
+  'كوينتن تارانتينو':['تارانتينو','Tarantino'],
+  'ميستر بيست':['MrBeast','Mr Beast'],
+  'بيودي باي':['PewDiePie','فيلكس'],
+  'بندريتا':['Banderita','BanderitaX'],
+  'نينجا':['Ninja','تايلر بليفنز'],
+};
+
+const aliasItems = [];
+
+function addAliasTag(e) {
+  if (e.key !== 'Enter') return;
+  addAliasTagBtn();
+}
+function addAliasTagBtn() {
+  const val = qs('#aliases-input').value.trim();
+  if (!val || aliasItems.includes(val)) return;
+  aliasItems.push(val);
+  qs('#aliases-input').value = '';
+  renderAliasTags();
+}
+function removeAliasTag(i) {
+  aliasItems.splice(i, 1);
+  renderAliasTags();
+}
+function renderAliasTags() {
+  qs('#aliases-tags').innerHTML = aliasItems.map((v, i) =>
+    `<span class="forbidden-tag" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.35);color:#6ee7b7">
+      ${escHtml(v)}<button onclick="removeAliasTag(${i})">×</button>
+    </span>`
+  ).join('');
+}
+
+let _currentCat = null;
+
+function toggleCharBrowser() {
+  const browser = qs('#char-browser');
+  const btn = qs('#char-browser-btn');
+  const open = browser.style.display === 'none';
+  browser.style.display = open ? '' : 'none';
+  btn.textContent = open ? '✖ إغلاق القائمة' : '📚 اختر شخصية جاهزة';
+  if (open && !_currentCat) {
+    const cats = Object.keys(CHARS_DB);
+    _currentCat = cats[0];
+    renderCatTabs();
+    renderCharGrid(_currentCat);
+  }
+}
+
+let _currentChars = [];
+
+function renderCatTabs() {
+  qs('#cat-tabs').innerHTML = Object.keys(CHARS_DB).map(cat =>
+    `<button class="cat-tab${cat === _currentCat ? ' active' : ''}" data-cat="${escHtml(cat)}" onclick="switchCat(this.dataset.cat)">${escHtml(cat)}</button>`
+  ).join('');
+}
+
+function switchCat(cat) {
+  _currentCat = cat;
+  renderCatTabs();
+  renderCharGrid(cat);
+}
+
+function renderCharGrid(cat) {
+  _currentChars = CHARS_DB[cat] || [];
+  const diff = ['', '⭐', '⭐⭐', '⭐⭐⭐'];
+  qs('#char-grid').innerHTML = _currentChars.map((c, i) =>
+    `<div class="char-card" onclick="selectCharByIndex(${i})">
+      <div class="char-card-name">${escHtml(c.n)}</div>
+      <div class="char-card-diff">${diff[c.e] || ''}</div>
+    </div>`
+  ).join('');
+}
+
+function selectCharByIndex(i) {
+  const c = _currentChars[i];
+  if (!c) return;
+  qs('#secret-input').value = c.d;
+  qs('#answer-input').value = c.n;
+  // Pre-fill aliases
+  aliasItems.length = 0;
+  const presetAliases = CHAR_ALIASES[c.n] || [];
+  aliasItems.push(...presetAliases);
+  renderAliasTags();
+  qs('#char-browser').style.display = 'none';
+  qs('#char-browser-btn').textContent = '📚 اختر شخصية جاهزة';
+  toast(`✅ تم اختيار: ${c.n}`, 'success');
+}
+
+// ─── Generate Clues ───────────────────────────────────────────────────────────
 function generateClues() {
   const description = qs('#secret-input').value.trim();
   if (!description) { toast('أدخل وصف الشخصية أولاً', 'error'); return; }
-  send({ type: 'GENERATE_CLUES', description, forbidden: [...forbiddenItems] });
+  const answer = qs('#answer-input').value.trim();
+  const msg = { type: 'GENERATE_CLUES', description, forbidden: [...forbiddenItems], aliases: [...aliasItems] };
+  if (answer) msg.answer = answer;
+  send(msg);
 }
 
 function regenerateClues() {
@@ -2748,6 +2864,15 @@ function revealClue() { send({ type: 'REVEAL_CLUE' }); }
 function endRound() {
   if (!confirm('هل تريد إنهاء الجولة الآن؟')) return;
   send({ type: 'END_ROUND' });
+}
+
+function skipRound() {
+  if (!confirm('تخطي الجولة الحالية وبدء جولة جديدة؟')) return;
+  send({ type: 'SKIP_ROUND' });
+  showScreen('screen-host-lobby');
+  qs('#clue-editor').style.display = 'none';
+  qs('#generate-btn').style.display = '';
+  qs('#generating-status').style.display = 'none';
 }
 
 function newRound() {
@@ -2819,9 +2944,30 @@ function requestClue() {
   send({ type: 'REQUEST_CLUE' });
 }
 
+function updateGuessLimit() {
+  if (state.correctGuess) return;
+  const allowed = state.cluesSeen * 2;
+  const remaining = Math.max(0, allowed - state.guessesUsed);
+  const el = qs('#guesses-remaining');
+  if (el) {
+    el.textContent = remaining;
+    el.style.color = remaining === 0 ? 'var(--red)' : remaining <= 2 ? '#f97316' : 'var(--gold)';
+  }
+  const locked = remaining === 0;
+  const input = qs('#guess-input');
+  const btn = qs('#guess-btn');
+  if (input) {
+    input.disabled = locked;
+    input.placeholder = locked ? 'انتهت محاولاتك في هذه الجولة' : 'من أنا؟ أدخل تخمينك...';
+  }
+  if (btn) btn.disabled = locked;
+}
+
 function submitGuess() {
   const guess = qs('#guess-input').value.trim();
   if (!guess || state.correctGuess) return;
+  const remaining = Math.max(0, state.cluesSeen * 2 - state.guessesUsed);
+  if (remaining === 0) { toast('🚫 استنفدت جميع محاولاتك في هذه الجولة!', 'error'); return; }
   qs('#guess-input').value = '';
   send({ type: 'SUBMIT_GUESS', guess });
 }
@@ -2857,19 +3003,30 @@ function renderHostState(s) {
     lobbyEl.innerHTML = '<div class="empty">في انتظار اللاعبين...</div>';
   } else {
     lobbyEl.innerHTML = players.map(p => `
-      <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border)">
-        <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>
-        ${avatarHtml(p.photo, p.name, 32)}
-        <span style="font-weight:700;flex:1">${escHtml(p.name)}</span>
-        ${p.score > 0 ? `<span class="badge badge-gold">⭐ ${p.score}</span>` : ''}
-        <span class="badge ${p.connected ? 'badge-green' : 'badge-gray'}">${p.connected ? 'متصل' : 'غائب'}</span>
-        <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.2rem 0.55rem;font-size:0.78rem;cursor:pointer">طرد</button>
+      <div style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0;border-bottom:1px solid var(--border)">
+        <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}" style="flex-shrink:0"></span>
+        ${avatarHtml(p.photo, p.name, 34)}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:1rem;word-break:break-word">${escHtml(p.name)}</div>
+          <div style="font-size:0.75rem;color:${p.connected ? 'var(--green)' : 'var(--muted)'};margin-top:0.1rem">${p.connected ? '● متصل' : '○ غائب'}${p.score > 0 ? ` · ⭐ ${p.score}` : ''}</div>
+        </div>
+        <button onclick="kickPlayer(${escHtml(JSON.stringify(p.name))})" style="flex-shrink:0;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff6b6b;border-radius:6px;padding:0.25rem 0.65rem;font-size:0.8rem;cursor:pointer;font-weight:700">طرد</button>
       </div>`).join('');
   }
 
   if (s.round) {
     qs('#host-round-num').textContent = s.roundNumber;
     qs('#host-secret-name').textContent = s.round.secret;
+    const aliasBar = qs('#host-aliases-bar');
+    if (aliasBar) {
+      const al = s.round.aliases || [];
+      if (al.length > 0) {
+        aliasBar.textContent = '✔ يُقبل أيضاً: ' + al.join('، ');
+        aliasBar.style.display = '';
+      } else {
+        aliasBar.style.display = 'none';
+      }
+    }
     const gi = s.round.globalClueIndex, total = s.round.totalClues;
     qs('#host-clue-counter').textContent = `${gi} / ${total} تلميح مكشوف`;
     qs('#host-clue-progress').style.width = `${Math.round((gi / total) * 100)}%`;
@@ -2904,7 +3061,7 @@ function renderHostState(s) {
         return `<div class="player-compact-row${p.correctGuess ? ' correct-row' : ''}${!p.connected ? ' disconnected-row' : ''}">
           <span class="dot ${p.connected ? 'dot-green' : 'dot-gray'}"></span>
           ${avatarHtml(p.photo, p.name, 26)}
-          <span style="flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.name)}</span>
+          <span style="flex:1;font-weight:900;font-size:1.15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.name)}</span>
           <span style="font-size:0.78rem;font-weight:800;color:var(--gold);white-space:nowrap">${p.score} ⭐</span>
           <span style="font-weight:900;color:${clueColor};min-width:1.4rem;text-align:center;font-size:0.95rem">${p.cluesSeen}</span>
           <span style="font-size:0.9rem">${statusIcon}</span>
