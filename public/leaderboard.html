@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الليدربورد — كويز لايف</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0b0e14;--surface:#141922;--card:#141922;--border:#2b3443;
+  --purple:#0f9e8d;--purple-light:#4ade80;--cyan:#2dd4bf;
+  --green:#4ade80;--red:#f87171;--gold:#f5a524;--text:#f4f1ea;--muted:#9aa5b8;
+}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#2b344318 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column}
+
+/* Background particles */
+.bg-glow{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.glow-1{position:absolute;width:600px;height:600px;background:radial-gradient(circle,#0f9e8d18 0%,transparent 70%);top:-200px;right:-200px;animation:drift 8s ease-in-out infinite alternate}
+.glow-2{position:absolute;width:500px;height:500px;background:radial-gradient(circle,#2dd4bf15 0%,transparent 70%);bottom:-150px;left:-150px;animation:drift 10s ease-in-out infinite alternate-reverse}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(40px,30px)}}
+
+/* Header */
+.header{position:relative;z-index:1;text-align:center;padding:28px 20px 16px}
+.logo{font-size:28px;font-weight:900;color:var(--green);text-shadow:0 0 24px #4ade8070,0 0 48px #0f9e8d50;margin-bottom:4px}
+.live-tag{display:inline-flex;align-items:center;gap:6px;background:#f8717120;border:1px solid var(--red);border-radius:20px;padding:4px 14px;font-size:13px;font-weight:700;color:var(--red)}
+.live-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Main layout */
+.content{position:relative;z-index:1;flex:1;padding:0 24px 24px;overflow:hidden;display:flex;flex-direction:column}
+
+/* Top 3 podium */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;padding:8px 0 20px;flex-shrink:0}
+.podium-slot{display:flex;flex-direction:column;align-items:center;flex:1;max-width:180px}
+.podium-card{width:100%;background:var(--card);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;border:2px solid transparent}
+.podium-card::before{content:'';position:absolute;inset:0;opacity:.15;border-radius:14px}
+.place-1 .podium-card{border-color:var(--gold);transform:translateY(-20px)}
+.place-1 .podium-card::before{background:var(--gold)}
+.place-2 .podium-card{border-color:#94a3b8}
+.place-2 .podium-card::before{background:#94a3b8}
+.place-3 .podium-card{border-color:#cd7f32}
+.place-3 .podium-card::before{background:#cd7f32}
+.pod-crown{font-size:28px;margin-bottom:4px}
+.pod-emoji{font-size:42px;margin-bottom:6px}
+.pod-name{font-size:15px;font-weight:800;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pod-pts{font-size:20px;font-weight:900}
+.place-1 .pod-pts{color:var(--gold)}
+.place-2 .pod-pts{color:#94a3b8}
+.place-3 .pod-pts{color:#cd7f32}
+.pod-streak{font-size:12px;color:var(--gold);margin-top:4px}
+.place-bar{height:6px;width:60%;border-radius:3px;margin:8px auto 0}
+.place-1 .place-bar{background:var(--gold);height:80px}
+.place-2 .place-bar{background:#94a3b8;height:60px}
+.place-3 .place-bar{background:#cd7f32;height:40px}
+
+/* Rest of list */
+.list-section{flex:1;overflow-y:auto;padding-right:4px}
+.list-section::-webkit-scrollbar{width:4px}
+.list-section::-webkit-scrollbar-track{background:var(--surface)}
+.list-section::-webkit-scrollbar-thumb{background:var(--purple);border-radius:2px}
+
+.lb-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:14px;background:var(--card);border:1px solid var(--border);margin-bottom:8px;transition:.4s;animation:slideIn .4s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.lb-row:hover{border-color:var(--border);background:#232c3a}
+.lb-rank{width:36px;text-align:center;font-size:16px;font-weight:900;color:var(--muted);flex-shrink:0}
+.lb-emoji-big{font-size:30px;flex-shrink:0}
+.lb-info{flex:1;min-width:0}
+.lb-name{font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-meta{font-size:12px;color:var(--muted);margin-top:1px}
+.lb-right{text-align:left;flex-shrink:0}
+.lb-pts{font-size:22px;font-weight:900;color:var(--purple-light)}
+.lb-streak-pill{background:#f5a52420;border:1px solid #f5a52440;border-radius:20px;padding:3px 10px;font-size:12px;color:var(--gold);font-weight:700;margin-top:4px;display:inline-block}
+
+/* Ticker / question display */
+.ticker{background:var(--surface);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ticker-label{font-size:12px;font-weight:700;color:var(--muted);flex-shrink:0}
+.ticker-q{font-size:14px;font-weight:700;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ticker-timer{font-size:18px;font-weight:900;color:var(--cyan);flex-shrink:0;min-width:36px;text-align:center}
+.ticker-timer.low{color:var(--red);animation:pulse .5s infinite alternate}
+@keyframes pulse{from{opacity:1}to{opacity:.4}}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:60px;margin-bottom:16px;display:block}
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<div class="bg-glow">
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+</div>
+
+<div class="header">
+  <div class="logo">🏆 كويز لايف</div>
+  <div style="margin-top:8px"><span class="live-tag"><span class="live-dot"></span>LIVE LEADERBOARD</span></div>
+</div>
+
+<div class="content">
+  <!-- TOP 3 PODIUM -->
+  <div class="podium" id="podium">
+    <div class="podium-slot place-2" id="pod-2" style="display:none">
+      <div class="podium-card">
+        <div class="pod-crown">🥈</div>
+        <div class="pod-emoji" id="pod-2-emoji"></div>
+        <div class="pod-name" id="pod-2-name"></div>
+        <div class="pod-pts" id="pod-2-pts"></div>
+        <div class="pod-streak" id="pod-2-streak"></div>
+      </div>
+      <div class="place-bar"></div>
+    </div>
+    <div class="podium-slot place-1" id="pod-1" style="display:none">
+      <div class="podium-card">
+        <div class="pod-crown">👑</div>
+        <div class="pod-emoji" id="pod-1-emoji"></div>
+        <div class="pod-name" id="pod-1-name"></div>
+        <div class="pod-pts" id="pod-1-pts"></div>
+        <div class="pod-streak" id="pod-1-streak"></div>
+      </div>
+      <div class="place-bar"></div>
+    </div>
+    <div class="podium-slot place-3" id="pod-3" style="display:none">
+      <div class="podium-card">
+        <div class="pod-crown">🥉</div>
+        <div class="pod-emoji" id="pod-3-emoji"></div>
+        <div class="pod-name" id="pod-3-name"></div>
+        <div class="pod-pts" id="pod-3-pts"></div>
+        <div class="pod-streak" id="pod-3-streak"></div>
+      </div>
+      <div class="place-bar"></div>
+    </div>
+  </div>
+
+  <!-- REST OF LIST -->
+  <div class="list-section" id="list-section">
+    <div class="empty"><span class="empty-icon">⏳</span>في انتظار اللاعبين...</div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker" id="ticker" style="display:none">
+  <span class="ticker-label">سؤال نشط:</span>
+  <span class="ticker-q" id="ticker-q"></span>
+  <span class="ticker-timer" id="ticker-timer">30</span>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+let lb = [];
+
+function renderAvatar(avatar, size = 60) {
+  if (avatar && avatar.startsWith('data:')) {
+    return `<img src="${avatar}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:3px solid var(--border)">`;
+  }
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:${Math.floor(size*0.45)}px">👤</div>`;
+}
+
+function setPodium(rank, p) {
+  const slot = document.getElementById('pod-' + rank);
+  if (!p) { slot.style.display = 'none'; return; }
+  slot.style.display = 'flex';
+  document.getElementById('pod-' + rank + '-emoji').innerHTML = renderAvatar(p.avatar, rank === 1 ? 72 : 58);
+  document.getElementById('pod-' + rank + '-name').textContent = p.name;
+  document.getElementById('pod-' + rank + '-pts').textContent  = p.points.toLocaleString() + ' نقطة';
+  document.getElementById('pod-' + rank + '-streak').textContent = p.streak >= 3 ? '🔥 ستريك ' + p.streak : '';
+}
+
+function renderLeaderboard(data) {
+  lb = data;
+  setPodium(1, data[0] || null);
+  setPodium(2, data[1] || null);
+  setPodium(3, data[2] || null);
+
+  const rest = data.slice(3);
+  const list = document.getElementById('list-section');
+
+  if (!data.length) {
+    list.innerHTML = '<div class="empty"><span class="empty-icon">⏳</span>في انتظار اللاعبين...</div>';
+    return;
+  }
+  if (!rest.length) { list.innerHTML = ''; return; }
+
+  list.innerHTML = rest.map(p => `
+    <div class="lb-row">
+      <div class="lb-rank">#${p.rank}</div>
+      ${renderAvatar(p.avatar, 48)}
+      <div class="lb-info">
+        <div class="lb-name">${p.name}</div>
+        <div class="lb-meta">المركز ${p.rank}</div>
+      </div>
+      <div class="lb-right">
+        <div class="lb-pts">${p.points.toLocaleString()}</div>
+        ${p.streak >= 3 ? `<div class="lb-streak-pill">🔥 ${p.streak}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+socket.on('game:state',       d  => renderLeaderboard(d.leaderboard || []));
+socket.on('game:leaderboard', renderLeaderboard);
+
+socket.on('game:question-start', ({ question }) => {
+  document.getElementById('ticker').style.display = 'flex';
+  document.getElementById('ticker-q').textContent = question.text;
+  document.getElementById('ticker-timer').textContent = '30';
+  document.getElementById('ticker-timer').className = 'ticker-timer';
+});
+
+socket.on('game:timer', t => {
+  const el = document.getElementById('ticker-timer');
+  el.textContent = t;
+  el.className = 'ticker-timer' + (t <= 5 ? ' low' : '');
+});
+
+socket.on('game:question-end', ({ leaderboard: lb }) => {
+  renderLeaderboard(lb);
+  document.getElementById('ticker').style.display = 'none';
+});
+
+socket.on('game:reset', () => {
+  renderLeaderboard([]);
+  document.getElementById('ticker').style.display = 'none';
+});
+</script>
+</body>
+</html>
