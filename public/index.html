@@ -301,6 +301,7 @@
   #toast.show  { transform: translateX(-50%) translateY(0); opacity: 1; }
   #toast.error { border-color: var(--red);   color: #fca5a5; }
   #toast.success { border-color: var(--green); color: #6ee7b7; }
+  #toast.gold { border-color: var(--gold); color: #fbbf24; }
 
   /* ── Secret box ── */
   .secret-box {
@@ -1212,9 +1213,9 @@
         </div>
         <div class="input-group" style="margin-bottom:0">
           <label>اسمك في اللعبة</label>
-          <input type="text" id="join-name" placeholder="أدخل اسمك..." maxlength="30">
+          <input type="text" id="join-name" placeholder="اكتب اسمك..." maxlength="30">
         </div>
-        <button class="btn btn-gold" onclick="joinSession()">انضم الآن</button>
+        <button class="btn btn-gold" onclick="joinSession()">انضم</button>
       </div>
 
     </div>
@@ -1243,11 +1244,11 @@
       </div>
       <div class="input-group">
         <label>اسمك في اللعبة</label>
-        <input type="text" id="manual-join-name" placeholder="أدخل اسمك..." maxlength="30"
+        <input type="text" id="manual-join-name" placeholder="اكتب اسمك..." maxlength="30"
           onkeydown="if(event.key==='Enter') manualJoin()">
       </div>
       <div id="manual-join-error" style="display:none;color:#ff6b6b;font-size:0.85rem;margin-bottom:0.75rem;text-align:center"></div>
-      <button class="btn btn-gold" onclick="manualJoin()">انضم الآن</button>
+      <button class="btn btn-gold" onclick="manualJoin()">انضم</button>
     </div>
     <div class="spacer-lg"></div>
   </div>
@@ -1257,7 +1258,7 @@
     <div class="spacer-lg"></div>
     <div class="card" style="text-align:center">
       <div style="font-size:2rem;font-weight:900;margin-bottom:0.25rem">من أنا؟</div>
-      <div style="color:var(--muted);margin-bottom:1.25rem;font-size:0.9rem">أدخل اسمك وصورتك للانضمام</div>
+      <div style="color:var(--muted);margin-bottom:1.25rem;font-size:0.9rem"></div>
 
 
       <!-- اختيار الصورة -->
@@ -1271,8 +1272,8 @@
           transition:all 0.2s;
         " title="اضغط لاختيار صورة">👤</div>
         <div style="display:flex;gap:0.5rem">
-          <button class="btn btn-ghost btn-sm" onclick="qs('#gallery-input').click()" style="width:auto">🖼 المعرض</button>
-          <button class="btn btn-ghost btn-sm" onclick="qs('#camera-input').click()" style="width:auto">📷 الكاميرا</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#gallery-input').click()" style="width:auto">الصور</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#camera-input').click()" style="width:auto">الكاميرا</button>
         </div>
         <div style="color:var(--muted);font-size:0.75rem">اختياري</div>
       </div>
@@ -1284,10 +1285,10 @@
       <!-- الاسم -->
       <div class="input-group" style="text-align:right">
         <label>اسمك في اللعبة</label>
-        <input type="text" id="player-join-name" placeholder="أدخل اسمك..." maxlength="30"
+        <input type="text" id="player-join-name" placeholder="اكتب اسمك..." maxlength="30"
           onkeydown="if(event.key==='Enter')playerJoinDirect()">
       </div>
-      <button class="btn btn-gold" onclick="playerJoinDirect()">انضم الآن ←</button>
+      <button class="btn btn-gold" onclick="playerJoinDirect()">انضم</button>
     </div>
     <div class="spacer-lg"></div>
   </div>
@@ -1304,20 +1305,20 @@
 
         <!-- رابط الجلسة المباشر -->
         <div>
-          <div class="section-title" style="margin-bottom:0.4rem">⚡ رابط الجلسة (الأسرع)</div>
+          <div class="section-title" style="margin-bottom:0.4rem">رابط الجلسة</div>
           <div style="display:flex;gap:0.5rem;align-items:center">
             <div id="join-session-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
-            <button class="btn btn-gold btn-sm" onclick="copySessionLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+            <button class="btn btn-gold btn-sm" onclick="copySessionLink()" style="width:auto;flex-shrink:0">نسخ</button>
           </div>
           <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">الكود مدمج — اللاعبون يكتبون اسمهم فقط ويدخلون مباشرة</div>
         </div>
 
         <!-- رابط عام -->
         <div>
-          <div class="section-title" style="margin-bottom:0.4rem">🌐 رابط عام</div>
+          <div class="section-title" style="margin-bottom:0.4rem">رابط عام</div>
           <div style="display:flex;gap:0.5rem;align-items:center">
             <div id="join-base-link" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--muted);font-family:'Courier New',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
-            <button class="btn btn-ghost btn-sm" onclick="copyJoinLink()" style="width:auto;flex-shrink:0">📋 نسخ</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyJoinLink()" style="width:auto;flex-shrink:0">نسخ</button>
           </div>
           <div style="color:var(--muted);font-size:0.75rem;margin-top:0.4rem">اللاعبون يدخلون الكود يدوياً بعد فتح الرابط</div>
         </div>
@@ -1336,7 +1337,7 @@
       <!-- ── Characters Browser ── -->
       <div style="margin-bottom:1rem">
         <button onclick="toggleCharBrowser()" class="btn btn-ghost btn-sm" id="char-browser-btn" style="width:auto;margin-bottom:0.75rem">
-          📚 اختر شخصية جاهزة
+          اختر شخصية جاهزة
         </button>
         <div id="char-browser" style="display:none">
           <div class="cat-tabs" id="cat-tabs"></div>
@@ -1347,19 +1348,19 @@
       <div class="divider"></div>
 
       <div class="input-group">
-        <label>📝 صف الشخصية (مخفي عن اللاعبين)</label>
+        <label>صف الشخصية (مخفي عن اللاعبين)</label>
         <input type="text" id="secret-input" placeholder="مثال: لاعب كرة القدم سالم الدوسري" autocomplete="off">
         <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">الذكاء الاصطناعي سيستخرج الإجابة ويولّد التلميحات تلقائياً</div>
       </div>
 
       <div class="input-group">
-        <label>✅ الإجابة الصحيحة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <label>الإجابة الصحيحة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
         <input type="text" id="answer-input" placeholder="مثال: سالم الدوسري" autocomplete="off">
         <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">إذا تركته فارغاً سيستخرجها الذكاء الاصطناعي من الوصف</div>
       </div>
 
       <div class="input-group">
-        <label>✔️ الإجابات المقبولة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <label>الإجابات المقبولة <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
         <div style="display:flex;gap:0.5rem">
           <input type="text" id="aliases-input" placeholder="مثال: رونالدو، CR7..." autocomplete="off"
             onkeydown="addAliasTag(event)" style="flex:1">
@@ -1370,7 +1371,7 @@
       </div>
 
       <div class="input-group">
-        <label>🚫 ممنوع ذكره في التلميحات <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
+        <label>ممنوع ذكره في التلميحات <span style="color:var(--muted);font-weight:400;font-size:0.8rem">(اختياري)</span></label>
         <div style="display:flex;gap:0.5rem">
           <input type="text" id="forbidden-input" placeholder="مثال: القرن، الدولة..." autocomplete="off"
             onkeydown="addForbiddenTag(event)" style="flex:1">
@@ -1380,7 +1381,7 @@
         <div style="color:var(--muted);font-size:0.78rem;margin-top:0.35rem">اكتب شيئاً واضغط Enter — لن يُذكر في أي تلميح</div>
       </div>
 
-      <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">✨ توليد التلميحات</button>
+      <button class="btn btn-primary" id="generate-btn" onclick="generateClues()">توليد التلميحات</button>
       <div class="spacer-sm"></div>
 
       <div id="generating-status" style="display:none;text-align:center">
@@ -1392,7 +1393,7 @@
       <div id="clue-editor" style="display:none">
         <div class="divider"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
-          <div class="section-title" style="margin-bottom:0">✏️ راجع وعدّل التلميحات</div>
+          <div class="section-title" style="margin-bottom:0">راجع وعدّل التلميحات</div>
           <button class="btn btn-ghost btn-sm" onclick="regenerateClues()" style="width:auto">↺ أعد التوليد</button>
         </div>
         <div id="extracted-answer-box" style="background:rgba(255,200,0,0.1);border:1px solid var(--gold);border-radius:10px;padding:0.7rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem">
@@ -1404,7 +1405,7 @@
         </div>
         <div id="clue-editor-list"></div>
         <div class="spacer-sm"></div>
-        <button class="btn btn-green" id="start-round-btn" onclick="startRound()">▶ ابدأ الجولة بهذه التلميحات</button>
+        <button class="btn btn-green" id="start-round-btn" onclick="startRound()">ابدأ الجولة بهذه التلميحات</button>
       </div>
     </div>
     <div class="spacer-lg"></div>
@@ -1433,7 +1434,7 @@
           </div>
         </div>
         <div style="display:flex;gap:0.5rem;flex-shrink:0">
-          <button class="btn btn-primary btn-sm" id="reveal-btn" onclick="revealClue()" style="white-space:nowrap;width:auto">⬇ تلميح للجميع</button>
+          <button class="btn btn-primary btn-sm" id="reveal-btn" onclick="revealClue()" style="white-space:nowrap;width:auto">تلميح للجميع</button>
           <button class="btn btn-gold btn-sm" onclick="skipRound()" style="width:auto">⏭ جولة جديدة</button>
           <button class="btn btn-red btn-sm" onclick="endRound()" style="width:auto">إنهاء الجولة</button>
         </div>
@@ -1445,13 +1446,13 @@
 
       <!-- قائمة التلميحات الكاملة -->
       <div class="card">
-        <div class="section-title">📋 كل التلميحات</div>
+        <div class="section-title">كل التلميحات</div>
         <div id="host-clues-list" style="display:flex;flex-direction:column;gap:0.45rem"></div>
       </div>
 
       <!-- لوحة اللاعبين الثابتة -->
       <div class="card host-players-panel">
-        <div class="section-title">👥 اللاعبون</div>
+        <div class="section-title">اللاعبون</div>
         <div id="host-player-list"></div>
       </div>
 
@@ -1464,9 +1465,9 @@
   <div id="screen-player-wait" class="screen">
     <div class="spacer-lg"></div>
     <div class="card" style="text-align:center;max-width:400px;width:100%">
-      <div class="pulse-emoji" id="wait-emoji">⏳</div>
-      <div style="font-size:1.2rem;font-weight:800;margin-bottom:0.5rem" id="wait-title">في انتظار المضيف...</div>
-      <div style="color:var(--muted);font-size:0.9rem" id="wait-subtitle">ستبدأ الجولة قريباً.</div>
+      <div class="pulse-emoji" id="wait-emoji"></div>
+      <div style="font-size:1.2rem;font-weight:800;margin-bottom:0.5rem" id="wait-title">في انتظار الهوست</div>
+      <div style="color:var(--muted);font-size:0.9rem" id="wait-subtitle"></div>
       <div class="spacer"></div>
       <div style="display:flex;justify-content:center;gap:1.5rem">
         <div>
@@ -1483,9 +1484,7 @@
         </div>
       </div>
 
-      <!-- تعديل الملف الشخصي -->
       <div class="divider"></div>
-      <div class="section-title" style="margin-bottom:0.75rem">✏️ تعديل الملف الشخصي</div>
 
       <!-- الصورة -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin-bottom:0.9rem">
@@ -1496,8 +1495,8 @@
           display:flex;align-items:center;justify-content:center;
           cursor:pointer;overflow:hidden;font-size:2.2rem;transition:all 0.2s">👤</div>
         <div style="display:flex;gap:0.4rem">
-          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-gallery-input').click()" style="width:auto">🖼 معرض</button>
-          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-camera-input').click()" style="width:auto">📷 كاميرا</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-gallery-input').click()" style="width:auto">معرض</button>
+          <button class="btn btn-ghost btn-sm" onclick="qs('#wait-camera-input').click()" style="width:auto">كاميرا</button>
         </div>
       </div>
       <input type="file" id="wait-gallery-input" accept="image/*" style="display:none" onchange="handleWaitPhotoSelect(this)">
@@ -1509,7 +1508,7 @@
         <input type="text" id="wait-name-input" maxlength="30" placeholder="اسمك في اللعبة"
           onkeydown="if(event.key==='Enter')saveProfile()">
       </div>
-      <button class="btn btn-primary btn-sm" onclick="saveProfile()" style="width:auto;padding:0.6rem 1.5rem;margin:0 auto;display:block">💾 حفظ</button>
+      <button class="btn btn-primary btn-sm" onclick="saveProfile()" style="width:auto;padding:0.6rem 1.5rem;margin:0 auto;display:block">حفظ</button>
     </div>
     <div class="spacer-lg"></div>
   </div>
@@ -1524,7 +1523,7 @@
           جولة <strong id="player-round-num" style="margin-right:0.3rem">1</strong>
         </div>
         <div class="clues-pill" style="margin:0">
-          <span>🔍</span>
+          <span></span>
           <span id="player-clues-count">1</span>
           <span style="font-weight:400;color:var(--muted)">/10</span>
           <span>تلميحات</span>
@@ -1537,7 +1536,7 @@
       <!-- لافتة الإجابة الصحيحة -->
       <div id="correct-banner" style="display:none;max-width:480px;margin:0 auto;width:100%">
         <div class="correct-banner">
-          <h3>🎉 أحسنت!</h3>
+          <h3>أحسنت!</h3>
           <p id="correct-detail"></p>
         </div>
         <div class="spacer-sm"></div>
@@ -1554,7 +1553,7 @@
       <!-- أزرار اللاعب -->
       <div id="player-actions" style="width:100%;max-width:480px;margin:0 auto">
         <button class="btn btn-ghost" id="request-clue-btn" onclick="requestClue()">
-          🔍 اطلب تلميحاً آخر <span style="color:var(--muted);font-size:0.85rem">(تكلفك نقطة)</span>
+          اطلب تلميحاً آخر <span style="color:var(--muted);font-size:0.85rem">(تكلفك نقطة)</span>
         </button>
         <div class="spacer-sm"></div>
         <div class="guess-area">
@@ -1562,7 +1561,7 @@
             المحاولات المتبقية: <strong id="guesses-remaining" style="color:var(--gold)">2</strong>
           </div>
           <div class="guess-row">
-            <input type="text" id="guess-input" placeholder="من أنا؟ أدخل تخمينك..." autocomplete="off"
+            <input type="text" id="guess-input" placeholder="خمن..." autocomplete="off"
               onkeydown="if(event.key==='Enter')submitGuess()">
             <button class="btn btn-gold" id="guess-btn" onclick="submitGuess()" style="width:auto">خمّن!</button>
           </div>
@@ -1591,11 +1590,10 @@
         <div id="host-results-controls" style="display:none">
           <div class="btn-row">
             <button class="btn btn-primary" onclick="newRound()">▶ جولة جديدة</button>
-            <button class="btn btn-ghost" onclick="endSession()">🏆 إنهاء الجلسة</button>
+            <button class="btn btn-ghost" onclick="endSession()">إنهاء الجلسة</button>
           </div>
         </div>
         <div id="player-results-msg" style="display:none;color:var(--muted);font-size:0.9rem">
-          في انتظار المضيف لبدء الجولة التالية...
         </div>
       </div>
       <div class="spacer-lg"></div>
@@ -1605,7 +1603,7 @@
   <!-- ════════════════ الترتيب النهائي ════════════════ -->
   <div id="screen-final" class="screen">
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem">
-      <span id="final-trophy-big">🏆</span>
+      <span id="final-trophy-big"></span>
       <div id="final-title-big">انتهت اللعبة!</div>
       <div id="final-subtitle">جارٍ عرض النتائج...</div>
     </div>
@@ -1741,13 +1739,13 @@
 
 <!-- ════ Player Reveal Overlay ════ -->
 <div id="player-reveal-overlay">
-  <div class="pr-title">🎭 نتائج الجولة</div>
+  <div class="pr-title">نتائج الجولة</div>
   <div id="pr-cards"></div>
 </div>
 
 <!-- ════ Leaderboard Reveal Overlay ════ -->
 <div id="lb-reveal-overlay">
-  <div class="lb-rov-title" id="lb-rov-title">📊 الترتيب</div>
+  <div class="lb-rov-title" id="lb-rov-title">الترتيب</div>
   <div id="lb-rov-cards"></div>
   <div class="lb-rov-cd" id="lb-rov-cd"></div>
   <div id="lb-rov-controls" style="width:100%;max-width:400px"></div>
@@ -1913,14 +1911,14 @@ function handleMessage(msg) {
       qs('#generate-btn').style.display = '';
       if (msg.answer) qs('#extracted-answer-text').textContent = msg.answer;
       renderClueEditor(msg.clues);
-      toast(`✅ تم توليد ${msg.totalClues} تلميحات! راجعها وعدّل إن شئت.`, 'success');
+      toast(`تم توليد ${msg.totalClues} تلميحات! راجعها وعدّل إن شئت.`, 'success');
       break;
 
     case 'ROUND_PREPARING':
       showScreen('screen-player-wait');
-      qs('#wait-emoji').textContent = '🎯';
-      qs('#wait-title').textContent = 'استعد! جولة جديدة تبدأ...';
-      qs('#wait-subtitle').textContent = 'المضيف يجهّز التلميحات.';
+      qs('#wait-emoji').textContent = '';
+      qs('#wait-title').textContent = 'في انتظار الهوست';
+      qs('#wait-subtitle').textContent = '';
       break;
 
     case 'ROUND_STARTED':
@@ -1969,9 +1967,14 @@ function handleMessage(msg) {
         state.guessesUsed = msg.guessesUsed || state.guessesUsed + 1;
         updateGuessLimit();
         if (msg.remaining === 0) {
-          toast('🚫 استنفدت جميع محاولاتك في هذه الجولة!', 'error');
+          if (state.cluesSeen < 10) {
+            toast('انتهت المحاولات — تم الانتقال للتلميح التالي تلقائياً', 'gold');
+            setTimeout(() => requestClue(), 600);
+          } else {
+            toast('استنفدت جميع محاولاتك في هذه الجولة!', 'error');
+          }
         } else {
-          toast(`❌ إجابة خاطئة — تبقى لك ${msg.remaining} ${msg.remaining === 1 ? 'محاولة' : 'محاولات'}`, 'error');
+          toast(`إجابة خاطئة — تبقى لك ${msg.remaining} ${msg.remaining === 1 ? 'محاولة' : 'محاولات'}`, 'error');
         }
       }
       break;
@@ -1986,9 +1989,9 @@ function handleMessage(msg) {
       state.clues = [];
       state.correctGuess = false;
       showScreen('screen-player-wait');
-      qs('#wait-emoji').textContent = '⏳';
-      qs('#wait-title').textContent = 'في انتظار المضيف...';
-      qs('#wait-subtitle').textContent = 'ستبدأ الجولة التالية قريباً.';
+      qs('#wait-emoji').textContent = '';
+      qs('#wait-title').textContent = 'في انتظار الهوست';
+      qs('#wait-subtitle').textContent = '';
       qs('#wait-score').textContent = state.score;
       refreshWaitProfile();
       break;
@@ -1997,7 +2000,7 @@ function handleMessage(msg) {
       state.playerName = msg.name;
       qs('#wait-name').textContent = msg.name;
       qs('#wait-name-input').value = msg.name;
-      toast('✅ تم حفظ التغييرات', 'success');
+      toast('تم حفظ التغييرات', 'success');
       break;
 
     case 'SESSION_ENDED':
@@ -2022,7 +2025,7 @@ function handleMessage(msg) {
       break;
 
     case 'ERROR':
-      toast('⚠ ' + msg.message, 'error');
+      toast(msg.message, 'error');
       // Show inline error on the join screen so it's more visible
       if (!state.role) {
         let inlineErr = qs('#join-inline-error');
@@ -2033,7 +2036,7 @@ function handleMessage(msg) {
           const btn = qs('#player-join-name').closest('.card').querySelector('.btn-gold');
           btn.parentNode.insertBefore(inlineErr, btn.nextSibling);
         }
-        inlineErr.textContent = '⚠ ' + msg.message;
+        inlineErr.textContent = msg.message;
         inlineErr.style.display = '';
       }
       if (state.role === 'host') {
@@ -2054,22 +2057,22 @@ function copyJoinLink() {
   const link = qs('#join-base-link').textContent;
   if (link === '—') return;
   navigator.clipboard.writeText(link)
-    .then(() => toast('✅ تم نسخ الرابط العام!', 'success'))
-    .catch(() => toast('❌ تعذّر النسخ', 'error'));
+    .then(() => toast('تم نسخ الرابط العام!', 'success'))
+    .catch(() => toast('تعذّر النسخ', 'error'));
 }
 
 function copySessionLink() {
   const link = qs('#join-session-link').textContent;
   if (link === '—') return;
   navigator.clipboard.writeText(link)
-    .then(() => toast('✅ تم نسخ رابط الجلسة!', 'success'))
-    .catch(() => toast('❌ تعذّر النسخ', 'error'));
+    .then(() => toast('تم نسخ رابط الجلسة!', 'success'))
+    .catch(() => toast('تعذّر النسخ', 'error'));
 }
 
 function playerJoinDirect() {
   const name = qs('#player-join-name').value.trim();
   const code = state.pendingCode;
-  if (!name) { toast('أدخل اسمك أولاً', 'error'); return; }
+  if (!name) { toast('اكتب اسمك أولاً', 'error'); return; }
   if (!code)  { toast('كود الجلسة غير موجود', 'error'); return; }
   // Clear any previous inline error
   const inlineErr = qs('#join-inline-error');
@@ -2191,7 +2194,7 @@ function handleWaitPhotoSelect(input) {
 
 function saveProfile() {
   const name = qs('#wait-name-input').value.trim();
-  if (!name) { toast('أدخل اسمك', 'error'); return; }
+  if (!name) { toast('اكتب اسمك', 'error'); return; }
   send({ type: 'UPDATE_PROFILE', name, photo: state.playerPhoto || null });
 }
 
@@ -2927,7 +2930,7 @@ function manualJoin() {
   const errEl = qs('#manual-join-error');
   errEl.style.display = 'none';
   if (!code) { errEl.textContent = 'أدخل كود الجلسة'; errEl.style.display = ''; return; }
-  if (!name) { errEl.textContent = 'أدخل اسمك'; errEl.style.display = ''; return; }
+  if (!name) { errEl.textContent = 'اكتب اسمك'; errEl.style.display = ''; return; }
   state.pendingCode = code;
   state.pendingName = name;
   connectWs();
@@ -2938,7 +2941,7 @@ function joinSession() {
   const code = qs('#join-code').value.trim().toUpperCase();
   const name = qs('#join-name').value.trim();
   if (!code) { toast('أدخل كود الجلسة', 'error'); return; }
-  if (!name) { toast('أدخل اسمك', 'error'); return; }
+  if (!name) { toast('اكتب اسمك', 'error'); return; }
   if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); setTimeout(joinSession, 800); return; }
   send({ type: 'JOIN_SESSION', code, name });
 }
@@ -2981,7 +2984,7 @@ function updateGuessLimit() {
   const btn = qs('#guess-btn');
   if (input) {
     input.disabled = locked;
-    input.placeholder = locked ? 'انتهت محاولاتك في هذه الجولة' : 'من أنا؟ أدخل تخمينك...';
+    input.placeholder = locked ? 'انتهت محاولاتك في هذه الجولة' : 'خمن...';
   }
   if (btn) btn.disabled = locked;
 }
@@ -2990,7 +2993,7 @@ function submitGuess() {
   const guess = qs('#guess-input').value.trim();
   if (!guess || state.correctGuess) return;
   const remaining = Math.max(0, state.cluesSeen * 2 - state.guessesUsed);
-  if (remaining === 0) { toast('🚫 استنفدت جميع محاولاتك في هذه الجولة!', 'error'); return; }
+  if (remaining === 0) { toast('استنفدت جميع محاولاتك في هذه الجولة!', 'error'); return; }
   qs('#guess-input').value = '';
   send({ type: 'SUBMIT_GUESS', guess });
 }
@@ -3169,7 +3172,7 @@ function openPlayerRevealOverlay(results) {
       `<span class="pr-icon">${r.correct ? '✅' : '❌'}</span>` +
       lbAvatarHtml(photoMap[r.name], r.name) +
       `<span class="pr-name">${escHtml(r.name)}</span>` +
-      (r.correct ? `<span class="pr-sub">🔍${r.cluesSeen}${r.guessTime ? ' · ' + formatTime(r.guessTime) : ''}</span>` : '') +
+      (r.correct ? `<span class="pr-sub">${r.cluesSeen}${r.guessTime ? ' · ' + formatTime(r.guessTime) : ''}</span>` : '') +
       `<span class="pr-pts${r.roundScore <= 0 ? ' zero' : ''}">+${r.roundScore}</span>`;
     container.appendChild(card);
     setTimeout(() => { card.classList.add('show'); }, i * 1000 + 300);
@@ -3191,7 +3194,7 @@ function openLbRevealOverlay(leaderboard, isFinal, onClose) {
   cdEl.style.display  = 'none';
   ctrlEl.innerHTML    = '';
   overlay.scrollTop   = 0;
-  qs('#lb-rov-title').textContent = isFinal ? '🏆 الترتيب النهائي' : '📊 الترتيب الإجمالي';
+  qs('#lb-rov-title').textContent = isFinal ? 'الترتيب النهائي' : 'الترتيب الإجمالي';
 
   leaderboard.forEach((l, i) => {
     const rkClass = i === 0 ? 'rk1' : i === 1 ? 'rk2' : i === 2 ? 'rk3' : '';
